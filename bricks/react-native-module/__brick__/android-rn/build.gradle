@@ -1,0 +1,79 @@
+buildscript {
+    if (project == rootProject) {
+        repositories {
+            google()
+            mavenCentral()
+            jcenter()
+        }
+
+        dependencies {
+            classpath 'com.android.tools.build:gradle:4.2.2'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+android {
+    namespace 'be.krispypen.plugins.flutter_rn_embedding'
+    compileSdkVersion safeExtGet('FlutterEmbeddingRNModule_compileSdkVersion', 34)
+    defaultConfig {
+        minSdkVersion safeExtGet('FlutterEmbeddingRNModule_minSdkVersion', 16)
+        targetSdkVersion safeExtGet('FlutterEmbeddingRNModule_targetSdkVersion', 33)
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            consumerProguardFiles 'proguard-rules.pro' // https://github.com/flutter/flutter/issues/100198#issuecomment-1069106261
+        }
+
+        profile {
+          initWith debug
+        }
+    }
+    lintOptions {
+        disable 'GradleCompatible'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+def storageUrl = System.env.FLUTTER_STORAGE_BASE_URL ?: "https://storage.googleapis.com"
+
+repositories {
+    mavenLocal()
+    maven {
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        url("$rootDir/../node_modules/react-native/android")
+    }
+    maven {
+        url "$rootDir/Flutter/repo"
+    }
+    maven {
+        url "$storageUrl/download.flutter.io"
+    }
+    google()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    // Start Flutter dependencies
+    debugImplementation 'com.example.flutter_module:flutter_debug:1.0'
+
+    releaseImplementation 'com.example.flutter_module:flutter_release:1.0'
+    // End Flutter dependencies
+
+    //noinspection GradleDynamicVersion
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+}

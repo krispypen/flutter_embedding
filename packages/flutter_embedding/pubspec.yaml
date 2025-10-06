@@ -1,0 +1,28 @@
+name: flutter_embedding
+description: This project helps embedding into a native ios or android app.
+version: 0.0.1-beta.1
+
+homepage: https://krispypen.be/
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.27.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_lints: ^3.0.1
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: be.krispypen.plugins.flutter_embedding
+        pluginClass: FlutterEmbeddingPlugin
+      ios:
+        pluginClass: FlutterEmbeddingPlugin
+

@@ -1,0 +1,12 @@
+name: flutter_rn_embedding_example
+description: React Native example for embedding Flutter
+repository: https://krispypen.be
+version: 0.0.1
+
+environment:
+  mason: ">=0.1.0-dev.50 <0.1.0"
+
+vars:
+  flutterRnEmbeddingPath:
+    type: string
+    description: The path to the flutter-rn-embedding module
