@@ -6,16 +6,6 @@ A comprehensive solution for embedding Flutter modules into native iOS, Android,
 
 This repository contains everything you need to integrate Flutter modules into existing native mobile applications. It provides a Flutter plugin, a CLI tool for generating platform-specific modules, and example applications for each supported platform.
 
-## 🚀 Features
-
-- **Cross-platform Support**: Works with iOS, Android, and React Native applications
-- **Bidirectional Communication**: Send data between Flutter and native code in both directions
-- **Theme Management**: Runtime dynamic theme switching (light/dark/system)
-- **Language Support**: Runtime language switching capabilities
-- **Environment Configuration**: Support for multiple environments
-- **React Native Compatibility**: Includes workarounds for React Native layout issues
-- **Easy Integration**: Simple setup with minimal configuration required
-
 ## 📦 Packages
 
 This repository contains three main packages:
@@ -23,19 +13,8 @@ This repository contains three main packages:
 ### 1. [flutter_embedding](./packages/flutter_embedding/)
 The core Flutter plugin that provides the embedding functionality and communication bridge between Flutter and native code.
 
-**Key Features:**
-- Bidirectional communication with native apps
-- Dynamic theme and language switching
-- React Native layout compatibility
-- Environment configuration support
-
 ### 2. [flutter_embedding_cli](./packages/flutter_embedding_cli/)
 A command-line tool for generating platform-specific modules and example applications.
-
-**Supported Platforms:**
-- iOS (with CocoaPods support)
-- Android (with AAR generation)
-- React Native (with npm package generation)
 
 ### 3. [flutter_module](./packages/flutter_module/)
 A demo Flutter module that showcases the embedding capabilities.
