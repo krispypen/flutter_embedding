@@ -3,9 +3,6 @@ description: ttt
 repository: https://krispypen.be
 version: 0.0.1
 
-environment:
-  mason: ">=0.1.0-dev.50 <0.1.0"
-
 vars:
   module_path:
     type: string
