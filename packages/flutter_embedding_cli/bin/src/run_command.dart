@@ -1,19 +1,31 @@
 import 'dart:convert';
 import 'dart:io';
 
-Future<void> runCommand(String command, List<String> arguments, {String directory = '.'}) async {
-  print('> Executing: $command ${arguments.join(' ')}');
+Future<void> runCommand(String command, List<String> arguments, bool verbose, {String directory = '.'}) async {
+  if (verbose) {
+    print('> Executing: $command ${arguments.join(' ')}');
+  }
 
   final process = await Process.start(command, arguments, workingDirectory: directory);
 
+  final StringBuffer output = StringBuffer();
+
   // Listen to stdout and print in real-time with proper UTF-8 decoding
   process.stdout.transform(utf8.decoder).transform(const LineSplitter()).listen((line) {
-    print(line);
+    if (verbose) {
+      print(line);
+    } else {
+      output.writeln(line);
+    }
   });
 
   // Listen to stderr and print in real-time with proper UTF-8 decoding
   process.stderr.transform(utf8.decoder).transform(const LineSplitter()).listen((line) {
-    stderr.writeln(line);
+    if (verbose) {
+      stderr.writeln(line);
+    } else {
+      output.writeln(line);
+    }
   });
 
   // Wait for the process to complete
@@ -21,6 +33,10 @@ Future<void> runCommand(String command, List<String> arguments, {String director
 
   if (exitCode != 0) {
     print('Process exited with code: $exitCode');
+    if (!verbose) {
+      print('To get more details, run with the --verbose flag');
+      print(output.toString());
+    }
     exit(exitCode);
   }
 }

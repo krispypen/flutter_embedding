@@ -12,14 +12,27 @@ import 'src/run_command.dart';
 void main(List<String> arguments) async {
   // 1. Maak een ArgParser
   final parser = ArgParser()
-    ..addCommand('ios', ArgParser()..addFlag('example', abbr: 'e', help: 'Generate example app'))
-    ..addCommand('android', ArgParser()..addFlag('example', abbr: 'e', help: 'Generate example app'))
-    ..addCommand('react-native', ArgParser()..addFlag('example', abbr: 'e', help: 'Generate example app'))
+    ..addCommand(
+        'ios',
+        ArgParser()
+          ..addFlag('example', abbr: 'e', help: 'Generate example app')
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+    ..addCommand(
+        'android',
+        ArgParser()
+          ..addFlag('example', abbr: 'e', help: 'Generate example app')
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+    ..addCommand(
+        'react-native',
+        ArgParser()
+          ..addFlag('example', abbr: 'e', help: 'Generate example app')
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
     ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help');
 
   try {
     // 2. Parse de argumenten
     final ArgResults results = parser.parse(arguments);
+    final verbose = results.command?.flag('verbose') ?? false;
 
     // 3. Behandel de 'help' vlag
     if (results['help']) {
@@ -33,14 +46,17 @@ void main(List<String> arguments) async {
         final flutterIosBundleIdentifier = _getFlutterIosBundleIdentifier();
         print('Generating iOS module for bundle identifier: ${flutterIosBundleIdentifier}');
         // execute fvm flutter build ios-framework --cocoapods --output=build/ios/sdk
-        await runCommand('fvm', ['flutter', 'build', 'ios-framework', '--cocoapods', '--output=build/ios/sdk']);
+        await runCommand(
+            'fvm', ['flutter', 'build', 'ios-framework', '--cocoapods', '--output=build/ios/sdk'], verbose);
 
-        await generateZip(Directory('build/ios/sdk'));
+        await generateZip(Directory('build/ios/sdk'), verbose);
         await generatePodSpecs(Directory('build/ios/sdk'));
         await generatePodHelper(Directory('.'), Directory('build/ios/sdk'), 'https://krispypen.be');
+        print('iOS module generated in: ${Directory.current.path}/build/ios/sdk');
         if (results.command?.flag('example') == true) {
           print('Generating iOS example app');
-          final brick = Brick.path('/opt/gitrepos/meetup_demo_add-to-app/bricks/ios-example');
+          final brick =
+              Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/ios-example'));
           final generator = await MasonGenerator.fromBrick(brick);
           final path = Directory.current.path + '/build/ios-example';
           final target = DirectoryGeneratorTarget(Directory(path));
@@ -48,7 +64,7 @@ void main(List<String> arguments) async {
             'module_path': '/opt/gitrepos/meetup_demo_add-to-app/flutter_module',
             'iosBundleIdentifier': flutterIosBundleIdentifier
           });
-          await runCommand('cp', ['-r', 'build/ios/sdk', '${path}/Flutter/']);
+          await runCommand('cp', ['-r', 'build/ios/sdk', '${path}/Flutter/'], verbose);
           print('Example app generated in: ${path}');
         }
 
@@ -57,10 +73,11 @@ void main(List<String> arguments) async {
         // read flutter.androidPackage from pubspec.yaml
         final flutterAndroidPackage = _getFlutterAndroidPackage();
         print('Generating Android module for package: ${flutterAndroidPackage}');
-        await runCommand('fvm', ['flutter', 'build', 'aar']);
+        await runCommand('fvm', ['flutter', 'build', 'aar'], verbose);
         if (results.command?.flag('example') == true) {
           print('Generating Android example app');
-          final brick = Brick.path('/opt/gitrepos/meetup_demo_add-to-app/bricks/android-example');
+          final brick =
+              Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/android-example'));
 
           final generator = await MasonGenerator.fromBrick(brick);
           final path = Directory.current.path + '/build/android-example';
@@ -70,47 +87,52 @@ void main(List<String> arguments) async {
             'module_path': '/opt/gitrepos/meetup_demo_add-to-app/flutter_module',
             'androidPackage': flutterAndroidPackage
           });
+          await runCommand('cp', ['-r', 'build/host/outputs/repo', '${path}/Flutter/'], verbose);
           print('Example app generated in: ${path}');
         }
         break;
       case 'react-native':
         print('Generating React Native module');
         final flutterRnEmbeddingPath = Directory.current.path + '/build/flutter-rn-embedding';
-        final brick = Brick.path('/opt/gitrepos/meetup_demo_add-to-app/bricks/react-native-module');
+        final brick = Brick.git(
+            GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-module'));
 
         final generator = await MasonGenerator.fromBrick(brick);
-        final path = Directory.current.path + '/build/flutter-rn-embedding';
-        final target = DirectoryGeneratorTarget(Directory(path));
+        final target = DirectoryGeneratorTarget(Directory(flutterRnEmbeddingPath));
 
         await generator.generate(target, vars: <String, dynamic>{});
-        print('React Native module generated in: ${path}');
-        await runCommand('fvm', ['flutter', 'build', 'aar']);
-        // copy all content of build/host/outputs/repo to flutterRnEmbeddingPath/android/Flutter including subdirectories
+
+        await runCommand('fvm', ['flutter', 'build', 'aar'], verbose);
+
         final flutterDir = Directory('${flutterRnEmbeddingPath}/android/Flutter');
         if (flutterDir.existsSync()) {
           Directory('${flutterRnEmbeddingPath}/android/Flutter').deleteSync(recursive: true);
         }
         Directory('${flutterRnEmbeddingPath}/android/Flutter').createSync(recursive: true);
-        await runCommand('cp', ['-r', 'build/host/outputs/repo', '${flutterRnEmbeddingPath}/android-rn/Flutter/']);
-        await runCommand('fvm',
-            ['flutter', 'build', 'ios-framework', '--cocoapods', '--output=${flutterRnEmbeddingPath}/ios-rn/Flutter']);
+        await runCommand(
+            'cp', ['-r', 'build/host/outputs/repo', '${flutterRnEmbeddingPath}/android-rn/Flutter/'], verbose);
+        await runCommand(
+            'fvm',
+            ['flutter', 'build', 'ios-framework', '--cocoapods', '--output=${flutterRnEmbeddingPath}/ios-rn/Flutter'],
+            verbose);
 
-        await generateZip(Directory('${flutterRnEmbeddingPath}/ios-rn/Flutter'));
+        await generateZip(Directory('${flutterRnEmbeddingPath}/ios-rn/Flutter'), verbose);
         await generatePodSpecs(Directory('${flutterRnEmbeddingPath}/ios-rn/Flutter'));
         await generatePodHelper(
             Directory('.'), Directory('${flutterRnEmbeddingPath}/ios-rn/Flutter'), 'https://krispypen.be');
-        // cp Flutter/Release/Flutter.podspec to Flutter/Flutter.podspec
+
         File('${flutterRnEmbeddingPath}/ios-rn/Flutter/Release/Flutter.podspec')
             .copySync('${flutterRnEmbeddingPath}/ios-rn/Flutter/Flutter.podspec');
-        // run: npm install
-        // npm run ci
-        // npm pack .
-        await runCommand('npm', ['install'], directory: flutterRnEmbeddingPath);
-        await runCommand('npm', ['run', 'ci'], directory: flutterRnEmbeddingPath);
-        await runCommand('npm', ['pack', '.'], directory: flutterRnEmbeddingPath);
+
+        await runCommand('npm', ['install'], directory: flutterRnEmbeddingPath, verbose);
+        await runCommand('npm', ['run', 'ci'], directory: flutterRnEmbeddingPath, verbose);
+        await runCommand('npm', ['pack', '.'], directory: flutterRnEmbeddingPath, verbose);
+        print('React Native module generated in: ${flutterRnEmbeddingPath}');
+        print('React Native module package: ${flutterRnEmbeddingPath}/flutter-rn-embedding-1.0.0.tgz');
         if (results.command?.flag('example') == true) {
           print('Generating React Native example app');
-          final brick = Brick.path('/opt/gitrepos/meetup_demo_add-to-app/bricks/react-native-example');
+          final brick = Brick.git(
+              GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-example'));
 
           final generator = await MasonGenerator.fromBrick(brick);
           final path = Directory.current.path + '/build/react-native-example';
@@ -120,7 +142,7 @@ void main(List<String> arguments) async {
             'flutterRnEmbeddingPath': flutterRnEmbeddingPath,
           });
           // run chmod 755 android/gradlew
-          await runCommand('chmod', ['755', 'android/gradlew'], directory: path);
+          await runCommand('chmod', ['755', 'android/gradlew'], directory: path, verbose);
           print('Example app generated in: ${path}');
         }
         break;

@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'directory_extensions.dart';
 import 'run_command.dart';
 
-Future<void> generateZip(Directory buildDirectory) async {
+Future<void> generateZip(Directory buildDirectory, bool verbose) async {
   final envNames = ['Release', 'Debug'];
 
   for (final env in envNames) {
@@ -34,7 +34,7 @@ Future<void> generateZip(Directory buildDirectory) async {
     }
 
     // Zip the Frameworks directory
-    await runCommand('zip', ['-r', 'Frameworks.zip', 'Frameworks'], directory: envDirectory.path);
+    await runCommand('zip', ['-r', 'Frameworks.zip', 'Frameworks'], directory: envDirectory.path, verbose);
 
     // Remove Frameworks directory
     Directory(join(envDirectory.path, 'Frameworks')).deleteSync(recursive: true);
