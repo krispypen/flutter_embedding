@@ -4,6 +4,8 @@
 
 @interface RCT_EXTERN_MODULE(FlutterEmbeddingModule, RCTEventEmitter)
 
+RCT_EXTERN_METHOD(supportedEvents)
+
 RCT_EXTERN_METHOD(startEngine: (NSString *)env
                   language: (NSString *)language
                   themeMode: (NSString *)themeMode

@@ -4,9 +4,6 @@ import 'package:flutter_embedding/flutter_embedding.dart';
 void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
   final embeddingController = EmbeddingController.fromArgs(args);
-  embeddingController.addHandoverHandler('handoverDemo', (args, _) async {
-    return 'Hello from Flutter Module';
-  });
 
   runApp(MyApp(embeddingController));
 }
@@ -83,13 +80,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    widget.embeddingController.addHandoverHandler('handoverDemo', (args) async {
+      // short alert
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(title: Text('Received handover'), content: Text('Data: $args')),
+      );
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
@@ -116,8 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+            const Text('Youu have pushed the button this many times:'),
             Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
+            ElevatedButton(
+              onPressed: () => widget.embeddingController.invokeHandover(
+                'handoverDemo',
+                arguments: {'message': 'Hello from Flutter Module'},
+              ),
+              child: const Text('Say Hello'),
+            ),
             ElevatedButton(onPressed: widget.embeddingController.exit, child: const Text('Exit')),
           ],
         ),

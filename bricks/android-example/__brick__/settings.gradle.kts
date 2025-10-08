@@ -22,7 +22,7 @@ dependencyResolutionManagement {
         mavenCentral()
         maven {
             // Start android maven repo url
-            url = uri("{{{module_path}}}/build/host/outputs/repo")
+            url = uri("../host/outputs/repo")
             // End android maven repo url
         }
         maven {

@@ -28,6 +28,9 @@ allprojects {
             url "$rootDir/../node_modules/flutter-rn-embedding/android-rn/Flutter/repo"
         }
         maven {
+            url "$rootDir/../node_modules/flutter-rn-embedding/android-rn/Flutter"
+        }
+        maven {
             url "$storageUrl/download.flutter.io"
         }
         jcenter()

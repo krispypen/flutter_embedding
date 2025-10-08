@@ -1,5 +1,7 @@
 {{=<% %>=}}
 
+
+
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -22,7 +24,7 @@ import {
   View
 } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import {
   FlutterEmbeddingModule,
 } from 'flutter-rn-embedding';
@@ -55,20 +57,30 @@ let handoverResponder: ExampleHandoverResponder;
 const HomeScreen = ({
   navigation,
 }: StackScreenProps<RootStackParamList, 'Home'>) => {
-  const [accessToken, setAccessToken] = React.useState<string>('');
   const [currentEnvironment, setCurrentEnvironment] = React.useState<string>('DEV');
   const [currentLanguage, setCurrentLanguage] = React.useState<string>('en');
   const [currentThemeMode, setCurrentThemeMode] = React.useState<string>('system');
   const [isEngineStarted, setIsEngineStarted] = React.useState<boolean>(false);
   const [isFlutterInView, setIsFlutterInView] = React.useState<boolean>(false);
 
+  // Use ref to access current state value in callbacks
+  const isFlutterInViewRef = React.useRef<boolean>(false);
+
+  // Update ref when state changes
+  React.useEffect(() => {
+    isFlutterInViewRef.current = isFlutterInView;
+  }, [isFlutterInView]);
+
+  // Sync isFlutterInView state with navigation
+  useFocusEffect(
+    React.useCallback(() => {
+      // When HomeScreen is focused, Flutter is not in view
+      setIsFlutterInView(false);
+    }, [])
+  );
+
   const languages = React.useMemo(() => [
     { value: 'en' },
-    { value: 'en-ES' },
-    { value: 'de-DE' },
-    { value: 'zh-Hans' },
-    { value: 'ar' },
-    { value: 'tr' },
     { value: 'nl' },
     { value: 'fr' },
   ], []);
@@ -79,18 +91,26 @@ const HomeScreen = ({
     { value: 'system' },
   ], []);
 
-  if (handoverResponder) {
-    handoverResponder.currentAccessToken = accessToken;
-  }
-
   const openApp = () => {
+    setIsFlutterInView(true);
     navigation.navigate('Flutter');
   };
 
   const startEngine = async () => {
     handoverResponder = new ExampleHandoverResponder({
-      accessToken: accessToken,
-      exit: () => navigation.navigate('Home'),
+      exit: () => {
+        if (isFlutterInViewRef.current) {
+          removeFlutterView();
+        } else {
+          navigation.navigate('Home');
+        }
+      },
+      invokeHandover: (name: string, data: any, completion: (response: any, error: any) => void) => {
+        console.log("invokeHandover in app.tsx " + data);
+        // show alert
+        Alert.alert('Invoke handover', data);
+        completion(null, null);
+      },
     });
 
     try {
@@ -106,7 +126,7 @@ const HomeScreen = ({
         { text: 'OK', onPress: () => console.log('OK Pressed') },
       ]);
     } catch (error) {
-      Alert.alert('Error', 'Something went wrong when starting the engine', [
+      Alert.alert('Error', 'Something went wrong when starting the engine' + error, [
         { text: 'OK' },
       ]);
     }
@@ -158,36 +178,7 @@ const HomeScreen = ({
   };
 
   const showHandoverAlert = () => {
-    Alert.prompt(
-      'Invoke handover "handoverDemo"',
-      'Enter handover data:',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Send',
-          onPress: async (inputValue) => {
-            try {
-              // Invoke handover with the input data
-              let response = await FlutterEmbeddingModule.invokeHandover('handoverDemo', { data: inputValue });
-
-              Alert.alert('Success', 'Handover invoked successfully.\nResponse: ' + response, [
-                { text: 'OK' }
-              ]);
-            } catch (error) {
-              Alert.alert('Error', 'Failed to invoke handover.\n' + error, [
-                { text: 'OK' }
-              ]);
-            }
-          },
-        },
-      ],
-      'plain-text',
-      '',
-      'default'
-    );
+    FlutterEmbeddingModule.invokeHandover('handoverDemo', { data: 'Hello from React Native' });
   };
 
   return (
@@ -304,6 +295,8 @@ const HomeScreen = ({
 };
 
 const FlutterScreen = () => {
+  // This would need access to the parent state, but since it's in a different component,
+  // we'll handle this differently by updating the state when navigating
   return (
     <FlutterApp
       style={{
@@ -394,4 +387,5 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
 <%={{ }}=%>

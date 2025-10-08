@@ -33,8 +33,10 @@ class CompletableEventEmitterDecorator {
             
             enveloppeData[CompletableEventEmitterDecorator.UUID_KEY] = uuid
         }
+
+        enveloppeData["name"] = name
         
-        eventEmitter.invokeHandover(withName: name, data: enveloppeData)
+        eventEmitter.sendEvent(withName: "invokeHandover", data: enveloppeData)
     }
 
     func completeEvent(withName name: String, data: Dictionary<String, Any?>) {
@@ -47,5 +49,5 @@ class CompletableEventEmitterDecorator {
 }
 
 protocol EventEmitterProtocol {
-    func invokeHandover(withName name: String, data: Dictionary<String, Any>)
+    func sendEvent(withName name: String, data: Dictionary<String, Any?>)
 }

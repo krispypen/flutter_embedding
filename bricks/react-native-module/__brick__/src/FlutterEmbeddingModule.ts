@@ -11,7 +11,8 @@ type NativeFlutterEmbeddingModuleType = EventSubscriptionVendor & {
   startEngine: (env: string, language: string, themeMode: string) => Promise<void>;
   stopEngine: () => void;
   respondToEvent: (eventName: string, data: { [key: string]: any }) => void;
-  invokeHandover: (eventName: string, data: {}) => void;
+  invokeHandover: (eventName: string, data: { [key: string]: any }) => void;
+  invokeHandoverReturn: (eventName: string, data: { [key: string]: any }) => void;
   changeLanguage: (language: string) => Promise<boolean>;
   changeThemeMode: (themeMode: string) => Promise<boolean>;
 };
@@ -21,36 +22,17 @@ const nativeFlutterEmbeddingModule: NativeFlutterEmbeddingModuleType =
 const eventEmitter = new NativeEventEmitter(nativeFlutterEmbeddingModule);
 let currentHandoverResponder: HandoverResponderInterface;
 
-function addListener(
-  eventName: string,
-  listener: (request?: any, uuid?: string) => void,
-) {
-  eventEmitter.addListener(eventName, async (data: any) => {
-    let uuid: string = data['COMPLETABLE_EVENT_UUID_KEY'];
-    let request: any = data['COMPLETABLE_EVENT_REQUEST_KEY'];
 
-    listener(
-      request,
-      uuid != null && typeof uuid === 'string' ? uuid : undefined
-    );
-  });
-}
-
-addListener('exit', async () => {
-  currentHandoverResponder.exit?.();
-});
-
-addListener('invokeHandover', async (request?: any, uuid?: string) => {
-  if (uuid != null) {
-    await currentHandoverResponder.invokeHandover?.(request.name, request.data, (response: any, error: any) => {
-      if (error) {
-        nativeFlutterEmbeddingModule.invokeHandover(uuid, error);
+eventEmitter.addListener("invokeHandover", async (data: any) => {
+  let name: string = data['name'];
+  if (name == "exit") {
+    currentHandoverResponder.exit?.();
+  } else if (name != '') {
+    currentHandoverResponder.invokeHandover?.(name, JSON.stringify(data["_completable_event_request"]), (response: any, _error: any) => {
+      if (response != null) {
+        respondToEvent(name, response);
       }
-      nativeFlutterEmbeddingModule.respondToEvent(uuid, response);
     });
-
-  } else {
-    console.debug(`Invalid ${'invokeHandover'} event`);
   }
 });
 
@@ -86,8 +68,13 @@ const changeThemeMode = ({ themeMode }: { themeMode: string }): Promise<boolean>
   nativeFlutterEmbeddingModule.changeThemeMode(themeMode);
 
 
-const invokeHandover = (eventName: string, data: {}) =>
-  nativeFlutterEmbeddingModule.invokeHandover(eventName, data);
+const invokeHandover = (eventName: string, data: {}) => {
+  nativeFlutterEmbeddingModule.invokeHandoverReturn(eventName, data);
+}
+
+const invokeHandoverReturn = (eventName: string, data: { [key: string]: any }) => {
+  nativeFlutterEmbeddingModule.invokeHandoverReturn(eventName, data);
+}
 
 const respondToEvent = (eventName: string, data: { [key: string]: any }) =>
   nativeFlutterEmbeddingModule.respondToEvent(eventName, data);
@@ -98,5 +85,6 @@ export const FlutterEmbeddingModule = {
   changeLanguage,
   changeThemeMode,
   invokeHandover,
+  invokeHandoverReturn,
   respondToEvent,
 };

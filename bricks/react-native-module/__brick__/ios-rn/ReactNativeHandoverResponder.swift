@@ -37,8 +37,8 @@ class ReactNativeHandoverResponder: HandoverResponderProtocol {
             withName: name,
             data: data,
             completion: { result in
-                completion?(result, nil)
-            }
+                            completion?(result, nil)
+                        }
         )
     }
 

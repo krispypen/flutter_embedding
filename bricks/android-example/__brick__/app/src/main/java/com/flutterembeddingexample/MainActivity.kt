@@ -8,11 +8,13 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import be.krispypen.plugins.flutter_embedding.FlutterEmbedding
 import be.krispypen.plugins.flutter_embedding.CompletionHandler
 import be.krispypen.plugins.flutter_embedding.HandoverResponderInterface
+import androidx.core.view.isVisible
 
 class MainActivity : AppCompatActivity() {
     
@@ -109,6 +111,10 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.update_language_button).setOnClickListener { view ->
             updateLanguage(view)
+        }
+
+        findViewById<Button>(R.id.invoke_handover_button).setOnClickListener { view ->
+            invokeHandover(view)
         }
     }
 
@@ -266,6 +272,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    private fun invokeHandover(view: View) {
+        FlutterEmbedding.instance().invokeHandover("handoverDemo", mapOf("data" to "Hello from Android"), object: CompletionHandler<Any?> {
+            override fun onSuccess(data: Any?) {
+                Log.d("MainActivity", "Successfully invoked handover")
+            }
+
+            override fun onFailure(e: Exception) {
+                Log.e("MainActivity", "Error when invoking handover: $e")
+                Snackbar.make(
+                    view,
+                    e.message ?: "Something went wrong (when invoking handover)",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 }
 

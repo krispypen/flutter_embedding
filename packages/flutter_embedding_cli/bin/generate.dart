@@ -41,6 +41,8 @@ void main(List<String> arguments) async {
       exit(0);
     }
 
+    final bool localBricks = Directory('../../bricks').existsSync();
+
     switch (results.command?.name) {
       case 'ios':
         final flutterIosBundleIdentifier = _getFlutterIosBundleIdentifier();
@@ -55,8 +57,9 @@ void main(List<String> arguments) async {
         print('iOS module generated in: ${Directory.current.path}/build/ios/sdk');
         if (results.command?.flag('example') == true) {
           print('Generating iOS example app');
-          final brick =
-              Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/ios-example'));
+          final brick = localBricks
+              ? Brick.path((Directory.current.path + '/../../bricks/ios-example'))
+              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/ios-example'));
           final generator = await MasonGenerator.fromBrick(brick);
           final path = Directory.current.path + '/build/ios-example';
           final target = DirectoryGeneratorTarget(Directory(path));
@@ -76,9 +79,10 @@ void main(List<String> arguments) async {
         await runCommand('fvm', ['flutter', 'build', 'aar'], verbose);
         if (results.command?.flag('example') == true) {
           print('Generating Android example app');
-          final brick =
-              Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/android-example'));
-
+          final brick = localBricks
+              ? Brick.path((Directory.current.path + '/../../bricks/android-example'))
+              : Brick.git(
+                  GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/android-example'));
           final generator = await MasonGenerator.fromBrick(brick);
           final path = Directory.current.path + '/build/android-example';
           final target = DirectoryGeneratorTarget(Directory(path));
@@ -94,8 +98,10 @@ void main(List<String> arguments) async {
       case 'react-native':
         print('Generating React Native module');
         final flutterRnEmbeddingPath = Directory.current.path + '/build/flutter-rn-embedding';
-        final brick = Brick.git(
-            GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-module'));
+        final brick = localBricks
+            ? Brick.path((Directory.current.path + '/../../bricks/react-native-module'))
+            : Brick.git(
+                GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-module'));
 
         final generator = await MasonGenerator.fromBrick(brick);
         final target = DirectoryGeneratorTarget(Directory(flutterRnEmbeddingPath));
@@ -131,8 +137,10 @@ void main(List<String> arguments) async {
         print('React Native module package: ${flutterRnEmbeddingPath}/flutter-rn-embedding-1.0.0.tgz');
         if (results.command?.flag('example') == true) {
           print('Generating React Native example app');
-          final brick = Brick.git(
-              GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-example'));
+          final brick = localBricks
+              ? Brick.path((Directory.current.path + '/../../bricks/react-native-example'))
+              : Brick.git(
+                  GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-example'));
 
           final generator = await MasonGenerator.fromBrick(brick);
           final path = Directory.current.path + '/build/react-native-example';

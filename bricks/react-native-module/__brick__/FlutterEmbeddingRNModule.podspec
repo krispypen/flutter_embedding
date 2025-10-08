@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
     'OTHER_LDFLAGS' => '$(inherited) -framework Flutter -framework FlutterPluginRegistrant -framework flutter_embedding'
   }
   s.preserve_paths = "**/*.xcframework"
-  s.version       ='13.10.23'
+  s.version       ='1.0.0'
   s.summary       = 'A new flutter module project.'
   s.homepage      = 'https://krispypen.be'
   s.license       = 'MIT'

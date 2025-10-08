@@ -13,9 +13,6 @@
         android:textStyle="bold"
         android:layout_marginBottom="24dp" />
 
-
-
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -140,6 +137,23 @@
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:text="Update Language"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:background="@color/blue"
+        android:layout_marginBottom="6dp" />
+
+     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Handover Controls"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/invoke_handover_button"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:text="Invoke Handover"
         android:textSize="16sp"
         android:textColor="@android:color/white"
         android:background="@color/blue"

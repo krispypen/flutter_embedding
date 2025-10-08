@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-typedef Handler = Future<Object?> Function(Map<String, dynamic> arguments, Object? previousResponse);
+typedef Handler = Future<Object?> Function(Map<String, dynamic> arguments);
 
 const String embeddingChannelName = 'flutter_embedding/embedding';
 
@@ -25,18 +25,17 @@ class EmbeddingChannel {
     );
 
     final nativeMessageHandlers = _nativeMessageHandlers[methodCall.method];
-    try {
-      final response = await nativeMessageHandlers?.fold<Future<dynamic>>(
-        Future.value(null),
-        (futurePreviousValue, handler) => futurePreviousValue.then(
-          (previousValue) => handler(Map<String, dynamic>.from(methodCall.arguments), previousValue),
-        ),
-      );
+    if (nativeMessageHandlers != null) {
+      // Cast methodCall.arguments to Map<String, dynamic> if it's a Map
+      final Map<String, dynamic> arguments =
+          methodCall.arguments is Map ? Map<String, dynamic>.from(methodCall.arguments as Map) : <String, dynamic>{};
 
-      return response;
-    } catch (e, stackTrace) {
-      log('Failed handling ${methodCall.method} $e $stackTrace');
-      rethrow;
+      for (final handler in nativeMessageHandlers) {
+        final response = await handler(arguments);
+        if (response != null) {
+          return response;
+        }
+      }
     }
   }
 
@@ -82,11 +81,11 @@ class EmbeddingController {
       final languageName = config['language'] as String;
       language.value = languageName;
     }
-    embeddingChannel.on('change_theme_mode', (args, _) async {
-      themeMode.value = ThemeMode.values.byName(args['theme_mode']);
+    embeddingChannel.on('change_theme_mode', (args) async {
+      themeMode.value = ThemeMode.values.byName(args['theme_mode'] as String);
       return true;
     });
-    embeddingChannel.on('change_language', (args, _) async {
+    embeddingChannel.on('change_language', (args) async {
       language.value = args['language'] as String;
       return true;
     });

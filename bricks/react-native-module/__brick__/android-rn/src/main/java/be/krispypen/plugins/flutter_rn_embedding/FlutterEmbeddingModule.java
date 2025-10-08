@@ -18,6 +18,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import be.krispypen.plugins.flutter_embedding.CompletionHandler;
 import be.krispypen.plugins.flutter_embedding.FlutterEmbedding;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,18 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
     });
   }
 
+  @ReactMethod
+  public void invokeHandoverReturn(@NonNull String name, ReadableMap data, Promise promise) {
+    final Map<String, Object> newMap = convertReadableMapToMap(data);
+    FlutterEmbedding.instance().invokeHandover(name, newMap, new CompletionHandler<Object>() {
+      @Override
+      public void onSuccess(Object result) { promise.resolve(result);}
+
+      @Override
+      public void onFailure(Exception e) { promise.reject(e);}
+    });
+  }
+
   @Override
   public void invokeHandover(@NonNull String eventName, @NonNull Map<String, Object> data) {
     final WritableMap arguments = convertToWritableMap(data);
@@ -121,6 +134,66 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
     constants.put("COMPLETABLE_EVENT_REQUEST_KEY", CompletableEventEmitterDecorator.REQUEST_KEY);
     constants.put("COMPLETABLE_EVENT_RESPONSE_KEY", CompletableEventEmitterDecorator.RESPONSE_KEY);
     return constants;
+  }
+
+  private Map<String, Object> convertReadableMapToMap(@NonNull ReadableMap data) {
+    Map<String, Object> result = new LinkedHashMap<>();
+    
+    com.facebook.react.bridge.ReadableMapKeySetIterator iterator = data.keySetIterator();
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      switch (data.getType(key)) {
+        case Null:
+          result.put(key, null);
+          break;
+        case Boolean:
+          result.put(key, data.getBoolean(key));
+          break;
+        case Number:
+          result.put(key, data.getDouble(key));
+          break;
+        case String:
+          result.put(key, data.getString(key));
+          break;
+        case Map:
+          result.put(key, convertReadableMapToMap(data.getMap(key)));
+          break;
+        case Array:
+          result.put(key, convertReadableArrayToList(data.getArray(key)));
+          break;
+      }
+    }
+    
+    return result;
+  }
+
+  private List<Object> convertReadableArrayToList(@NonNull com.facebook.react.bridge.ReadableArray data) {
+    List<Object> result = new ArrayList<>();
+    
+    for (int i = 0; i < data.size(); i++) {
+      switch (data.getType(i)) {
+        case Null:
+          result.add(null);
+          break;
+        case Boolean:
+          result.add(data.getBoolean(i));
+          break;
+        case Number:
+          result.add(data.getDouble(i));
+          break;
+        case String:
+          result.add(data.getString(i));
+          break;
+        case Map:
+          result.add(convertReadableMapToMap(data.getMap(i)));
+          break;
+        case Array:
+          result.add(convertReadableArrayToList(data.getArray(i)));
+          break;
+      }
+    }
+    
+    return result;
   }
 
   private WritableArray convertToWritableArray(@NonNull List<Object> data) {
