@@ -24,18 +24,15 @@ class FlutterEmbeddingModule: RCTEventEmitter, EventEmitterProtocol {
     }
     
 
-    @objc func startEngine(_ env: String, language: String, themeMode: String, handoverResponder: ReactNativeHandoverResponder, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-        // Store the handoverResponder for later use
-        self.handoverResponder = handoverResponder
-        
-        FlutterEmbedding.shared.startEngine(forEnv: env, forLanguage: language, forThemeMode: themeMode, with: handoverResponder, libraryURI: "package:flutter_module/main.dart") { result, error in
-            if let flutterError = error?.toFlutterError() {
-                reject(flutterError.code, flutterError.message ?? flutterError.description, error)
-            } else {
-                resolve(nil)
+    @objc func startEngine(_ env: String, language: String, themeMode: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+            FlutterEmbedding.shared.startEngine(forEnv: env, forLanguage: language, forThemeMode: themeMode, with: handoverResponder!, libraryURI: "package:flutter_module/main.dart") { result, error in
+                if let flutterError = error?.toFlutterError() {
+                    reject(flutterError.code, flutterError.message ?? flutterError.description, error)
+                } else {
+                    resolve(nil)
+                }
             }
         }
-    }
     
     @objc func stopEngine() {
         FlutterEmbedding.shared.stopEngine()
@@ -70,7 +67,7 @@ class FlutterEmbeddingModule: RCTEventEmitter, EventEmitterProtocol {
        super.sendEvent(withName: "exit", body: nil)
     }
     
-    @objc func invokeHandoverReturn(_ name: String, data: Dictionary<String, Any>) {
+    @objc func invokeHandoverReturn(_ name: String, data: Dictionary<String, Any>, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
         FlutterEmbedding.shared.invokeHandover(withName: name, data: data, completion: nil);
     }
     
@@ -93,3 +90,4 @@ class FlutterEmbeddingModule: RCTEventEmitter, EventEmitterProtocol {
     }
     
 }
+

@@ -27,6 +27,11 @@ RCT_EXTERN_METHOD(invokeHandover: (NSString *)name
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(invokeHandoverReturn: (NSString *)name
+                  data: (NSDictionary *)data
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(respondToEvent: (NSString *)eventName
                   data: (NSDictionary *)data)
 
