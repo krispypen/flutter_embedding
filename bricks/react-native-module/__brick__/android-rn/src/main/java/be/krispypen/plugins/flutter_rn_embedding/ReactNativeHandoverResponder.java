@@ -33,7 +33,8 @@ public class ReactNativeHandoverResponder implements HandoverResponderInterface 
   @Override
   public void invokeHandover(@NonNull String name, @NonNull Map<String, Object> data, @NonNull CompletionHandler<Object> completion) {
     Log.d(ReactNativeHandoverResponder.TAG, "Start invokeHandover");
-    eventEmitter.invokeHandover(name, data, completion);
+    data.put("name", name);
+    eventEmitter.invokeHandover("invokeHandover", data, completion);
   }
 
   

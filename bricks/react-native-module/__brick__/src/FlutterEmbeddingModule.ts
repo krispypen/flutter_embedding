@@ -36,6 +36,10 @@ eventEmitter.addListener("invokeHandover", async (data: any) => {
   }
 });
 
+eventEmitter.addListener("exit", async (_data: any) => {
+  currentHandoverResponder.exit?.();
+});
+
 export interface FlutterStartEngineParams {
   handoverResponder: HandoverResponderInterface;
   environment: string;
