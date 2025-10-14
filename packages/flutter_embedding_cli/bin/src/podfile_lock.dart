@@ -55,7 +55,7 @@ class PodFileLock {
     );
   }
 
-  String getPodVersion(podName) {
+  String getPodVersion(String podName) {
     if (pods.containsKey(podName)) {
       return pods[podName]!;
     }

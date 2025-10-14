@@ -1,6 +1,6 @@
 name: flutter_embedding_cli
 description: This project helps generating modules for embedding flutter into a native ios, android or react-native app.
-version: 0.0.1-beta.2
+version: 0.0.1-beta.3
 
 homepage: https://github.com/krispypen/flutter_embedding
 repository: https://github.com/krispypen/flutter_embedding/tree/main/packages/flutter_embedding_cli
@@ -17,7 +17,7 @@ environment:
   sdk: ^3.6.0
 
 dependencies:
-  args: ^2.4.0
+  args: ^2.5.0
   path: ^1.8.3
   mason: ^0.1.1
   yaml: ^3.0.0
