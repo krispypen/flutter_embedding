@@ -59,3 +59,4 @@ For support and questions:
 ---
 
 **Made with ❤️ by [Krispypen](https://krispypen.be/)**
+

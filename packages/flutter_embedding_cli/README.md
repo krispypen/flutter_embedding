@@ -2,17 +2,25 @@
 
 A command-line tool for generating modules that allow embedding Flutter into native iOS, Android, or React Native (more to come later) applications. 
 
+## Screenshot
+
+![Screenshot](https://raw.githubusercontent.com/krispypen/flutter_embedding/main/assets/demo.gif)
+
 ## Overview
 
-This CLI tool helps developers create the necessary modules and example applications for integrating Flutter modules into existing native mobile applications. At the moment it supports three platforms: iOS, Android, and React Native.
+This CLI tool helps developers create the module and example applications for integrating Flutter modules into existing native mobile applications. At the moment it supports three platforms: iOS, Android, and React Native.
 
 ## Installation
 
-1. Navigate to the `flutter_embedding_cli` directory
-2. Install dependencies:
-   ```bash
-   dart pub get
-   ```
+Add this to your package's `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  flutter_embedding: ^0.0.1-beta.2
+
+dev_dependencies:
+  flutter_embedding_cli: ^0.0.1-beta.2
+```
 
 ## Usage
 
@@ -21,10 +29,6 @@ The CLI provides a single command with multiple subcommands:
 ```bash
 dart run flutter_embedding_cli:generate [options] <command> [arguments]
 ```
-
-### Global Options
-
-- `--help`, `-h`: Show help information and usage
 
 ### Commands
 
@@ -46,9 +50,6 @@ dart run flutter_embedding_cli:generate ios [--example]
 4. Generates a Pod helper file
 5. If `--example` is specified, creates a complete example iOS app
 
-**Requirements:**
-- You need to run this in a flutter module project. (The `pubspec.yaml` must contain `flutter.module.iosBundleIdentifier` configuration)
-
 #### Android Module Generation
 
 Generate Android Flutter module and optionally create an example app:
@@ -63,9 +64,6 @@ dart run flutter_embedding_cli:generate android [--example]
 **What it does:**
 1. Builds the Flutter Android Archive (AAR)
 2. If `--example` is specified, creates a complete example Android app
-
-**Requirements:**
-- You need to run this in a flutter module project. (The `pubspec.yaml` must contain `flutter.module.androidPackage` configuration)
 
 #### React Native Module Generation
 
@@ -112,28 +110,6 @@ flutter:
 ### React Native
 - `build/flutter-rn-embedding/` - React Native module
 - `build/react-native-example/` - Example React Native app (if `--example` flag used)
-
-## Examples
-
-### Generate iOS module only
-```bash
-dart run flutter_embedding_cli:generate ios
-```
-
-### Generate Android module with example app
-```bash
-dart run flutter_embedding_cli:generate android --example
-```
-
-### Generate React Native module with example app
-```bash
-dart run flutter_embedding_cli:generate react-native --example
-```
-
-### Show help
-```bash
-dart run flutter_embedding_cli:generate --help
-```
 
 ## License
 

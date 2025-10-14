@@ -2,13 +2,20 @@
 
 A Flutter plugin that enables seamless embedding of Flutter modules into native iOS and Android applications with bidirectional communication capabilities. This can also be used to embed Flutter modules into React Native applications.
 
+## flutter_embedding_cli
+
+[flutter_embedding_cli](https://pub.dev/packages/flutter_embedding_cli) is not required but recommended to generate the module and example applications.
+
+## Screenshot
+
+![Screenshot](https://raw.githubusercontent.com/krispypen/flutter_embedding/main/assets/demo.gif)
+
 ## Features
 
-- **Cross-platform Support**: Works with both iOS and Android native applications
-- **Bidirectional Communication**: Send data between Flutter and native code in both directions
-- **Theme Management**: Runtime dynamic theme switching (light/dark/system)
-- **Language Support**: Runtime language switching capabilities
-- **Environment Configuration**: Support for multiple environments
+- **Bidirectional Communication**: Send data between Flutter and native code in both directions (called handover events)
+- **Switch theme mode**: Sent at startup and can be changed at runtime, supports light/dark/system
+- **Switch language**: Sent at startup and can be changed at runtime, supports any language
+- **Pass environment at startup**: Sent as a String at startup
 - **React Native Compatibility**: Includes workarounds for React Native layout issues
 - **Fragment/ViewController Management**: Easy integration with native UI components
 
@@ -18,7 +25,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  flutter_embedding: ^0.0.1-beta.1
+  flutter_embedding: ^0.0.1-beta.2
 ```
 
 Then run:
@@ -26,16 +33,6 @@ Then run:
 ```bash
 fvm flutter pub get
 ```
-
-## Platform Setup
-
-### Android
-
-The plugin automatically registers itself with the Flutter engine. No additional setup is required.
-
-### iOS
-
-The plugin automatically registers itself with the Flutter engine. No additional setup is required.
 
 ## Usage
 
@@ -281,24 +278,6 @@ The main controller class for managing Flutter embedding functionality.
 - `environment` - Current environment (String)
 - `themeMode` - Current theme mode (ValueNotifier<ThemeMode>)
 - `language` - Current language (ValueNotifier<String>)
-
-### RnNativeComponentWrapper
-
-A widget wrapper for React Native compatibility that handles layout issues.
-
-## Troubleshooting
-
-### React Native Layout Issues
-
-If you're experiencing layout issues in React Native, ensure you wrap your Flutter widgets with `RnNativeComponentWrapper`. This addresses a known React Native bug with Flutter embedding.
-
-### Engine Not Starting
-
-Make sure you're calling the start engine methods on the main thread and that all required parameters are provided.
-
-### Communication Issues
-
-Verify that both Flutter and native sides are implementing the handover interfaces correctly and that method names match between both sides.
 
 ## Contributing
 
