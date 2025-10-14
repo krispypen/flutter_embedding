@@ -1,19 +1,17 @@
 name: flutter_embedding
 description: This project helps embedding into a native ios or android app.
-version: 0.0.1-beta.1
+version: 0.0.1-beta.2
 
 homepage: https://github.com/krispypen/flutter_embedding
 repository: https://github.com/krispypen/flutter_embedding/tree/main/packages/flutter_embedding
 issue_tracker: https://github.com/krispypen/flutter_embedding/labels/flutter_embedding
 
 topics:
-  - flutter
   - embedding
-  - flutter_embedding
-  - flutter_embedding_plugin
-  - flutter_embedding_plugin_ios
-  - flutter_embedding_plugin_android
-  - flutter_embedding_plugin_react_native
+  - embedding-flutter
+  - embedding-ios
+  - embedding-android
+  - embedding-react-native
 
 environment:
   sdk: ^3.6.0
