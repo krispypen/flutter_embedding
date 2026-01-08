@@ -52,8 +52,7 @@ void main(List<String> arguments) async {
       exit(0);
     }
 
-    //FIXFIXFIX final localBricksPath = Directory('${Directory.current.path}/../../bricks');
-    final localBricksPath = Directory('/opt/gitrepos/flutter_embedding/bricks');
+    final localBricksPath = Directory('${Directory.current.path}/../../bricks');
 
     final flutterModuleVersion = getFlutterModuleVersion();
 
