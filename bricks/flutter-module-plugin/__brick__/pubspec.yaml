@@ -2,6 +2,7 @@ name: {{moduleName}}
 description: "{{moduleName}} SDK for embedding Flutter apps into native apps or web apps."
 version: 0.0.1
 homepage:
+publish_to: none
 
 environment:
   sdk: ^3.8.1
