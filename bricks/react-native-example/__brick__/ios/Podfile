@@ -14,7 +14,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-require_relative '../node_modules/flutter-rn-embedding/ios-rn/Flutter/podhelper.rb'
+require_relative '../node_modules/{{reactNativePackageName}}/ios-rn/Flutter/podhelper.rb'
 
 target 'FlutterRNEmbeddingExample' do
   install_all_flutter_pods()

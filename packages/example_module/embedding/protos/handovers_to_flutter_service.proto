@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+message StartParams {
+  Language language = 1;
+  string environment = 2;
+  ThemeMode themeMode = 3;
+}
+
+enum ThemeMode {
+  THEME_MODE_UNSPECIFIED = 0;
+  THEME_MODE_LIGHT = 1;
+  THEME_MODE_DARK = 2;
+  THEME_MODE_SYSTEM = 3;
+}
+
+enum Language {
+  LANGUAGE_UNSPECIFIED = 0;
+  LANGUAGE_EN = 1;
+  LANGUAGE_NL = 2;
+  LANGUAGE_FR = 3;
+}
+
+service HandoversToFlutterService {
+  rpc changeLanguage(ChangeLanguageRequest) returns (ChangeLanguageResponse);
+  rpc changeThemeMode(ChangeThemeModeRequest) returns (ChangeThemeModeResponse);
+  rpc reset(ResetRequest) returns (ResetResponse);
+}
+
+message ChangeLanguageRequest {
+  Language language = 1;
+}
+
+message ChangeLanguageResponse {
+  bool success = 1;
+}
+
+message ChangeThemeModeRequest {
+  ThemeMode themeMode = 1;
+}
+
+message ChangeThemeModeResponse {
+  bool success = 1;
+}
+
+message ResetRequest {
+  bool clearData = 1;
+}
+
+message ResetResponse {
+  bool success = 1;
+}

@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.flutterembeddingexample"
+    namespace = "{{exampleAndroidPackageName}}"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.flutterembeddingexample"
+        applicationId = "{{exampleAndroidPackageName}}"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

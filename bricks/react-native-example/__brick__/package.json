@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-native/new-app-screen": "0.81.4",
     "@react-navigation/stack": "^7.4.2",
-    "flutter-rn-embedding": "file:../flutter-rn-embedding/flutter-rn-embedding-1.0.0.tgz",
+    "{{reactNativePackageName}}": "file:../{{reactNativePackageName}}/{{reactNativePackageName}}-1.0.0.tgz",
     "react": "19.1.0",
     "react-native": "0.81.4",
     "react-native-element-dropdown": "^2.12.4",

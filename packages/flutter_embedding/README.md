@@ -47,7 +47,7 @@ void main(List<String> args) {
   // Initialize the embedding controller with configuration
   final embeddingController = EmbeddingController.fromArgs(args);
   
-  runApp(MyApp(embeddingController: embeddingController));
+  runFlutterEmbeddingApp(MyApp(embeddingController), embeddingController);
 }
 ```
 

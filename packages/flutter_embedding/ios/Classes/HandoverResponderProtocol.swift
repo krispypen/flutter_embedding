@@ -5,10 +5,6 @@
 
 import Foundation
 
-public enum Handover: String, CaseIterable {
-    case exit = "exit"
-}
-
 /**
  * IMPORTANT: keep this in sync:
  * - with the Flutter version: handover_service.dart
@@ -16,15 +12,8 @@ public enum Handover: String, CaseIterable {
  * - with the React-native version: HandoverResponderInterface.ts
  **/
 public protocol HandoverResponderProtocol {
-    
-    /**
-     * This will be used when the exit button is clicked in the app-in-app. The super app is then
-     * responsible to navigate away from the app-in-app.
-     *
-     * This will be triggered by the back button on the home screen.
-     */
-    func exit()
 
+    
     /**
      * This will be used to invoke a handover event to the native app.
      *

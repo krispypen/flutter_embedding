@@ -1,5 +1,4 @@
-{{=<% %>=}}
-
+//{{=<% %>=}}
 
 
 /**
@@ -27,9 +26,11 @@ import {
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import {
   FlutterEmbeddingModule,
-} from 'flutter-rn-embedding';
+} from '<% reactNativePackageName %>';
 
+import { ServerCallContext } from '@protobuf-ts/runtime-rpc';
 import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
+import { ChangeLanguageRequest, ChangeThemeModeRequest, ExitRequest, ExitResponse, GetAccessTokenRequest, GetAccessTokenResponse, GetHostInfoRequest, GetHostInfoResponse, IHandoversToHostService, Language, StartParams, ThemeMode } from '<% reactNativePackageName %>';
 import { Dropdown } from 'react-native-element-dropdown';
 import { ExampleHandoverResponder } from './ExampleHandoverResponder';
 import { FlutterApp } from './FlutterApp';
@@ -85,6 +86,7 @@ const HomeScreen = ({
     { value: 'fr' },
   ], []);
 
+
   const themeModes = React.useMemo(() => [
     { value: 'light' },
     { value: 'dark' },
@@ -97,28 +99,28 @@ const HomeScreen = ({
   };
 
   const startEngine = async () => {
-    handoverResponder = new ExampleHandoverResponder({
-      exit: () => {
-        if (isFlutterInViewRef.current) {
-          removeFlutterView();
-        } else {
-          navigation.navigate('Home');
-        }
-      },
-      invokeHandover: (name: string, data: any, completion: (response: any, error: any) => void) => {
-        console.log("invokeHandover in app.tsx " + data);
-        // show alert
-        Alert.alert('Invoke handover', data);
-        completion(null, null);
-      },
-    });
+
+    class MyHandoversToHostService implements IHandoversToHostService {
+      getHostInfo(request: GetHostInfoRequest, context: ServerCallContext): Promise<GetHostInfoResponse> {
+        return Promise.resolve(GetHostInfoResponse.create({ framework: 'React Native' }));
+      }
+      getAccessToken(request: GetAccessTokenRequest, context: ServerCallContext): Promise<GetAccessTokenResponse> {
+        return Promise.resolve(GetAccessTokenResponse.create({ accessToken: '1234567890' }));
+      }
+      exit(request: ExitRequest, context: ServerCallContext): Promise<ExitResponse> {
+        removeFlutterView();
+        return Promise.resolve(ExitResponse.create({ success: true }));
+      }
+    }
 
     try {
       await FlutterEmbeddingModule.startEngine({
-        environment: currentEnvironment,
-        handoverResponder: handoverResponder,
-        language: currentLanguage,
-        themeMode: currentThemeMode,
+        startParams: StartParams.create({
+          environment: currentEnvironment,
+          language: currentLanguage == 'en' ? Language.EN : currentLanguage == 'nl' ? Language.NL : Language.FR,
+          themeMode: currentThemeMode == 'light' ? ThemeMode.LIGHT : currentThemeMode == 'dark' ? ThemeMode.DARK : ThemeMode.SYSTEM,
+        }),
+        handoversToHostService: new MyHandoversToHostService(),
       });
       setIsEngineStarted(true);
 
@@ -153,28 +155,18 @@ const HomeScreen = ({
   };
 
   const changeLanguage = async () => {
-    let response = await FlutterEmbeddingModule.changeLanguage({ language: currentLanguage });
-
-    Alert.alert(
-      'Change language',
-      response === true
-        ? 'Successfully changed language'
-        : 'Something went wrong (when changing language)',
-      [{ text: 'OK' }]
-    );
+    let language = currentLanguage == 'en' ? Language.EN : currentLanguage == 'nl' ? Language.NL : Language.FR;
+    let request = ChangeLanguageRequest.create({ language: language });
+    let response = await FlutterEmbeddingModule.handoversToFlutterServiceClient().changeLanguage(request);
+    console.log('changeLanguage response: ' + response);
   };
 
   const changeThemeMode = async () => {
-    setCurrentThemeMode(currentThemeMode);
-    let response = await FlutterEmbeddingModule.changeThemeMode({ themeMode: currentThemeMode });
+    let themeMode = currentThemeMode == 'light' ? ThemeMode.LIGHT : currentThemeMode == 'dark' ? ThemeMode.DARK : ThemeMode.SYSTEM;
+    let request = ChangeThemeModeRequest.create({ themeMode: themeMode });
+    let response = await FlutterEmbeddingModule.handoversToFlutterServiceClient().changeThemeMode(request);
 
-    Alert.alert(
-      'Change theme mode',
-      response === true
-        ? 'Successfully changed theme mode'
-        : 'Something went wrong (when changing theme mode)',
-      [{ text: 'OK' }]
-    );
+    console.log('changeThemeMode response: ' + response);
   };
 
   const showHandoverAlert = () => {
@@ -187,7 +179,7 @@ const HomeScreen = ({
       <ScrollView contentInsetAdjustmentBehavior="automatic">
         <View style={styles.content}>
           {/* Title */}
-          <Text style={styles.title}>Flutter Embedding Demo</Text>
+          <Text style={styles.title}><% flutterEmbeddingName %> Demo</Text>
 
           {/* Engine Controls */}
           <View style={styles.section}>
@@ -387,5 +379,3 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-
-<%={{ }}=%>

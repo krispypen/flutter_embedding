@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+
+service HandoversToHostService {
+  // The flutter embedding wants to get information about the host.
+  rpc GetHostInfo(GetHostInfoRequest) returns (GetHostInfoResponse);
+
+  // The flutter embedding wants to get an access token.
+  rpc GetIncrement (GetIncrementRequest) returns (GetIncrementResponse);
+
+  // The flutter embedding wants to exit the app.
+  rpc Exit(ExitRequest) returns (ExitResponse);
+}
+
+message GetHostInfoRequest {
+}
+
+message GetHostInfoResponse {
+  string framework = 1;
+}
+
+message GetIncrementRequest {
+}
+
+message GetIncrementResponse {
+  int32 increment = 1;
+}
+
+message ExitRequest {
+  int32 counter = 1;
+}
+
+message ExitResponse {
+  bool success = 1;
+}

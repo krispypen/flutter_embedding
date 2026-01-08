@@ -1,0 +1,41 @@
+{
+    // 1. Specifies the parser for TypeScript files
+    "parser": "@typescript-eslint/parser",
+    // 2. Extends recommended configurations
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended"
+        // Add "prettier" here if you're using it
+    ],
+    // 3. Environment settings (e.g., browser, node)
+    "env": {
+        "browser": true,
+        "es2020": true,
+        "node": true
+    },
+    // 4. Custom rules (optional)
+    "rules": {
+        // Example: allow console.log in development
+        "no-console": "off",
+        // Example: enforce 4-space indentation
+        "indent": [
+            "error",
+            4
+        ]
+        // Disable the no-explicit-any rule
+        //"@typescript-eslint/no-explicit-any": "off"
+        // Add your custom rule overrides here
+    },
+    // 5. Project-specific configuration for TypeScript
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module",
+        // This tells ESLint where your project's type definitions are
+        "project": "./tsconfig.json"
+    },
+    // 6. Specifies files to lint
+    "ignorePatterns": [
+        "dist/",
+        "node_modules/"
+    ]
+}

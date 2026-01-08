@@ -28,6 +28,7 @@ public class CompletableEventEmitterDecorator {
   // Can this work with generics?
   void invokeHandover(@NonNull String eventName, @Nullable Object data, @Nullable CompletionHandler<Object> completion) {
     final Map<String, Object> enveloppeData = new HashMap<String, Object>();
+    enveloppeData.put("name", eventName);
     enveloppeData.put(CompletableEventEmitterDecorator.REQUEST_KEY, data);
 
     if (completion != null) {
@@ -41,16 +42,19 @@ public class CompletableEventEmitterDecorator {
       enveloppeData.put(CompletableEventEmitterDecorator.UUID_KEY, uuid);
     }
 
-    eventEmitter.invokeHandover(eventName, enveloppeData);
+    eventEmitter.invokeHandover("invokeHandover", enveloppeData);
   }
 
   void completeEvent(@NonNull String eventName, @NonNull Map data) {
     final String uuid = (String) data.get(CompletableEventEmitterDecorator.UUID_KEY);
     final Object response = data.get(CompletableEventEmitterDecorator.RESPONSE_KEY);
 
+    Log.d("CompletableEventEmitterDecorator", "Complete event " + eventName + " with data " + data);
     if (uuid != null) {
+       Log.d("CompletableEventEmitterDecorator", "Complete event uuid is not null");
       final CompletionHandler completer = completers.get(uuid);
       if (completer != null) {
+        Log.d("CompletableEventEmitterDecorator", "Complete event completer is not null");
         completer.onSuccess(response);
         completers.remove(uuid);
       }

@@ -1,10 +1,16 @@
-import 'dart:convert';
 import 'dart:developer';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'flutter_embedding_io.dart' if (dart.library.js_interop) 'flutter_embedding_web.dart';
+
+export 'flutter_embedding_io.dart' if (dart.library.js_interop) 'flutter_embedding_web.dart';
+
 typedef Handler = Future<Object?> Function(Map<String, dynamic> arguments);
+typedef HandlerBinary = Future<Object?> Function(List<int> arguments);
 
 const String embeddingChannelName = 'flutter_embedding/embedding';
 
@@ -52,11 +58,11 @@ class EmbeddingChannel {
 
   Future<T?> invoke<T>(
     String method, {
-    Map<String, dynamic> arguments = const {},
+    Map<String, dynamic> data = const {},
     bool withPerformanceTracing = false,
   }) async {
     try {
-      final response = await _platform.invokeMethod<T>(method, arguments);
+      final response = await _platform.invokeMethod<T>(method, data);
       return response;
     } catch (e, stackTrace) {
       log('Handover $method failed $e $stackTrace');
@@ -66,60 +72,83 @@ class EmbeddingChannel {
   }
 }
 
-class EmbeddingController {
-  String environment = 'DEV';
-  ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
-  ValueNotifier<String> language = ValueNotifier('en');
-  EmbeddingChannel embeddingChannel = EmbeddingChannel.instance;
+class MultiViewWebApp extends StatefulWidget {
+  const MultiViewWebApp({super.key, required this.viewBuilder});
 
-  EmbeddingController.fromArgs(List<String> args) {
-    if (args.isNotEmpty) {
-      final config = jsonDecode(args.first);
-      environment = config['environment'] as String;
-      final themeName = config['themeMode'] as String;
-      themeMode.value = ThemeMode.values.byName(themeName);
-      final languageName = config['language'] as String;
-      language.value = languageName;
+  final WidgetBuilder viewBuilder;
+
+  @override
+  State<MultiViewWebApp> createState() => _MultiViewWebAppState();
+}
+
+class _MultiViewWebAppState extends State<MultiViewWebApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _updateViews();
+  }
+
+  @override
+  void didUpdateWidget(MultiViewWebApp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Need to re-evaluate the viewBuilder callback for all views.
+    _views.clear();
+    _updateViews();
+  }
+
+  @override
+  void didChangeMetrics() {
+    _updateViews();
+  }
+
+  Map<Object, Widget> _views = <Object, Widget>{};
+
+  void _updateViews() {
+    final Map<Object, Widget> newViews = <Object, Widget>{};
+    for (final FlutterView view in WidgetsBinding.instance.platformDispatcher.views) {
+      final Widget viewWidget = _views[view.viewId] ?? _createViewWidget(view);
+      newViews[view.viewId] = viewWidget;
     }
-    embeddingChannel.on('change_theme_mode', (args) async {
-      themeMode.value = ThemeMode.values.byName(args['theme_mode'] as String);
-      return true;
-    });
-    embeddingChannel.on('change_language', (args) async {
-      language.value = args['language'] as String;
-      return true;
+    setState(() {
+      _views = newViews;
     });
   }
 
-  /// Add a handler for a handover event.
-  ///
-  /// This is used to handle handover events coming from the native side.
-  ///
-  /// Example:
-  /// ```dart
-  /// embeddingController.addHandoverHandler('resetCounter', (args, _) async {
-  ///   return true;
-  /// });
-  /// ```
-  void addHandoverHandler(String method, Handler handler) {
-    embeddingChannel.on(method, handler);
+  Widget _createViewWidget(FlutterView view) {
+    return View(
+      view: view,
+      child: Builder(
+        builder: widget.viewBuilder,
+      ),
+    );
   }
 
-  /// Invoke a handover event.
-  ///
-  /// This is used to invoke handover events to the native side.
-  ///
-  /// Example:
-  /// ```dart
-  /// embeddingController.invokeHandover('resetCounter', arguments: {'counter': 0});
-  /// ```
-
-  Future<String?> invokeHandover(String method, {Map<String, dynamic> arguments = const {}}) {
-    return embeddingChannel.invoke(method, arguments: arguments);
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
-  // This is used to go back to the native side.
-  void exit() {
-    invokeHandover('exit');
+  @override
+  Widget build(BuildContext context) {
+    return ViewCollection(views: _views.values.toList(growable: false));
+  }
+}
+
+void runFlutterEmbeddingApp(Widget app, EmbeddingController Function() getEmbeddingController) {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb || kIsWasm) {
+    runWidget(
+      MultiViewWebApp(viewBuilder: (BuildContext context) {
+        final embeddingController = getEmbeddingController();
+        return EmbeddingWrapper(
+            embeddingController: embeddingController,
+            child: EmbeddingControllerInheritedWidget(embeddingController: embeddingController, child: app));
+      }),
+    );
+  } else {
+    final embeddingController = getEmbeddingController();
+    runApp(EmbeddingControllerInheritedWidget(embeddingController: embeddingController, child: app));
   }
 }

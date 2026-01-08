@@ -5,6 +5,7 @@
 
 import Foundation
 import UIKit
+import Flutter
 
 public final class FlutterEmbedding {
     
@@ -12,9 +13,6 @@ public final class FlutterEmbedding {
     public static let flutterEvent: String = "EventFlutter";
     public static let allEvents: Dictionary<String, String> = {
         var allEvents: Dictionary<String, String> = [:]
-        Handover.allCases.forEach { handover in
-            allEvents[handover.rawValue] = handover.rawValue
-        }
         return allEvents
     }()
 
@@ -33,19 +31,15 @@ public final class FlutterEmbedding {
     }
     
     public func startEngine(
-        forEnv env: String,
-        forLanguage language: String,
-        forThemeMode themeMode: String,
+        startConfig: String,
         with handoverResponder: HandoverResponderProtocol,
         completion: ((_ success: Bool?, _ error: FlutterEmbeddingError?) -> ())?
     ) {
-        return self.startEngine(forEnv: env, forLanguage: language, forThemeMode: themeMode, with: handoverResponder, libraryURI: nil, completion: completion)
+        return self.startEngine(startConfig: startConfig, with: handoverResponder, libraryURI: nil, completion: completion)
     }
     
     public func startEngine(
-        forEnv environment: String,
-        forLanguage language: String,
-        forThemeMode themeMode: String,
+        startConfig: String,
         with handoverResponder: HandoverResponderProtocol,
         libraryURI: String?,
         completion: ((_ success: Bool?, _ error: FlutterEmbeddingError?) -> ())?
@@ -60,7 +54,7 @@ public final class FlutterEmbedding {
         self.flutterEngine = FlutterEngine(name: FlutterEmbedding.ENGINE_ID)
         
         let runEngine = {
-            let runResult = self.flutterEngine!.run(withEntrypoint: "main", libraryURI: libraryURI, initialRoute: "/", entrypointArgs: ["{\"environment\":\"\(environment)\",\"language\":\"\(language)\",\"themeMode\":\"\(themeMode)\"}"])
+            let runResult = self.flutterEngine!.run(withEntrypoint: "main", libraryURI: libraryURI, initialRoute: "/", entrypointArgs: [startConfig])
             
             if let generatedPluginRegistrantClass = (NSClassFromString("GeneratedPluginRegistrant") as Any) as? NSObjectProtocol {
                 let registerWitSelector = NSSelectorFromString("registerWithRegistry:")
@@ -108,27 +102,68 @@ public final class FlutterEmbedding {
     }
     
     internal func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        guard let args = call.arguments as? Dictionary<String, Any?> else {
-            result(FlutterEmbeddingError.illegalArguments(message: "Invalid arguments").toFlutterError());
-            return;
+        // 1. Zorg ervoor dat de argumenten een Dictionary zijn
+        guard var incomingMap = call.arguments as? [String: Any] else {
+            // Stuur een fout terug als de argumenten niet het verwachte formaat hebben
+            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Expected Map not found.", details: nil))
+            return
         }
-        
-        switch (call.method) {
-            case Handover.exit.rawValue:
-                self.handoverResponder?.exit()
-                result(nil)
-                break;
-            
-            default: self.handoverResponder?.invokeHandover(
-                    withName: call.method,
-                    data: args
-                ) { response, error in
-                    if let error = error {
-                        self.handleError(error: error, result: result)
-                    } else {
-                        result(response!)
+
+        // convert FlutterStandardTypedData to Swift Data
+        guard let typedData = incomingMap["data"] as? FlutterStandardTypedData else {
+            // Stuur een fout terug als de 'data' sleutel ontbreekt of van een verkeerd type is
+            result(FlutterError(code: "MISSING_DATA", message: "Data-element missing or not a FlutterStandardTypedData.", details: nil))
+            return
+        }
+
+        // convert FlutterStandardTypedData to Swift Data
+        // 'data' is NSData, that is automatically converted to Swift Data
+        let swiftData: Data = typedData.data as Data
+
+        // Optioneel: Voor een Array van UInt8
+        let byteArray: [UInt8] = [UInt8](swiftData)
+
+        // 4. Vervang de oude waarde in de Dictionary door de nieuwe Swift Data
+        // Omdat we 'var incomingMap' hebben, kunnen we de waarde aanpassen.
+        incomingMap["data"] = byteArray // swiftData 
+
+        // De nieuwe map met native Swift Data (en de rest van de data)
+        let processedMap: [String: Any] = incomingMap
+
+        self.handoverResponder?.invokeHandover(
+            withName: call.method,
+            data: processedMap
+        ) { response, error in
+            if let error = error {
+                self.handleError(error: error, result: result)
+            } else {
+                // Handle response which can be either Data or [NSNumber]
+                let data: Data
+                var typedData: FlutterStandardTypedData?
+                
+                if let responseData = response as? Data {
+                    // Response is already Data, use it directly
+                    data = responseData
+                    typedData = FlutterStandardTypedData(bytes: data)
+                } else if let nsNumberArray = response as? [NSNumber] {
+                    // Convert NSNumber array to int array
+                    let intArray: [Int] = nsNumberArray.map { nsNumber in
+                        return nsNumber.intValue
                     }
+                    // Convert the [Int] array to Data
+                    data = intArray.withUnsafeBytes { Data($0) }
+                    typedData = FlutterStandardTypedData(int64: data)
+                } else {
+                    print("Error: Response is neither Data nor an array of NSNumber. Response: \(String(describing: response))")
+                    result(FlutterError(code: "INVALID_RESPONSE", message: "Response must be either Data or [NSNumber]", details: nil))
+                    return
                 }
+
+                // Create a FlutterStandardTypedData (Int64Array is the most robust for [Int])
+                // Note: Int64Array corresponds to Dart's List<int> (64-bit int).
+                // Use .int32Array if you're sure the numbers fit in 32-bits.
+                result(typedData!)
+            }
         }
     }
     
@@ -142,11 +177,53 @@ public final class FlutterEmbedding {
         
         // Check channel in stead of flutterEngine, because embedding Flutter doesn't create a FlutterEngine
         if (self.channel != nil) {
-            self.channel?.invokeMethod(name, arguments: data) { result in
-                if let flutterError = result as? FlutterError {
-                    completion?(nil, FlutterEmbeddingError.flutterError(error: flutterError))
-                } else {
-                    completion?(result, nil)
+                    // convert data["request"] to [int]
+            // convert data["request"] to Data
+            var requestData: Data?
+            var typedData: FlutterStandardTypedData?
+
+            if let requestArray = data["request"] as? [Int] { // at this moment this is what we get from react native code
+                NSLog("Request array: \(requestArray)")
+                requestData = requestArray.withUnsafeBytes { Data($0) }
+                typedData = FlutterStandardTypedData(int64: requestData!)
+            } else if let requestDataDirect = data["request"] as? Data { // at this moment this is what we get from ios native code
+                NSLog("Request data direct: \(requestDataDirect)")
+                requestData = requestDataDirect
+                typedData = FlutterStandardTypedData(bytes: requestData!)
+            } /*else if let requestUInt8Array = data["request"] as? [UInt8] {
+                requestData = Data(requestUInt8Array)
+                typedData = FlutterStandardTypedData(int64: requestData!)
+            }*/
+
+            guard let requestData = requestData else {
+                completion?(nil, FlutterEmbeddingError.genericError(code: "INVALID_REQUEST_DATA", message: "Request data is missing or invalid"))
+                return
+            }
+
+            // clone data into new dictionary
+            var newData: [String: Any?] = data.mapValues { $0 }
+            newData["request"] = typedData
+            newData["test"] = "test"
+            
+            // Ensure method channel calls are made on the main thread
+            DispatchQueue.main.async {
+                self.channel?.invokeMethod(name, arguments: newData) { result in
+                    if let flutterError = result as? FlutterError {
+                        completion?(nil, FlutterEmbeddingError.flutterError(error: flutterError))
+                    } else {
+                        // Handle result as either [Int] or FlutterStandardTypedData
+                        if let typedData = result as? FlutterStandardTypedData { // at this moment this is what we get from ios native code
+                            // Extract Data from FlutterStandardTypedData
+                            let data = typedData.data as Data
+                            completion?(data, nil)
+                        } else if let resultArray = result as? [Int] { // at this moment this is what we get from react native code
+                            // Convert [Int] to Data
+                            let resultData = resultArray.withUnsafeBytes { Data($0) }
+                            completion?(resultData, nil)
+                        } else {
+                            completion?(nil, FlutterEmbeddingError.genericError(code: "INVALID_RESULT", message: "Result \(String(describing: result)) is not a valid [Int] or FlutterStandardTypedData"))
+                        }
+                    }
                 }
             }
         } else {

@@ -21,20 +21,16 @@ public class ReactNativeHandoverResponder implements HandoverResponderInterface 
   }
 
   void handleResponse(String eventName, ReadableMap data) {
-    this.eventEmitter.completeEvent(eventName, data.toHashMap());
-  }
-
-  @Override
-  public void exit() {
-    Log.d(ReactNativeHandoverResponder.TAG, "Start exit");
-    eventEmitter.invokeHandover(Handover.exit.getEventName(), null, null);
+    Log.d(ReactNativeHandoverResponder.TAG, "Handle response for event " + eventName + " with data " + data);
+    Map<String, Object> map = FlutterEmbeddingModule.convertReadableMapToMap(data);
+    Log.d(ReactNativeHandoverResponder.TAG, "Handle response for event " + eventName + " with hashmapdata " + map);
+    this.eventEmitter.completeEvent(eventName, map);
   }
 
   @Override
   public void invokeHandover(@NonNull String name, @NonNull Map<String, Object> data, @NonNull CompletionHandler<Object> completion) {
-    Log.d(ReactNativeHandoverResponder.TAG, "Start invokeHandover");
-    data.put("name", name);
-    eventEmitter.invokeHandover("invokeHandover", data, completion);
+    Log.d(ReactNativeHandoverResponder.TAG, "Start invokeHandover " + name + " with data " + data);
+    eventEmitter.invokeHandover(name, data, completion);
   }
 
   

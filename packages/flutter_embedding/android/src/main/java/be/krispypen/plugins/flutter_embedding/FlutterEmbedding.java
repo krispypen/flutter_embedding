@@ -79,24 +79,19 @@ public class FlutterEmbedding implements MethodChannel.MethodCallHandler {
         channel.setMethodCallHandler(null);
     }
 
-    public void startEngine(@NonNull Context context, @NonNull String environment, @NonNull String language, @NonNull String themeMode, @NonNull HandoverResponderInterface handoverResponder) {
-        this.startEngine(context, environment, language, themeMode, handoverResponder, null);
+    public void startEngine(@NonNull Context context, @NonNull String startConfig, @NonNull HandoverResponderInterface handoverResponder) {
+        this.startEngine(context, startConfig, handoverResponder, null);
     }
 
-    public void startEngine(@NonNull Context context, @NonNull String environment, @NonNull String language, @NonNull String themeMode, @NonNull HandoverResponderInterface handoverResponder, @Nullable CompletionHandler<Boolean> completion) {
-        this.startEngine(context, environment, language, themeMode, handoverResponder, null, completion);
+    public void startEngine(@NonNull Context context, @NonNull String startConfig, @NonNull HandoverResponderInterface handoverResponder, @Nullable CompletionHandler<Boolean> completion) {
+        this.startEngine(context, startConfig, handoverResponder, null, completion);
     }
 
-    public void startEngine(@NonNull Context context, @NonNull String environment, @NonNull String language, @NonNull String themeMode, @NonNull HandoverResponderInterface handoverResponder, @Nullable String libraryURI, @Nullable CompletionHandler<Boolean> completion) {
+    public void startEngine(@NonNull Context context, @NonNull String startConfig, @NonNull HandoverResponderInterface handoverResponder, @Nullable String libraryURI, @Nullable CompletionHandler<Boolean> completion) {
         if (this.flutterEngine != null) {
             if (completion != null) {
                 completion.onSuccess(true);
             }
-            return;
-        }
-
-        if (!Arrays.asList(ALLOWED_ENVIRONMENTS).contains(environment)) {
-            completion.onFailure(new Exception("`" + environment + "` is not a supported environment: " + Arrays.toString(ALLOWED_ENVIRONMENTS)));
             return;
         }
 
@@ -119,7 +114,7 @@ public class FlutterEmbedding implements MethodChannel.MethodCallHandler {
                         (libraryURI == null) ?
                                 new DartExecutor.DartEntrypoint(flutterLoader.findAppBundlePath(), "main") :
                                 new DartExecutor.DartEntrypoint(flutterLoader.findAppBundlePath(), libraryURI, "main"),
-                                Arrays.asList("{\"environment\":\"" + environment + "\",\"language\":\"" + language + "\",\"themeMode\":\"" + themeMode + "\"}")
+                                Arrays.asList(startConfig)
                 );
             }
 
@@ -184,10 +179,7 @@ public class FlutterEmbedding implements MethodChannel.MethodCallHandler {
 
         final Map<String, Object> params = (call.arguments instanceof Map) ? (Map<String, Object>) call.arguments : null;
 
-        if (call.method.equals(Handover.exit.getEventName())) {
-            handoverResponder.exit();
-            result.success(null);                
-        } else if (call.method.equals("internalRequestLayout")) {
+        if (call.method.equals("internalRequestLayout")) {
             // a bug in react native requires the layout to be done manually https://github.com/facebook/react-native/issues/17968
             View view = FlutterEmbeddingFlutterFragment.lastview != null ? FlutterEmbeddingFlutterFragment.lastview.get() : null;
             if (view == null || !(view instanceof FrameLayout)) {
@@ -212,11 +204,13 @@ public class FlutterEmbedding implements MethodChannel.MethodCallHandler {
                     new CompletionHandler<Object>() {
                         @Override
                         public void onSuccess(@Nullable Object data) {
+                            Log.d(TAG, "onSuccess " + data);
                             result.success(data);
                         }
 
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            Log.e(TAG, "onFailure " + e.getMessage());
                             result.error(e.getMessage(), null, e.getStackTrace());
                         }
                     });          

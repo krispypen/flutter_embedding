@@ -1,180 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:fitsSystemWindows="true">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Flutter Embedding Demo"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Flutter Engine Controls"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
-    <Button
-        android:id="@+id/start_engine_button"
+    <!-- Tab Layout for small screens -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Start Flutter Engine"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
+        android:layout_height="wrap_content"
         android:background="@color/blue"
-        android:layout_marginBottom="6dp" />
-
-    <Button
-        android:id="@+id/stop_engine_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Stop Flutter Engine"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp"
+        app:tabTextColor="@android:color/white"
+        app:tabSelectedTextColor="@android:color/white"
+        app:tabIndicatorColor="@android:color/white"
         android:visibility="gone" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Flutter App"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/start_screen_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Open Flutter Screen"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp" />
-
-    <Button
-        android:id="@+id/start_view_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Open Flutter in View"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp" />
-
-    <Button
-        android:id="@+id/remove_view_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Remove Flutter View"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp"
-        android:visibility="gone" />
-
+    <!-- Container that will hold either side-by-side or tabbed content -->
     <LinearLayout
+        android:id="@+id/content_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="4dp">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Theme Mode:"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <Spinner
-        android:id="@+id/theme_mode_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/update_theme_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Update Theme Mode"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="4dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Language:"
-            android:textSize="16sp"
-            android:layout_marginEnd="8dp"
-            android:layout_gravity="center_vertical" />
-
-        <Spinner
-            android:id="@+id/language_spinner"
+        <!-- Settings Panel -->
+        <ScrollView
+            android:id="@+id/settings_panel"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="{{flutterEmbeddingName}} Demo"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="24dp" />
+
+                <Button
+                    android:id="@+id/start_engine_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="startEngine"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    android:background="@color/blue"
+                    android:layout_marginBottom="6dp" />
+
+                <Button
+                    android:id="@+id/stop_engine_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="stopEngine"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    android:background="@color/blue"
+                    android:layout_marginBottom="6dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/start_screen_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="startScreen"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    android:background="@color/blue"
+                    android:layout_marginBottom="6dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/start_view_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="startFlutterInView"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    android:background="@color/blue"
+                    android:layout_marginBottom="6dp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/remove_view_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:text="removeFlutterView"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/white"
+                    android:background="@color/blue"
+                    android:layout_marginBottom="6dp"
+                    android:visibility="gone" />
+
+                <{{exampleAndroidPackageName}}.CommunicationView
+                    android:id="@+id/communication_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <!-- Flutter Container Panel -->
+        <FrameLayout
+            android:id="@+id/flutter_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#f0f0f0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Flutter container area"
+                android:textSize="18sp"
+                android:textColor="#666666"
+                android:gravity="center" />
+
+        </FrameLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/update_language_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Update Language"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp" />
-
-     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Handover Controls"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/invoke_handover_button"
-        android:layout_width="match_parent"
-        android:layout_height="32dp"
-        android:text="Invoke Handover"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/blue"
-        android:layout_marginBottom="6dp" />
-
-    <FrameLayout
-        android:id="@+id/flutter_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="#d3d3d3">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Flutter container area"
-            android:textSize="18sp"
-            android:textColor="#666666"
-            android:gravity="center" />
-
-    </FrameLayout>
 
 </LinearLayout>

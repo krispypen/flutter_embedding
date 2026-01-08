@@ -5,8 +5,9 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   React native module for embedding Flutter
                   DESC
-  s.source_files = "ios-rn/**/*.{h,c,cc,cpp,m,mm,swift}"
-  # s.source_files = "ios/**/*.{h,m,mm,swift}"
+  s.source_files = "ios-rn/*.{h,c,cc,cpp,m,mm,swift}"
+  # Only expose the main header as public
+  s.public_header_files = "ios-rn/FlutterEmbeddingRNModule.h"
   s.static_framework = true
 
   s.dependency "React-Core"

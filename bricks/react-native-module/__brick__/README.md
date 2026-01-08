@@ -1,4 +1,4 @@
-# flutter-rn-embedding
+# {{reactNativePackageName}}
 
 
 ## Development setup

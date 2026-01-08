@@ -1,0 +1,53 @@
+{
+  "name": "{{webReactPackageName}}",
+  "version": "{{flutterModuleVersion}}",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "public",
+    "src",
+    "scripts",
+    "dist"
+  ],
+  "source": "src/index",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typescript": "tsc --noEmit",
+    "tsc": "tsc --noEmit",
+    "lint": "eslint **/*.ts{,x}",
+    "lint-fix": "eslint **/*.ts{,x} --fix",
+    "ci": "npm run tsc && npm run lint",
+    "postinstall": "node scripts/install_flutter.js"
+  },
+  "keywords": [
+    "flutter",
+    "react",
+    "embedding",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "React module for embedding Flutter web applications",
+  "peerDependencies": {
+    "react": ">=16.8.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": ">=16.8.0 || ^18.0.0 || ^19.0.0",
+    "@mui/material": "^5.0.0",
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^4.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@mui/material": "^5.14.0",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "eslint": "^8.19.0"
+  }
+}

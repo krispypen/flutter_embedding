@@ -45,8 +45,8 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
   }
 
   @ReactMethod
-  public void startEngine(@NonNull String environment, @NonNull String language, @NonNull String themeMode, Promise promise) {
-    FlutterEmbedding.instance().startEngine(reactContext, environment, language, themeMode, handoverResponder, "package:flutter_module/main.dart", new CompletionHandler<Boolean>() {
+  public void startEngine(@NonNull String startConfig, Promise promise) {
+    FlutterEmbedding.instance().startEngine(reactContext, startConfig, handoverResponder, "package:{{flutterBaseModuleName}}/main.dart", new CompletionHandler<Boolean>() {
 
       @Override
       public void onSuccess(Boolean unused) {
@@ -73,35 +73,9 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
   }
 
   @ReactMethod
-  public void changeLanguage(@NonNull String language, Promise promise) {
-    FlutterEmbedding.instance().changeLanguage(language, new CompletionHandler<Boolean>() {
-
-      @Override
-      public void onSuccess(Boolean result) {
-        promise.resolve(result);
-      }
-
-      @Override
-      public void onFailure(Exception e) {
-        promise.reject(e);
-      }
-    });
-  }
-
-  @ReactMethod
-  public void changeThemeMode(@NonNull String themeMode, Promise promise) {
-    FlutterEmbedding.instance().changeThemeMode(themeMode, new CompletionHandler<Boolean>() {
-      @Override
-      public void onSuccess(Boolean result) { promise.resolve(result);}
-
-      @Override
-      public void onFailure(Exception e) { promise.reject(e);}
-    });
-  }
-
-  @ReactMethod
   public void invokeHandoverReturn(@NonNull String name, ReadableMap data, Promise promise) {
-    final Map<String, Object> newMap = convertReadableMapToMap(data);
+    Log.d(REACT_CLASS, "Invoke Handover Return " + name + " with data " + data);
+    final Map<String, Object> newMap = FlutterEmbeddingModule.convertReadableMapToMap(data);
     FlutterEmbedding.instance().invokeHandover(name, newMap, new CompletionHandler<Object>() {
       @Override
       public void onSuccess(Object result) { promise.resolve(result);}
@@ -136,38 +110,53 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
     return constants;
   }
 
-  private Map<String, Object> convertReadableMapToMap(@NonNull ReadableMap data) {
+  public static Map<String, Object> convertReadableMapToMap(@NonNull ReadableMap data) {
     Map<String, Object> result = new LinkedHashMap<>();
     
     com.facebook.react.bridge.ReadableMapKeySetIterator iterator = data.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      switch (data.getType(key)) {
-        case Null:
-          result.put(key, null);
-          break;
-        case Boolean:
-          result.put(key, data.getBoolean(key));
-          break;
-        case Number:
-          result.put(key, data.getDouble(key));
-          break;
-        case String:
-          result.put(key, data.getString(key));
-          break;
-        case Map:
-          result.put(key, convertReadableMapToMap(data.getMap(key)));
-          break;
-        case Array:
-          result.put(key, convertReadableArrayToList(data.getArray(key)));
-          break;
+      if((key.equals("request") || key.equals(CompletableEventEmitterDecorator.RESPONSE_KEY)) && data.getType(key) == com.facebook.react.bridge.ReadableType.Array) {
+        result.put(key, convertArrayToByteArray(data.getArray(key)));
+      } else {
+        switch (data.getType(key)) {
+          case Null:
+            result.put(key, null);
+            break;
+          case Boolean:
+            result.put(key, data.getBoolean(key));
+            break;
+          case Number:
+            result.put(key, data.getDouble(key));
+            break;
+          case String:
+            result.put(key, data.getString(key));
+            break;
+          case Map:
+            result.put(key, convertReadableMapToMap(data.getMap(key)));
+            break;
+          case Array:
+            result.put(key, convertReadableArrayToList(data.getArray(key)));
+            break;
+          default:
+            throw new IllegalArgumentException("Unsupported type: " + data.getType(key));
+        }
       }
     }
+
+    Log.d(REACT_CLASS, "convertReadableMapToMap result: " + result);
     
     return result;
   }
+  private static byte[] convertArrayToByteArray(@NonNull com.facebook.react.bridge.ReadableArray data) {
+    byte[] result = new byte[data.size()];
+    for (int i = 0; i < data.size(); i++) {
+      result[i] = (byte) data.getInt(i);
+    }
+    return result;
+  }
 
-  private List<Object> convertReadableArrayToList(@NonNull com.facebook.react.bridge.ReadableArray data) {
+  private static List<Object> convertReadableArrayToList(@NonNull com.facebook.react.bridge.ReadableArray data) {
     List<Object> result = new ArrayList<>();
     
     for (int i = 0; i < data.size(); i++) {
@@ -192,6 +181,8 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
           break;
       }
     }
+
+    Log.d(REACT_CLASS, "convertReadableArrayToList result: " + result);
     
     return result;
   }
@@ -214,8 +205,14 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
         result.pushMap(convertToWritableMap((Map) value));
       } else if (value instanceof List) {
         result.pushArray(convertToWritableArray((List) value));
+      } else if (value instanceof byte[]) {
+        result.pushArray(convertByteToWritableArray((byte[]) value));
+      } else {
+        throw new IllegalArgumentException("Unsupported type: " + value.getClass().getName());
       }
     }
+
+    Log.d(REACT_CLASS, "convertToWritableArray result: " + result);
 
     return result;
   }
@@ -237,9 +234,25 @@ public class FlutterEmbeddingModule extends ReactContextBaseJavaModule implement
         result.putMap(pair.getKey(), convertToWritableMap((Map) pair.getValue()));
       } else if (pair.getValue() instanceof List) {
         result.putArray(pair.getKey(), convertToWritableArray((List) pair.getValue()));
+      } else if (pair.getValue() instanceof byte[]) {
+        result.putArray(pair.getKey(), convertByteToWritableArray((byte[]) pair.getValue()));
+      } else {
+        throw new IllegalArgumentException("Unsupported type: " + pair.getValue().getClass().getName());
       }
     }
+
+    Log.d(REACT_CLASS, "convertToWritableMap result: " + result);
     return result;
+  }
+
+  private WritableArray convertByteToWritableArray(@NonNull byte[] bytes) {
+    WritableArray byteArray = Arguments.createArray();
+    for (byte b : bytes) {
+      // Convert byte to an unsigned integer (0-255) for accurate JS representation
+      // A Java byte is signed (-128 to 127). We need to mask it to get the unsigned value.
+      byteArray.pushInt(b & 0xFF);
+    }
+    return byteArray;
   }
 
 }

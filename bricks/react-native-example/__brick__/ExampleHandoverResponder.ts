@@ -1,6 +1,6 @@
 import {
     HandoverResponderInterface
-} from 'flutter-rn-embedding';
+} from '{{reactNativePackageName}}';
 
 export class ExampleHandoverResponder implements HandoverResponderInterface {
     exitCallback: () => void;

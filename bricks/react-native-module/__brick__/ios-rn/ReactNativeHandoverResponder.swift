@@ -24,14 +24,6 @@ class ReactNativeHandoverResponder: HandoverResponderProtocol {
         );
     }
 
-    func exit() {
-        eventEmitter.invokeHandover(
-            withName: Handover.exit.rawValue,
-            data: nil,
-            completion: nil
-        )
-    }
-
     func invokeHandover(withName name: String, data: Dictionary<String, Any?>, completion: ((Any?, flutter_embedding.FlutterEmbeddingError?) -> ())?) {
         eventEmitter.invokeHandover(
             withName: name,

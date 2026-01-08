@@ -1,0 +1,24 @@
+name: flutter_module_plugin
+description: A brick for generating a flutter module plugin
+publish_to: none
+version: 0.0.1
+
+vars:
+  handoversToHostServices:
+    type: list
+    description: The handovers to host services
+  handoversToFlutterServices:
+    type: list
+    description: The handovers to flutter services
+  startParamsMessage:
+    type: string
+    description: The start params message
+  moduleName:
+    type: string
+    description: The name of the module
+  flutterEmbeddingPackageName:
+    type: string
+    description: The package name of the flutter embedding
+  startParamsMessageFolder:
+    type: string
+    description: The folder name of the start params message

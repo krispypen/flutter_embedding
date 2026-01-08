@@ -1,176 +1,225 @@
 //
 //  ContentView.swift
-//  FlutterEmbeddingExample
+//  {{flutterEmbeddingName}}Example
 //
 //  Created by Kris Pypen on 29/09/2025.
 //
 
 import UIKit
 import flutter_embedding
-
-class ExampleHandoverResponder: HandoverResponderProtocol {
-    var accessToken: String = ""
-    weak var contentViewController: ContentView?
-    
-    func exit() {
-        // Handle exit from Flutter app
-        print("Flutter app requested exit")
-        DispatchQueue.main.async { [weak self] in
-            guard let contentVC = self?.contentViewController else { return }
-            
-            // Check if Flutter is embedded in the view (removeViewButton is visible)
-            if !contentVC.removeViewButton.isHidden {
-                // Flutter is embedded, remove it from the container
-                contentVC.removeFlutterView()
-            } else {
-                // Flutter is presented modally, dismiss it
-                guard
-                  let windowScene = UIApplication.shared.connectedScenes
-                    .first(where: { $0.activationState == .foregroundActive && $0 is UIWindowScene }) as? UIWindowScene,
-                  let window = windowScene.windows.first(where: \.isKeyWindow),
-                  let rootViewController = window.rootViewController
-                else { return }
-                
-                rootViewController.dismiss(animated: true)
-            }
-        }
-    }
-    
-    func invokeHandover(withName name: String, data: Dictionary<String, Any?>, completion: ((_ response: Any?, _ error: FlutterEmbeddingError?) -> ())?) {
-        DispatchQueue.main.async { [weak self] in
-            guard let contentVC = self!.contentViewController else {
-                completion?(nil, FlutterEmbeddingError.genericError(code: "disposed", message: "disposed"))
-                return
-            }
-            
-            // Create popup with handover information
-            let alert = UIAlertController(
-                title: "Handover: \(name)",
-                message: "Data: \(data)",
-                preferredStyle: .alert
-            )
-            
-            // Add OK action
-            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-                // Return success response
-                completion?("OK", nil)
-            })
-            
-            // Add Cancel action
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { _ in
-                // Return cancelled response
-                completion?("Cancelled", nil)
-            })
-            
-            // Present the popup
-            contentVC.present(alert, animated: true)
-        }
-    }
-}
+import {{moduleName}}
 
 class ContentView: UIViewController {
     
-    private var currentThemeMode = "system"
-    private var currentLanguage = "en"
-    private var currentEnvironment = "DEV"
-    
-    private let handoverResponder = ExampleHandoverResponder()
+    private let communicationView = CommunicationView()
     
     // UI Elements
-    private let scrollView = UIScrollView()
-    private let stackView = UIStackView()
+    private let mainContainer = UIView()
+    private let tabSegmentedControl = UISegmentedControl(items: ["Settings", "Flutter"])
+    private let settingsScrollView = UIScrollView()
+    private let settingsStackView = UIStackView()
     private let titleLabel = UILabel()
-    private let themeModeLabel = UILabel()
-    private let themeModeSpinner = UIPickerView()
     private let startEngineButton = UIButton(type: .system)
     private let stopEngineButton = UIButton(type: .system)
     private let startScreenButton = UIButton(type: .system)
     private let startViewButton = UIButton(type: .system)
     internal let removeViewButton = UIButton(type: .system) // internal so handover responder can check it
-    private let updateThemeButton = UIButton(type: .system)
     private let flutterContainer = UIView()
+    private let flutterPlaceholderLabel = UILabel()
     
-    private let themeModes = ["light", "dark", "system"]
+    // Layout constraints for responsive layout
+    private var sideBySideConstraints: [NSLayoutConstraint] = []
+    private var tabbedConstraints: [NSLayoutConstraint] = []
+    private var settingsWidthConstraint: NSLayoutConstraint?
+    
+    // Track current layout mode
+    private var isLargeScreen: Bool = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        handoverResponder.contentViewController = self
+        communicationView.contentViewController = self
         setupUI()
         setupButtons()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateLayoutForScreenSize()
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: { _ in
+            self.updateLayoutForScreenSize(width: size.width)
+        })
     }
     
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        // Setup ScrollView
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(scrollView)
+        // Setup Tab Segmented Control
+        tabSegmentedControl.selectedSegmentIndex = 0
+        tabSegmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        tabSegmentedControl.addTarget(self, action: #selector(tabChanged), for: .valueChanged)
+        view.addSubview(tabSegmentedControl)
         
-        // Setup StackView
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.alignment = .fill
-        stackView.distribution = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(stackView)
+        // Setup Main Container
+        mainContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(mainContainer)
+        
+        // Setup Settings ScrollView
+        settingsScrollView.translatesAutoresizingMaskIntoConstraints = false
+        mainContainer.addSubview(settingsScrollView)
+        
+        // Setup Settings StackView
+        settingsStackView.axis = .vertical
+        settingsStackView.spacing = 16
+        settingsStackView.alignment = .fill
+        settingsStackView.distribution = .fill
+        settingsStackView.translatesAutoresizingMaskIntoConstraints = false
+        settingsScrollView.addSubview(settingsStackView)
         
         // Title
-        titleLabel.text = "Flutter Embedding Demo"
+        titleLabel.text = "{{flutterEmbeddingName}} Demo"
         titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
         
-        // Theme Mode Label
-        themeModeLabel.text = "Select Theme Mode:"
-        themeModeLabel.font = UIFont.systemFont(ofSize: 16)
-        
-        // Theme Mode Spinner
-        themeModeSpinner.delegate = self
-        themeModeSpinner.dataSource = self
-        themeModeSpinner.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
         // Setup Buttons
-        setupButton(startEngineButton, title: "Start Flutter Engine")
-        setupButton(stopEngineButton, title: "Stop Flutter Engine")
-        setupButton(startScreenButton, title: "Open Flutter Screen")
-        setupButton(startViewButton, title: "Open Flutter in View")
-        setupButton(removeViewButton, title: "Remove Flutter View")
-        setupButton(updateThemeButton, title: "Update Theme Mode")
+        setupButton(startEngineButton, title: "startEngine")
+        setupButton(stopEngineButton, title: "stopEngine")
+        setupButton(startScreenButton, title: "startScreen")
+        setupButton(startViewButton, title: "startFlutterInView")
+        setupButton(removeViewButton, title: "removeFlutterView")
         
         // Flutter Container
         flutterContainer.backgroundColor = UIColor(red: 0.94, green: 0.94, blue: 0.94, alpha: 1.0) // #f0f0f0
-        flutterContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 300).isActive = true
+        flutterContainer.translatesAutoresizingMaskIntoConstraints = false
+        mainContainer.addSubview(flutterContainer)
+        
+        // Flutter Placeholder Label
+        flutterPlaceholderLabel.text = "Flutter container area"
+        flutterPlaceholderLabel.font = UIFont.systemFont(ofSize: 18)
+        flutterPlaceholderLabel.textColor = UIColor(red: 0.4, green: 0.4, blue: 0.4, alpha: 1.0) // #666666
+        flutterPlaceholderLabel.textAlignment = .center
+        flutterPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        flutterContainer.addSubview(flutterPlaceholderLabel)
+        
+        // Add CommunicationView as child
+        addChild(communicationView)
+        communicationView.view.translatesAutoresizingMaskIntoConstraints = false
         
         // Add to stack view
-        stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(themeModeLabel)
-        stackView.addArrangedSubview(themeModeSpinner)
-        stackView.addArrangedSubview(startEngineButton)
-        stackView.addArrangedSubview(stopEngineButton)
-        stackView.addArrangedSubview(startScreenButton)
-        stackView.addArrangedSubview(startViewButton)
-        stackView.addArrangedSubview(removeViewButton)
-        stackView.addArrangedSubview(updateThemeButton)
-        stackView.addArrangedSubview(flutterContainer)
+        settingsStackView.addArrangedSubview(titleLabel)
+        settingsStackView.addArrangedSubview(startEngineButton)
+        settingsStackView.addArrangedSubview(stopEngineButton)
+        settingsStackView.addArrangedSubview(startScreenButton)
+        settingsStackView.addArrangedSubview(startViewButton)
+        settingsStackView.addArrangedSubview(removeViewButton)
+        settingsStackView.addArrangedSubview(communicationView.view)
         
-        // Setup constraints
+        communicationView.didMove(toParent: self)
+        
+        // Base constraints (always active)
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            // Tab segmented control at top
+            tabSegmentedControl.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            tabSegmentedControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            tabSegmentedControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 16),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 16),
-            stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -16),
-            stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -16),
-            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, constant: -32)
+            // Main container below tabs (when visible) or safe area (when tabs hidden)
+            mainContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mainContainer.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mainContainer.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            // Settings stack view inside scroll view
+            settingsStackView.topAnchor.constraint(equalTo: settingsScrollView.topAnchor, constant: 16),
+            settingsStackView.leadingAnchor.constraint(equalTo: settingsScrollView.leadingAnchor, constant: 16),
+            settingsStackView.trailingAnchor.constraint(equalTo: settingsScrollView.trailingAnchor, constant: -16),
+            settingsStackView.bottomAnchor.constraint(equalTo: settingsScrollView.bottomAnchor, constant: -16),
+            settingsStackView.widthAnchor.constraint(equalTo: settingsScrollView.widthAnchor, constant: -32),
+            
+            // Flutter placeholder label centered in container
+            flutterPlaceholderLabel.centerXAnchor.constraint(equalTo: flutterContainer.centerXAnchor),
+            flutterPlaceholderLabel.centerYAnchor.constraint(equalTo: flutterContainer.centerYAnchor)
         ])
+        
+        // Side-by-side constraints (for large screens >= 600)
+        settingsWidthConstraint = settingsScrollView.widthAnchor.constraint(equalToConstant: 400)
+        sideBySideConstraints = [
+            mainContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            
+            settingsScrollView.topAnchor.constraint(equalTo: mainContainer.topAnchor),
+            settingsScrollView.leadingAnchor.constraint(equalTo: mainContainer.leadingAnchor),
+            settingsScrollView.bottomAnchor.constraint(equalTo: mainContainer.bottomAnchor),
+            settingsWidthConstraint!,
+            
+            flutterContainer.topAnchor.constraint(equalTo: mainContainer.topAnchor),
+            flutterContainer.leadingAnchor.constraint(equalTo: settingsScrollView.trailingAnchor),
+            flutterContainer.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor),
+            flutterContainer.bottomAnchor.constraint(equalTo: mainContainer.bottomAnchor)
+        ]
+        
+        // Tabbed constraints (for small screens < 600)
+        tabbedConstraints = [
+            mainContainer.topAnchor.constraint(equalTo: tabSegmentedControl.bottomAnchor, constant: 8),
+            
+            settingsScrollView.topAnchor.constraint(equalTo: mainContainer.topAnchor),
+            settingsScrollView.leadingAnchor.constraint(equalTo: mainContainer.leadingAnchor),
+            settingsScrollView.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor),
+            settingsScrollView.bottomAnchor.constraint(equalTo: mainContainer.bottomAnchor),
+            
+            flutterContainer.topAnchor.constraint(equalTo: mainContainer.topAnchor),
+            flutterContainer.leadingAnchor.constraint(equalTo: mainContainer.leadingAnchor),
+            flutterContainer.trailingAnchor.constraint(equalTo: mainContainer.trailingAnchor),
+            flutterContainer.bottomAnchor.constraint(equalTo: mainContainer.bottomAnchor)
+        ]
         
         // Initially hide stop engine and remove view buttons
         stopEngineButton.isHidden = true
         removeViewButton.isHidden = true
+        // Initially hide start screen and start view buttons (engine not running yet)
+        startScreenButton.isHidden = true
+        startViewButton.isHidden = true
+    }
+    
+    private func updateLayoutForScreenSize(width: CGFloat? = nil) {
+        let screenWidth = width ?? view.bounds.width
+        let newIsLargeScreen = screenWidth >= 600
         
-        // Set default theme mode selection
-        themeModeSpinner.selectRow(2, inComponent: 0, animated: false) // "system"
+        // Only update if layout mode changed
+        guard newIsLargeScreen != isLargeScreen || !sideBySideConstraints[0].isActive && !tabbedConstraints[0].isActive else { return }
+        
+        isLargeScreen = newIsLargeScreen
+        
+        // Deactivate all layout-specific constraints
+        NSLayoutConstraint.deactivate(sideBySideConstraints)
+        NSLayoutConstraint.deactivate(tabbedConstraints)
+        
+        if isLargeScreen {
+            // Large screen (>= 600): side-by-side, hide tabs
+            tabSegmentedControl.isHidden = true
+            settingsScrollView.isHidden = false
+            flutterContainer.isHidden = false
+            
+            NSLayoutConstraint.activate(sideBySideConstraints)
+        } else {
+            // Small screen (< 600): show tabs, toggle between views
+            tabSegmentedControl.isHidden = false
+            
+            // Show view based on selected tab
+            let selectedTab = tabSegmentedControl.selectedSegmentIndex
+            settingsScrollView.isHidden = selectedTab != 0
+            flutterContainer.isHidden = selectedTab != 1
+            
+            NSLayoutConstraint.activate(tabbedConstraints)
+        }
+    }
+    
+    @objc private func tabChanged() {
+        guard !isLargeScreen else { return }
+        
+        let selectedTab = tabSegmentedControl.selectedSegmentIndex
+        settingsScrollView.isHidden = selectedTab != 0
+        flutterContainer.isHidden = selectedTab != 1
     }
     
     private func setupButton(_ button: UIButton, title: String) {
@@ -183,30 +232,29 @@ class ContentView: UIViewController {
     }
     
     private func setupButtons() {
-        startEngineButton.addTarget(self, action: #selector(startEngine), for: .touchUpInside)
+        startEngineButton.addTarget(self, action: #selector(handleStartEngine), for: .touchUpInside)
         stopEngineButton.addTarget(self, action: #selector(stopEngine), for: .touchUpInside)
         startScreenButton.addTarget(self, action: #selector(startScreen), for: .touchUpInside)
         startViewButton.addTarget(self, action: #selector(startFlutterInView), for: .touchUpInside)
         removeViewButton.addTarget(self, action: #selector(removeFlutterView), for: .touchUpInside)
-        updateThemeButton.addTarget(self, action: #selector(updateThemeMode), for: .touchUpInside)
     }
     
-    @objc private func startEngine() {
-        FlutterEmbedding.shared.startEngine(
-            forEnv: currentEnvironment,
-            forLanguage: currentLanguage,
-            forThemeMode: currentThemeMode,
-            with: handoverResponder
-        ) { [weak self] success, error in
+    @objc private func handleStartEngine() {
+        communicationView.startEngine { [weak self] success, error in
             DispatchQueue.main.async {
-                if success != nil {
+                if success {
                     // Hide "Start Flutter Engine" button and show "Stop Flutter Engine" button
                     self?.startEngineButton.isHidden = true
                     self?.stopEngineButton.isHidden = false
+                    // Show start screen and start view buttons (engine is now running)
+                    self?.startScreenButton.isHidden = false
+                    self?.startViewButton.isHidden = false
+                    // Show update theme button in communication view
+                    self?.communicationView.setEngineRunning(true)
                     
                     print("Successfully started engine")
                     self?.showToast("Flutter engine started successfully")
-                                } else {
+                } else {
                     print("Error when starting engine: \(error?.localizedDescription ?? "Unknown error")")
                     self?.showToast(error?.localizedDescription ?? "Something went wrong")
                 }
@@ -216,7 +264,7 @@ class ContentView: UIViewController {
     
     @objc private func startScreen() {
         do {
-            let vc = try FlutterEmbedding.shared.getViewController()
+            let vc = try {{flutterEmbeddingName}}.shared.getViewController()
             vc.modalPresentationStyle = .fullScreen
             present(vc, animated: true)
         } catch {
@@ -227,7 +275,7 @@ class ContentView: UIViewController {
     
     @objc private func startFlutterInView() {
         do {
-            let flutterViewController = try FlutterEmbedding.shared.getViewController()
+            let flutterViewController = try {{flutterEmbeddingName}}.shared.getViewController()
             
             // Add as child view controller
             addChild(flutterViewController)
@@ -240,6 +288,9 @@ class ContentView: UIViewController {
                 flutterViewController.view.bottomAnchor.constraint(equalTo: flutterContainer.bottomAnchor)
             ])
             flutterViewController.didMove(toParent: self)
+            
+            // Hide placeholder label
+            flutterPlaceholderLabel.isHidden = true
             
             // Hide "Open Flutter in View" button and show "Remove Flutter View" button
             startViewButton.isHidden = true
@@ -263,6 +314,9 @@ class ContentView: UIViewController {
             }
         }
         
+        // Show placeholder label
+        flutterPlaceholderLabel.isHidden = false
+        
         // Show "Open Flutter in View" button and hide "Remove Flutter View" button
         startViewButton.isHidden = false
         removeViewButton.isHidden = true
@@ -272,27 +326,18 @@ class ContentView: UIViewController {
     }
     
     @objc private func stopEngine() {
-        FlutterEmbedding.shared.stopEngine()
+        {{flutterEmbeddingName}}.shared.stopEngine()
         
         // Show "Start Flutter Engine" button and hide "Stop Flutter Engine" button
         startEngineButton.isHidden = false
         stopEngineButton.isHidden = true
+        // Hide start screen and start view buttons (engine is not running)
+        startScreenButton.isHidden = true
+        startViewButton.isHidden = true
+        // Hide update theme button in communication view
+        communicationView.setEngineRunning(false)
         
         showToast("Flutter engine stopped")
-    }
-    
-    @objc private func updateThemeMode() {
-        FlutterEmbedding.shared.changeThemeMode(themeMode: currentThemeMode) { [weak self] success, error in
-            DispatchQueue.main.async {
-                if success == true {
-                    print("Successfully changed theme mode")
-                    self?.showToast("Theme mode updated to: \(self?.currentThemeMode ?? "")")
-                } else {
-                    print("Error when changing theme mode: \(error?.localizedDescription ?? "Unknown error")")
-                    self?.showToast(error?.localizedDescription ?? "Something went wrong (when changing theme mode)")
-                }
-            }
-        }
     }
     
     private func showToast(_ message: String) {
@@ -300,25 +345,22 @@ class ContentView: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
-}
-
-// MARK: - UIPickerViewDataSource & UIPickerViewDelegate
-extension ContentView: UIPickerViewDataSource, UIPickerViewDelegate {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
     
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return themeModes.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return themeModes[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        currentThemeMode = themeModes[row]
-        print("Theme mode changed to: \(currentThemeMode)")
+    func handleFlutterExit() {
+        // Check if Flutter is embedded in the view (removeViewButton is visible)
+        if !removeViewButton.isHidden {
+            // Flutter is embedded, remove it from the container
+            removeFlutterView()
+        } else {
+            // Flutter is presented modally, dismiss it
+            guard
+              let windowScene = UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive && $0 is UIWindowScene }) as? UIWindowScene,
+              let window = windowScene.windows.first(where: \.isKeyWindow),
+              let rootViewController = window.rootViewController
+            else { return }
+            
+            rootViewController.dismiss(animated: true)
         }
     }
-
+}

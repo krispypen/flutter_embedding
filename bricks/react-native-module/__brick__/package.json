@@ -1,6 +1,6 @@
 {
-  "name": "flutter-rn-embedding",
-  "version": "1.0.0",
+  "name": "{{reactNativePackageName}}",
+  "version": "{{flutterModuleVersion}}",
   "description": "A react-native module to embed the Flutter",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -52,6 +52,10 @@
   "homepage": "https://krispypen.be",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@protobuf-ts/runtime-rpc": "^2.11.1",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",

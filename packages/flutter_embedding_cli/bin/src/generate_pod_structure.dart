@@ -34,8 +34,13 @@ Future<void> generatePodHelper(
 
   writeStream.write('  pod "Flutter", :podspec => File.join(prefix, "Release", "Flutter.podspec")\n');
 
+  // Filter out SwiftProtobuf from direct pod declarations since it's already a dependency
+  // of FlutterEmbeddingModule and will be available transitively
   for (final podName in podFilelock.specRepo.trunk) {
-    writeStream.write('  pod "$podName", "${podFilelock.getPodVersion(podName)}"\n');
+    if (podName == 'SwiftProtobuf') {
+      continue; // Skip SwiftProtobuf - it comes through FlutterEmbeddingModule dependencies
+    }
+    // writeStream.write('  pod "$podName", "${podFilelock.getPodVersion(podName)}"\n');
     for (final env in envNames) {
       final envPath = join(buildDirectory.path, env);
       final podFile = File(join(envPath, '$podName.xcframework'));
@@ -93,7 +98,8 @@ Future<void> generatePodHelper(
   writeStream.write('  s.description  = <<-DESC\n');
   writeStream.write('                  App flutter module for ${pubspecData['name']}, #{configuration}\n');
   writeStream.write('                  DESC\n');
-  writeStream.write('  s.source_files = "**/*.{swift,h,m}"\n');
+  writeStream.write('  s.source_files = "Frameworks/**/*.{swift,h,m}"\n');
+  writeStream.write('  s.exclude_files = "Frameworks/**/*.xcframework/**/*.h"\n');
   writeStream.write('  s.vendored_frameworks = \'**/*.xcframework\'\n');
   writeStream.write('  s.preserve_paths = "**/*.xcframework"\n');
   writeStream.write(
@@ -104,7 +110,10 @@ Future<void> generatePodHelper(
   writeStream.write('  s.static_framework = true\n\n');
 
   for (final podName in podFilelock.specRepo.trunk) {
-    writeStream.write('  s.dependency "$podName"\n');
+    if (podName == 'SwiftProtobuf') {
+      continue; // Skip SwiftProtobuf - it comes through FlutterEmbeddingModule dependencies
+    }
+    //writeStream.write('  s.dependency "$podName"\n');
   }
 
   writeStream.write('end\n\n');

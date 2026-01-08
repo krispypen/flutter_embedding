@@ -1,0 +1,47 @@
+{
+    "name": "{{webAngularPackageName}}",
+    "version": "{{flutterModuleVersion}}",
+    "files": [
+        "public",
+        "src",
+        "scripts",
+        "dist"
+    ],
+    "main": "dist/fesm2022/{{webAngularPackageName}}.mjs",
+    "module": "dist/fesm2022/{{webAngularPackageName}}.mjs",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "ng-packagr -p ng-package.json -c tsconfig.lib.json",
+        "prepublishOnly": "npm run build",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "typescript": "tsc --noEmit",
+        "tsc": "tsc --noEmit",
+        "lint": "eslint **/*.ts",
+        "lint-fix": "eslint **/*.ts --fix",
+        "ci": "npm run tsc && npm run lint",
+        "postinstall": "node scripts/install_flutter.js"
+    },
+    "keywords": [
+        "flutter",
+        "angular",
+        "embedding",
+        "web"
+    ],
+    "author": "",
+    "license": "ISC",
+    "description": "Angular module for embedding Flutter web applications",
+    "peerDependencies": {
+        "@angular/core": ">=15.0.0 <21.0.0",
+        "@angular/common": ">=15.0.0 <21.0.0",
+        "@protobuf-ts/runtime-rpc": "^2.11.1"
+    },
+    "devDependencies": {
+        "@angular/compiler": "^20.3.10",
+        "@angular/compiler-cli": "^20.3.10",
+        "ng-packagr": "^20.3.0",
+        "typescript": "^5.9.2",
+        "@typescript-eslint/eslint-plugin": "^8.27.0",
+        "@typescript-eslint/parser": "^8.27.0",
+        "eslint": "^9.21.0"
+    }
+}

@@ -6,7 +6,8 @@ Future<void> runCommand(String command, List<String> arguments, bool verbose, {S
     print('> Executing: $command ${arguments.join(' ')}');
   }
 
-  final process = await Process.start(command, arguments, workingDirectory: directory);
+  final process =
+      await Process.start(command, arguments, workingDirectory: directory, environment: Platform.environment);
 
   final StringBuffer output = StringBuffer();
 
@@ -33,6 +34,8 @@ Future<void> runCommand(String command, List<String> arguments, bool verbose, {S
 
   if (exitCode != 0) {
     print('Process exited with code: $exitCode');
+    print('Command: $command ${arguments.join(' ')}');
+    print('Directory: $directory');
     if (!verbose) {
       print('To get more details, run with the --verbose flag');
       print(output.toString());

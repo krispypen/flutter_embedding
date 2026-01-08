@@ -1,6 +1,5 @@
-import { FlutterEmbeddingView } from 'flutter-rn-embedding';
-import React from 'react';
 import type { ViewStyle } from 'react-native';
+import { FlutterEmbeddingView } from '{{reactNativePackageName}}';
 
 interface Props {
     style?: ViewStyle;

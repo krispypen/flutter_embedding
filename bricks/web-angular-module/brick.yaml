@@ -1,0 +1,7 @@
+name: flutter_angular_embedding
+description: Web Angular module for embedding Flutter
+repository: https://krispypen.be
+version: 0.0.1
+
+vars:
+  
