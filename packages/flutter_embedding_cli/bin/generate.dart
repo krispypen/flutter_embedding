@@ -80,6 +80,7 @@ void main(List<String> arguments) async {
       'moduleName': moduleName,
       'exampleAndroidPackageName': getExampleAndroidPackageName(),
       'exampleAndroidPackageNameFolder': getExampleAndroidPackageName()?.replaceAll('.', '/'),
+      'exampleAndroidAppName': getExampleAndroidAppName(),
       'exampleIosBundleIdentifier': getExampleIosBundleIdentifier(),
       'exampleIosDisplayName': getExampleIosDisplayName(),
       'webAngularPackageName': webAngularPackageName,
@@ -410,6 +411,11 @@ String? getExampleAndroidPatchBrickPath() {
 String? getExampleAndroidPackageName() {
   final exampleAndroidPackageName = flutterEmbeddingConfig?['android']?['example']?['package_name'];
   return exampleAndroidPackageName?.toString() ?? '${_getFlutterEmbeddingPackageName()}.example';
+}
+
+String? getExampleAndroidAppName() {
+  final exampleAndroidAppName = flutterEmbeddingConfig?['android']?['example']?['app_name'];
+  return exampleAndroidAppName?.toString() ?? 'Flutter Embedding Example';
 }
 
 String? getExampleIosBundleIdentifier() {

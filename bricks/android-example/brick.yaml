@@ -7,3 +7,7 @@ vars:
   module_path:
     type: string
     description: The path to the flutter module
+
+  exampleAndroidAppName:
+    type: string
+    description: The name of the example Android app
