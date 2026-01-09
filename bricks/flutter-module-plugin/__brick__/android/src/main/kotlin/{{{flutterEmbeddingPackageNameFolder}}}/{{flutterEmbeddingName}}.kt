@@ -24,8 +24,6 @@ import io.grpc.stub.StreamObserver
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 class {{flutterEmbeddingName}} {
 
@@ -132,36 +130,43 @@ class {{flutterEmbeddingName}} {
                                     // 7. Simulate the client finishing the stream (CRITICAL for unary)
                                     listener.onHalfClose()
 
-                                    // 8. Wait for the response to arrive in our fakeServerCall
-                                    val response: Any? = responseFuture.get(10, TimeUnit.SECONDS)
+                                    // 8. Handle response asynchronously to allow for user interaction (dialogs, etc.)
+                                    val methodDesc = method.methodDescriptor
+                                    responseFuture.whenComplete { response, throwable ->
+                                        if (throwable != null) {
+                                            println("Error: gRPC service implementation failed: ${throwable.message}")
+                                            completion?.onFailure(Exception(throwable))
+                                        } else {
+                                            // 9. Serialize the response
+                                            var responseData: ByteArray = byteArrayOf()
+                                            if (response != null) {
+                                                // Use the method's own marshaller to serialize
+                                                @Suppress("UNCHECKED_CAST")
+                                                val responseStream: InputStream =
+                                                    (methodDesc.responseMarshaller as MethodDescriptor.Marshaller<Any>).stream(response)
+                                                responseData = responseStream.readBytes()
+                                            }
 
-                                    // 9. Serialize the response
-                                    var responseData: ByteArray = byteArrayOf()
-                                    if (response != null) {
-                                        // Use the method's own marshaller to serialize
-                                        @Suppress("UNCHECKED_CAST")
-                                        val responseStream: InputStream =
-                                            (method.methodDescriptor.responseMarshaller as MethodDescriptor.Marshaller<Any>).stream(response)
-                                        responseData = responseStream.readBytes()
+                                            println("Successfully called '$serviceMethod'. Response size: ${responseData.size} bytes")
+                                            
+                                            completion?.onSuccess(responseData)
+                                        }
+                                    }
+                                    
+                                    // Also handle error future
+                                    errorFuture.whenComplete { status, _ ->
+                                        if (status != null) {
+                                            println("Error: gRPC service implementation failed with status: ${status.code} - ${status.description}")
+                                            completion?.onFailure(Exception("gRPC error: ${status.code} - ${status.description}"))
+                                        }
                                     }
 
-                                    println("Successfully called '$serviceMethod'. Response size: ${responseData.size} bytes")
-                                    
-                                    completion?.onSuccess(responseData)
-
-                                    break
+                                    return
 
                                 } catch (e: Exception) {
-                                    // Handle timeouts or gRPC errors
-                                    if (errorFuture.isDone) {
-                                        val status = errorFuture.getNow(null)
-                                        println("Error: gRPC service implementation failed with status: ${status.code} - ${status.description}")
-                                    } else if (e is TimeoutException) {
-                                        println("Error: gRPC method call timed out")
-                                    } else {
-                                        println("Error during dynamic call invocation: ${e.message}")
-                                        e.printStackTrace()
-                                    }
+                                    println("Error during dynamic call invocation: ${e.message}")
+                                    e.printStackTrace()
+                                    completion?.onFailure(e)
                                 }
                             }
                         }
