@@ -5,6 +5,10 @@ import 'package:path/path.dart';
 import 'directory_extensions.dart';
 import 'run_command.dart';
 
+/// Creates zip archives of the xcframework files for Release and Debug configurations.
+///
+/// Moves all .xcframework directories into a Frameworks folder and creates a
+/// Frameworks.zip archive in each configuration directory.
 Future<void> generateZip(Directory buildDirectory, bool verbose) async {
   final envNames = ['Release', 'Debug'];
 

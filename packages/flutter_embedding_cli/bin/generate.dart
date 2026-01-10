@@ -10,8 +10,16 @@ import 'src/generate_protoc.dart';
 import 'src/generate_zip.dart';
 import 'src/run_command.dart';
 
+/// Exception thrown when configuration is invalid or missing.
+class ConfigurationException implements Exception {
+  final String message;
+  const ConfigurationException(this.message);
+
+  @override
+  String toString() => 'ConfigurationException: $message';
+}
+
 void main(List<String> arguments) async {
-  // 1. Maak een ArgParser
   final parser = ArgParser()
     ..addCommand(
         'ios',
@@ -41,11 +49,9 @@ void main(List<String> arguments) async {
     ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help');
 
   try {
-    // 2. Parse de argumenten
     final ArgResults results = parser.parse(arguments);
     final verbose = results.command?.flag('verbose') ?? false;
 
-    // 3. Behandel de 'help' vlag
     if (results['help']) {
       print('Usage: flutter_embedding_cli [options] <command> <arguments>');
       print(parser.usage);
@@ -386,15 +392,21 @@ void main(List<String> arguments) async {
         print('Invalid command');
         break;
     }
-  } on FormatException catch (e, stackTrace) {
-    stderr.writeln(e.message);
-    stderr.writeln('Stack trace: $stackTrace');
+  } on FormatException catch (e) {
+    stderr.writeln('Error: ${e.message}');
     stderr.writeln(parser.usage);
-    exit(1);
+    exit(64); // EX_USAGE
+  } on ConfigurationException catch (e) {
+    stderr.writeln(e.toString());
+    exit(78); // EX_CONFIG
+  } on CommandException catch (e) {
+    stderr.writeln(e.toString());
+    stderr.writeln('Tip: Run with --verbose flag for more details.');
+    exit(e.exitCode);
   } catch (e, stackTrace) {
-    stderr.writeln('An error occurred: $e');
+    stderr.writeln('An unexpected error occurred: $e');
     stderr.writeln('Stack trace: $stackTrace');
-    exit(2);
+    exit(1);
   }
 }
 
@@ -453,22 +465,23 @@ String _getFlutterBaseModuleName() {
   final pubspec = File('pubspec.yaml');
   final flutterModuleName = loadYaml(pubspec.readAsStringSync())['name'];
   if (flutterModuleName == null) {
-    print('flutter.name is not set in pubspec.yaml');
-    exit(1);
+    throw const ConfigurationException(
+      'The "name" field is not set in pubspec.yaml. '
+      'Please ensure your pubspec.yaml contains a valid package name.',
+    );
   }
   return flutterModuleName;
 }
 
 String _getModuleName() {
   final moduleName = flutterEmbeddingConfig?['module_name'];
-  if (!RegExp(r'^[a-z][a-z0-9_]*$').hasMatch(moduleName ?? '')) {
-    print('name is not a valid dart package name');
-    exit(1);
+  if (moduleName != null && !RegExp(r'^[a-z][a-z0-9_]*$').hasMatch(moduleName)) {
+    throw ConfigurationException(
+      'The "flutter_embedding.module_name" value "$moduleName" is not a valid Dart package name. '
+      'Package names must start with a lowercase letter and contain only lowercase letters, numbers, and underscores.',
+    );
   }
-  if (moduleName == null) {
-    return '${_getFlutterBaseModuleName()}_module';
-  }
-  return moduleName;
+  return moduleName ?? '${_getFlutterBaseModuleName()}_module';
 }
 
 String _getWebAngularPackageName() {
@@ -498,8 +511,10 @@ String _getReactNativePackageName() {
 String _getFlutterEmbeddingName() {
   final flutterEmbeddingName = flutterEmbeddingConfig?['name'];
   if (flutterEmbeddingName == null) {
-    print('flutter_embedding.name is not set in pubspec.yaml');
-    exit(1);
+    throw const ConfigurationException(
+      'The "flutter_embedding.name" field is not set in pubspec.yaml. '
+      'Please add a "flutter_embedding" section with a "name" field.',
+    );
   }
   return flutterEmbeddingName;
 }
@@ -507,28 +522,36 @@ String _getFlutterEmbeddingName() {
 String _getFlutterEmbeddingPackageName() {
   final flutterEmbeddingPackageName = flutterEmbeddingConfig?['package_name'];
   if (flutterEmbeddingPackageName == null) {
-    print('flutter_embedding.package_name is not set in pubspec.yaml');
-    exit(1);
+    throw const ConfigurationException(
+      'The "flutter_embedding.package_name" field is not set in pubspec.yaml. '
+      'Please add a "package_name" field under the "flutter_embedding" section.',
+    );
   }
   return flutterEmbeddingPackageName;
 }
 
 String _getFlutterAndroidPackage() {
   final pubspec = File('pubspec.yaml');
-  final flutterAndroidPackage = loadYaml(pubspec.readAsStringSync())['flutter']['module']['androidPackage'];
+  final yaml = loadYaml(pubspec.readAsStringSync());
+  final flutterAndroidPackage = yaml['flutter']?['module']?['androidPackage'];
   if (flutterAndroidPackage == null) {
-    print('flutter.androidPackage is not set in pubspec.yaml');
-    exit(1);
+    throw const ConfigurationException(
+      'The "flutter.module.androidPackage" field is not set in pubspec.yaml. '
+      'Please ensure your Flutter module configuration includes an androidPackage.',
+    );
   }
   return flutterAndroidPackage;
 }
 
 String _getFlutterIosBundleIdentifier() {
   final pubspec = File('pubspec.yaml');
-  final flutterIosBundleIdentifier = loadYaml(pubspec.readAsStringSync())['flutter']['module']['iosBundleIdentifier'];
+  final yaml = loadYaml(pubspec.readAsStringSync());
+  final flutterIosBundleIdentifier = yaml['flutter']?['module']?['iosBundleIdentifier'];
   if (flutterIosBundleIdentifier == null) {
-    print('flutter.iosBundleIdentifier is not set in pubspec.yaml');
-    exit(1);
+    throw const ConfigurationException(
+      'The "flutter.module.iosBundleIdentifier" field is not set in pubspec.yaml. '
+      'Please ensure your Flutter module configuration includes an iosBundleIdentifier.',
+    );
   }
   return flutterIosBundleIdentifier;
 }

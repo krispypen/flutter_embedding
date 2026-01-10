@@ -1,13 +1,68 @@
 import 'dart:convert';
 import 'dart:io';
 
-Future<void> runCommand(String command, List<String> arguments, bool verbose, {String directory = '.'}) async {
+/// Exception thrown when a command execution fails.
+class CommandException implements Exception {
+  /// The command that was executed.
+  final String command;
+
+  /// The arguments passed to the command.
+  final List<String> arguments;
+
+  /// The directory in which the command was executed.
+  final String directory;
+
+  /// The exit code of the command.
+  final int exitCode;
+
+  /// The output captured from the command (if not in verbose mode).
+  final String output;
+
+  CommandException({
+    required this.command,
+    required this.arguments,
+    required this.directory,
+    required this.exitCode,
+    required this.output,
+  });
+
+  @override
+  String toString() {
+    final buffer = StringBuffer()
+      ..writeln('CommandException: Process exited with code $exitCode')
+      ..writeln('Command: $command ${arguments.join(' ')}')
+      ..writeln('Directory: $directory');
+    if (output.isNotEmpty) {
+      buffer
+        ..writeln('Output:')
+        ..writeln(output);
+    }
+    return buffer.toString();
+  }
+}
+
+/// Runs a command in a subprocess.
+///
+/// If [verbose] is true, the command output is streamed to stdout/stderr.
+/// Otherwise, output is captured and included in the exception if the command fails.
+///
+/// Throws [CommandException] if the command exits with a non-zero exit code.
+Future<void> runCommand(
+  String command,
+  List<String> arguments,
+  bool verbose, {
+  String directory = '.',
+}) async {
   if (verbose) {
     print('> Executing: $command ${arguments.join(' ')}');
   }
 
-  final process =
-      await Process.start(command, arguments, workingDirectory: directory, environment: Platform.environment);
+  final process = await Process.start(
+    command,
+    arguments,
+    workingDirectory: directory,
+    environment: Platform.environment,
+  );
 
   final StringBuffer output = StringBuffer();
 
@@ -33,13 +88,12 @@ Future<void> runCommand(String command, List<String> arguments, bool verbose, {S
   final exitCode = await process.exitCode;
 
   if (exitCode != 0) {
-    print('Process exited with code: $exitCode');
-    print('Command: $command ${arguments.join(' ')}');
-    print('Directory: $directory');
-    if (!verbose) {
-      print('To get more details, run with the --verbose flag');
-      print(output.toString());
-    }
-    exit(exitCode);
+    throw CommandException(
+      command: command,
+      arguments: arguments,
+      directory: directory,
+      exitCode: exitCode,
+      output: output.toString(),
+    );
   }
 }

@@ -5,6 +5,10 @@ import 'package:yaml/yaml.dart';
 
 import 'podfile_lock.dart';
 
+/// Generates the podhelper.rb file for CocoaPods integration.
+///
+/// This helper file provides functions for installing Flutter pods and setting up
+/// the necessary framework dependencies for iOS embedding.
 Future<void> generatePodHelper(
   Directory flutterModuleDirectory,
   Directory buildDirectory,
@@ -138,5 +142,5 @@ Future<void> generatePodHelper(
       '  IO.readlines(File.join(Dir.pwd,"Pods/Target Support Files/Pods-#{target}/Pods-#{target}-frameworks-Debug-output-files.xcfilelist"), chomp: true).uniq.join("\\n"))\n');
   writeStream.write('end\n\n');
 
-  writeStream.close();
+  await writeStream.close();
 }

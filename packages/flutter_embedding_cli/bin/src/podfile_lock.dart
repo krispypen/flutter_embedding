@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:yaml/yaml.dart';
 
+/// Represents a parsed Podfile.lock file.
+///
+/// Provides access to pod versions and spec repository information.
 class PodFileLock {
   final Map<String, String> pods;
   final SpecRepo specRepo;
@@ -12,6 +15,10 @@ class PodFileLock {
     required this.specRepo,
   });
 
+  /// Parses the Podfile.lock from the given [directory].
+  ///
+  /// Looks for Podfile.lock in either .ios/ or ios/ subdirectory.
+  /// Throws an [Exception] if the file is not found or both directories exist.
   factory PodFileLock.parse(Directory directory) {
     final podFileName = 'Podfile.lock';
     final iosPodFileLock = File(join(directory.path, '.ios', podFileName));
@@ -55,6 +62,9 @@ class PodFileLock {
     );
   }
 
+  /// Returns the version string for the given [podName].
+  ///
+  /// Throws an [Exception] if the pod is not found in the lock file.
   String getPodVersion(String podName) {
     if (pods.containsKey(podName)) {
       return pods[podName]!;
@@ -63,6 +73,7 @@ class PodFileLock {
   }
 }
 
+/// Represents the spec repositories section of a Podfile.lock.
 class SpecRepo {
   final List<String> trunk;
 

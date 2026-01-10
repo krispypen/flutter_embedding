@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 
+/// Generates CocoaPods podspec files for Release and Debug configurations.
+///
+/// Creates podspec files in [buildDirectory]/Release and [buildDirectory]/Debug
+/// that reference the shared podhelper.rb file.
 Future<void> generatePodSpecs(Directory buildDirectory) async {
   final envNames = ['Release', 'Debug'];
   final moduleName = 'FlutterEmbeddingModule';
@@ -19,6 +23,6 @@ Future<void> generatePodSpecs(Directory buildDirectory) async {
     writeStream.write('  generateFrameworksSpecProps(s, "$env")\n');
     writeStream.write('end\n');
 
-    writeStream.close();
+    await writeStream.close();
   }
 }

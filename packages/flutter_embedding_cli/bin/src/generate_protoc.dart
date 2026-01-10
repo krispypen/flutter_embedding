@@ -4,26 +4,34 @@ import 'package:yaml/yaml.dart';
 
 import 'run_command.dart';
 
+/// The flutter_embedding configuration section from pubspec.yaml.
+///
+/// This is lazily loaded from the current directory's pubspec.yaml.
 final flutterEmbeddingConfig = loadYaml(File('pubspec.yaml').readAsStringSync())['flutter_embedding'];
 
+/// Returns the start params message type from the embedding configuration.
 Future<String> getStartParamsMessage() async {
   final startParamsMessage = flutterEmbeddingConfig['handovers']['start_params'];
   return startParamsMessage;
 }
 
+/// Returns a list of service definitions for host-to-Flutter handover services.
+///
+/// Each service is represented as a map with keys: 'name', 'snake_name', 'path', and 'type'.
 Future<List<Map<String, String>>> getHandoversToHostServices() async {
-  // handoversToHostProtoPaths is a list of proto files
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
-
   return await getServicesFromProto(handoversToHostProtoPaths);
 }
 
+/// Returns a list of service definitions for Flutter-to-host handover services.
+///
+/// Each service is represented as a map with keys: 'name', 'snake_name', 'path', and 'type'.
 Future<List<Map<String, String>>> getHandoversToFlutterServices() async {
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
-
   return await getServicesFromProto(handoversToFlutterProtoPaths);
 }
 
+/// Parses proto files to extract service definitions.
 Future<List<Map<String, String>>> getServicesFromProto(YamlList protoPaths) async {
   // read all proto files in handoversToHostProtoPaths files  and search for all services
   final services = <Map<String, String>>[];
@@ -51,10 +59,10 @@ Future<List<Map<String, String>>> getServicesFromProto(YamlList protoPaths) asyn
   return services;
 }
 
+/// Generates Dart gRPC service stubs from proto definitions.
+///
+/// Output is written to [outputPath].
 Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
-  // update proto services
-  //protoc --dart_out=grpc:lib/protos protos/host_service.proto protos/embedding_service.proto --java_out=androidtest/ --kotlin_out=androidtestkotlin/ --swift_out=swift/ --grpc-swift-2_out=swift/ --doc_out=markdown,output:./protodocs/ --js_out=import_style=commonjs,binary:jstest/ --grpc-web_out=import_style=commonjs+dts,mode=grpcweb:jstest --proto_path protos
-  // read pubspec.yaml and get embedding.host_handover_proto_paths and embedding.embedding_handover_proto_paths
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
@@ -83,10 +91,10 @@ Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
   }
 }
 
+/// Generates Java gRPC service stubs from proto definitions.
+///
+/// Output is written to [outputPath].
 Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
-  // update proto services
-  //protoc --java_out=androidtest/ --kotlin_out=androidtestkotlin/ --swift_out=swift/ --grpc-swift-2_out=swift/ --doc_out=markdown,output:./protodocs/ --js_out=import_style=commonjs,binary:jstest/ --grpc-web_out=import_style=commonjs+dts,mode=grpcweb:jstest --proto_path protos
-  // read pubspec.yaml and get embedding.host_handover_proto_paths and embedding.embedding_handover_proto_paths
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
@@ -117,10 +125,10 @@ Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
   }
 }
 
+/// Generates Swift gRPC service stubs from proto definitions.
+///
+/// Output is written to [outputPath].
 Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async {
-  // update proto services
-  //protoc --swift_out=swift/ --grpc-swift-2_out=swift/ --doc_out=markdown,output:./protodocs/ --proto_path protos
-  // read pubspec.yaml and get embedding.host_handover_proto_paths and embedding.embedding_handover_proto_paths
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   // available options see: https://github.com/grpc/grpc-swift-protobuf/blob/main/Sources/protoc-gen-grpc-swift-2/Options.swift
@@ -166,10 +174,10 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
   }
 }
 
+/// Generates TypeScript service stubs for React Native from proto definitions.
+///
+/// Output is written to [outputPath].
 Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) async {
-  // update proto services
-  //protoc --dart_out=grpc:lib/protos protos/host_service.proto protos/embedding_service.proto --java_out=androidtest/ --kotlin_out=androidtestkotlin/ --swift_out=swift/ --grpc-swift-2_out=swift/ --doc_out=markdown,output:./protodocs/ --js_out=import_style=commonjs,binary:jstest/ --grpc-web_out=import_style=commonjs+dts,mode=grpcweb:jstest --proto_path protos
-  // read pubspec.yaml and get embedding.host_handover_proto_paths and embedding.embedding_handover_proto_paths
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
@@ -199,11 +207,10 @@ Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) 
   }
 }
 
+/// Generates TypeScript service stubs for gRPC-Web from proto definitions.
+///
+/// Output is written to [outputPath].
 Future<void> updateGrpcWebHandoverServices(bool verbose, String outputPath) async {
-  // update proto services
-  //protoc --js_out=jstest/  --proto_path protos
-  //protoc --js_out=jstest/  --ts_opt=server_grpc1 --proto_path protos
-  // read pubspec.yaml and get embedding.host_handover_proto_paths and embedding.embedding_handover_proto_paths
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
