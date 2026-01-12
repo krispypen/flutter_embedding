@@ -1,7 +1,22 @@
 name: flutter_r_embedding
-description: Web React module for embedding Flutter
-repository: https://krispypen.be
+description: Generates a React web module for embedding Flutter web apps
+repository: https://github.com/krispypen/flutter_embedding
 version: 0.0.1
 
 vars:
-  
+  webReactPackageName:
+    type: string
+    description: The npm package name for the React web module
+  flutterModuleVersion:
+    type: string
+    description: The version of the Flutter module
+  moduleName:
+    type: string
+    description: The name of the Flutter module plugin
+  handoversToHostServices:
+    type: list
+    description: List of gRPC services for communication from Flutter to host
+  handoversToFlutterServices:
+    type: list
+    description: List of gRPC services for communication from host to Flutter
+

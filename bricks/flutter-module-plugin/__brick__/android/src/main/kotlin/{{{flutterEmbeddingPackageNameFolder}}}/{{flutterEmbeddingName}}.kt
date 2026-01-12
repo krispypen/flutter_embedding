@@ -5,7 +5,15 @@ import androidx.fragment.app.FragmentActivity
 import be.krispypen.plugins.flutter_embedding.FlutterEmbedding
 import be.krispypen.plugins.flutter_embedding.FlutterEmbeddingFlutterFragment
 import be.krispypen.plugins.flutter_embedding.HandoverResponderInterface
-import be.krispypen.plugins.flutter_embedding.CompletionHandler
+
+/**
+ * Completion handler interface for async operations.
+ * This is a local interface to avoid requiring implementors to import from flutter_embedding.
+ */
+interface CompletionHandler<T> {
+    fun onSuccess(data: T?)
+    fun onFailure(e: Exception)
+}
 {{#handoversToHostServices}}
 import {{type}}Grpc
 {{/handoversToHostServices}}{{#handoversToFlutterServices}}import {{type}}Grpc.{{type}}FutureStub
@@ -49,7 +57,7 @@ class {{flutterEmbeddingName}} {
             override fun invokeHandover(
                 name: String,
                 data: Map<String?, Any?>,
-                completion: CompletionHandler<in Any>?
+                completion: be.krispypen.plugins.flutter_embedding.CompletionHandler<in Any>?
             ) {
                 val serviceName = name
                 val serviceMethod = data["method"] as String
@@ -174,7 +182,17 @@ class {{flutterEmbeddingName}} {
                 }
             }
         }
-        FlutterEmbedding.instance().startEngine(context, startConfig, handoverResponder, completion)
+        val wrappedCompletion = if (completion != null) {
+            object : be.krispypen.plugins.flutter_embedding.CompletionHandler<Boolean> {
+                override fun onSuccess(data: Boolean?) {
+                    completion.onSuccess(data)
+                }
+                override fun onFailure(e: Exception) {
+                    completion.onFailure(e)
+                }
+            }
+        } else null
+        FlutterEmbedding.instance().startEngine(context, startConfig, handoverResponder, wrappedCompletion)
     }
 
     fun getEngine(): FlutterEngine? {
@@ -194,7 +212,17 @@ class {{flutterEmbeddingName}} {
         data: Map<String, Any>,
         completion: CompletionHandler<Any?>?
     ) {
-        FlutterEmbedding.instance().invokeHandover(eventName, data, completion)
+        val wrappedCompletion = if (completion != null) {
+            object : be.krispypen.plugins.flutter_embedding.CompletionHandler<Any?> {
+                override fun onSuccess(data: Any?) {
+                    completion.onSuccess(data)
+                }
+                override fun onFailure(e: Exception) {
+                    completion.onFailure(e)
+                }
+            }
+        } else null
+        FlutterEmbedding.instance().invokeHandover(eventName, data, wrappedCompletion)
     }
 
     fun getOrCreateFragment(activity: FragmentActivity): FlutterEmbeddingFlutterFragment {

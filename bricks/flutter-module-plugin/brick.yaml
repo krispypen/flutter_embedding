@@ -1,24 +1,27 @@
 name: flutter_module_plugin
-description: A brick for generating a flutter module plugin
+description: Generates a Flutter module plugin for embedding Flutter into native iOS and Android apps
 publish_to: none
 version: 0.0.1
 
 vars:
-  handoversToHostServices:
-    type: list
-    description: The handovers to host services
-  handoversToFlutterServices:
-    type: list
-    description: The handovers to flutter services
-  startParamsMessage:
-    type: string
-    description: The start params message
   moduleName:
     type: string
-    description: The name of the module
+    description: The name of the generated Flutter module plugin (e.g. counter_embedding)
+  flutterEmbeddingName:
+    type: string
+    description: The name of the Flutter embedding class (e.g. CounterEmbedding)
   flutterEmbeddingPackageName:
     type: string
-    description: The package name of the flutter embedding
-  startParamsMessageFolder:
+    description: The package name for the Flutter embedding (e.g. com.example.counter)
+  flutterEmbeddingPackageNameFolder:
     type: string
-    description: The folder name of the start params message
+    description: The package name as folder path (e.g. com/example/counter)
+  startParamsMessage:
+    type: string
+    description: The protobuf message type for start parameters
+  handoversToHostServices:
+    type: list
+    description: List of gRPC services for communication from Flutter to host
+  handoversToFlutterServices:
+    type: list
+    description: List of gRPC services for communication from host to Flutter

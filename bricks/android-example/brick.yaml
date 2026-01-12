@@ -1,13 +1,30 @@
 name: android_example_app
-description: ttt
-repository: https://krispypen.be
+description: Generates an Android example app demonstrating Flutter embedding
+repository: https://github.com/krispypen/flutter_embedding
 version: 0.0.1
 
 vars:
-  module_path:
+  exampleAndroidPackageName:
     type: string
-    description: The path to the flutter module
-
+    description: The Android package name (e.g. com.example.flutterembedding)
+  exampleAndroidPackageNameFolder:
+    type: string
+    description: The Android package name as folder path (e.g. com/example/flutterembedding)
   exampleAndroidAppName:
     type: string
-    description: The name of the example Android app
+    description: The display name of the example Android app
+  moduleName:
+    type: string
+    description: The name of the Flutter module plugin
+  flutterEmbeddingName:
+    type: string
+    description: The name of the Flutter embedding class
+  flutterEmbeddingPackageName:
+    type: string
+    description: The package name for the Flutter embedding
+  handoversToHostServices:
+    type: list
+    description: List of gRPC services for communication from Flutter to host
+  handoversToFlutterServices:
+    type: list
+    description: List of gRPC services for communication from host to Flutter

@@ -43,13 +43,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://krispypen.be",
-  "author": "Kris Pypen",
+  "repository": "https://github.com/krispypen/flutter_embedding",
+  "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://krispypen.be"
+    "url": "https://github.com/krispypen/flutter_embedding/issues"
   },
-  "homepage": "https://krispypen.be",
+  "homepage": "https://github.com/krispypen/flutter_embedding#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

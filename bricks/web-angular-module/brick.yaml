@@ -1,7 +1,22 @@
 name: flutter_angular_embedding
-description: Web Angular module for embedding Flutter
-repository: https://krispypen.be
+description: Generates an Angular web module for embedding Flutter web apps
+repository: https://github.com/krispypen/flutter_embedding
 version: 0.0.1
 
 vars:
-  
+  webAngularPackageName:
+    type: string
+    description: The npm package name for the Angular web module
+  flutterModuleVersion:
+    type: string
+    description: The version of the Flutter module
+  moduleName:
+    type: string
+    description: The name of the Flutter module plugin
+  handoversToHostServices:
+    type: list
+    description: List of gRPC services for communication from Flutter to host
+  handoversToFlutterServices:
+    type: list
+    description: List of gRPC services for communication from host to Flutter
+

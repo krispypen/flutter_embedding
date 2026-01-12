@@ -1,9 +1,24 @@
 name: ios_example_app
-description: ttt
-repository: https://krispypen.be
+description: Generates an iOS example app demonstrating Flutter embedding
+repository: https://github.com/krispypen/flutter_embedding
 version: 0.0.1
 
 vars:
-  module_path:
+  moduleName:
     type: string
-    description: The path to the flutter module
+    description: The name of the Flutter module plugin
+  flutterEmbeddingName:
+    type: string
+    description: The name of the Flutter embedding class
+  exampleIosBundleIdentifier:
+    type: string
+    description: The iOS bundle identifier for the example app
+  exampleIosDisplayName:
+    type: string
+    description: The display name of the example iOS app
+  handoversToHostServices:
+    type: list
+    description: List of gRPC services for communication from Flutter to host
+  handoversToFlutterServices:
+    type: list
+    description: List of gRPC services for communication from host to Flutter

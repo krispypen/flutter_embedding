@@ -13,7 +13,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.Toast
-import be.krispypen.plugins.flutter_embedding.CompletionHandler
+import {{flutterEmbeddingPackageName}}.CompletionHandler
 import {{flutterEmbeddingPackageName}}.{{flutterEmbeddingName}}
 import io.grpc.stub.StreamObserver
 import java.lang.ref.WeakReference

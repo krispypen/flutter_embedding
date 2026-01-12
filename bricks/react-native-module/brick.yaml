@@ -1,7 +1,25 @@
 name: flutter_rn_embedding
-description: React Native module for embedding Flutter
-repository: https://krispypen.be
+description: Generates a React Native module for embedding Flutter apps
+repository: https://github.com/krispypen/flutter_embedding
 version: 0.0.1
 
 vars:
-  
+  reactNativePackageName:
+    type: string
+    description: The npm package name for the React Native module
+  flutterModuleVersion:
+    type: string
+    description: The version of the Flutter module
+  moduleName:
+    type: string
+    description: The name of the Flutter module plugin
+  flutterEmbeddingName:
+    type: string
+    description: The name of the Flutter embedding class
+  handoversToHostServices:
+    type: list
+    description: List of gRPC services for communication from Flutter to host
+  handoversToFlutterServices:
+    type: list
+    description: List of gRPC services for communication from host to Flutter
+
