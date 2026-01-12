@@ -6,14 +6,6 @@ import be.krispypen.plugins.flutter_embedding.FlutterEmbedding
 import be.krispypen.plugins.flutter_embedding.FlutterEmbeddingFlutterFragment
 import be.krispypen.plugins.flutter_embedding.HandoverResponderInterface
 
-/**
- * Completion handler interface for async operations.
- * This is a local interface to avoid requiring implementors to import from flutter_embedding.
- */
-interface CompletionHandler<T> {
-    fun onSuccess(data: T?)
-    fun onFailure(e: Exception)
-}
 {{#handoversToHostServices}}
 import {{type}}Grpc
 {{/handoversToHostServices}}{{#handoversToFlutterServices}}import {{type}}Grpc.{{type}}FutureStub
@@ -32,6 +24,15 @@ import io.grpc.stub.StreamObserver
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.CompletableFuture
+
+/**
+ * Completion handler interface for async operations.
+ * This is a local interface to avoid requiring implementors to import from flutter_embedding.
+ */
+interface CompletionHandler<T> {
+    fun onSuccess(data: T?)
+    fun onFailure(e: Exception)
+}
 
 class {{flutterEmbeddingName}} {
 

@@ -1,6 +1,7 @@
 package {{flutterEmbeddingPackageName}}
 
 import io.grpc.*
+import {{flutterEmbeddingPackageName}}.CompletionHandler
 
 /**
  * Custom gRPC Channel implementation that converts requests to binary format,
@@ -75,7 +76,7 @@ class FlutterGRPCChannel(
                 val data = mapOf("request" to requestBytes, "service" to serviceName, "method" to methodName)
 
                 // Invoke the handler and wait for response
-                val completionHandler = object : be.krispypen.plugins.flutter_embedding.CompletionHandler<Any?> {
+                val completionHandler = object : CompletionHandler<Any?> {
                     override fun onSuccess(result: Any?) {
                         if (result != null) {
                             try {
