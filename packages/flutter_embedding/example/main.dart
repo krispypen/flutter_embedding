@@ -1,1 +1,1 @@
-../../flutter_module/lib/main.dart
+../../example_module/lib/main.dart

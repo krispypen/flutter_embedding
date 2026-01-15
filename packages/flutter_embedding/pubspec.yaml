@@ -1,6 +1,6 @@
 name: flutter_embedding
 description: This project helps embedding into a native ios or android app.
-version: 0.0.1-beta.4
+version: 0.0.1-beta.5
 
 homepage: https://github.com/krispypen/flutter_embedding
 repository: https://github.com/krispypen/flutter_embedding/tree/main/packages/flutter_embedding
