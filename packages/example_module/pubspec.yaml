@@ -33,21 +33,27 @@ flutter_embedding:
   package_name: com.example.counter_module
   module_name: counter_embedding
   name: CounterEmbedding
-  handovers_to_host_proto_paths:
-    - handovers_to_host_service.proto
-  handovers_to_flutter_proto_paths:
-    - handovers_to_flutter_service.proto
-  start_params_message: StartParams
-  example_ios_patch_brick:
-    path: embedding/example_patch_bricks/ios
-  example_android_patch_brick:
-    path: embedding/example_patch_bricks/android
-  example_react_native_patch_brick:
-    path: embedding/example_patch_bricks/react-native
-  example_web_react_patch_brick:
-    path: embedding/example_patch_bricks/web-react
-  example_web_angular_patch_brick:
-    path: embedding/example_patch_bricks/web-angular
+  handovers:
+    to_host:
+      - handovers_to_host_service.proto
+    to_flutter:
+      - handovers_to_flutter_service.proto
+    start_params: StartParams
+  ios:
+    example:
+      brick_patch: embedding/example_patch_bricks/ios
+  android:
+    example:
+      brick_patch: embedding/example_patch_bricks/android
+  react_native:
+    example:
+      brick_patch: embedding/example_patch_bricks/react-native
+  web_react:
+    example:
+      brick_patch: embedding/example_patch_bricks/web-react
+  web_angular:
+    example:
+      brick_patch: embedding/example_patch_bricks/web-angular
   
 
 flutter:

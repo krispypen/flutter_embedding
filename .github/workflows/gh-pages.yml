@@ -1,0 +1,122 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install protoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
+      - name: Install FVM
+        run: |
+          dart pub global activate fvm
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
+      - name: Setup Flutter with FVM
+        run: |
+          fvm install 3.35.4
+          fvm global 3.35.4
+
+      - name: Add Flutter to PATH
+        run: |
+          echo "$HOME/fvm/default/bin" >> $GITHUB_PATH
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
+      - name: Install Dart protoc plugin
+        run: |
+          fvm dart pub global activate protoc_plugin 20.0.1
+
+      - name: Install npm protobuf tools
+        run: |
+          npm install -g @protobuf-ts/plugin
+
+      - name: Get Flutter dependencies
+        working-directory: packages/example_module
+        run: fvm flutter pub get
+
+      - name: Generate Web Angular module
+        working-directory: packages/example_module
+        run: fvm dart run flutter_embedding_cli:generate web-angular
+
+      - name: Generate Web React module
+        working-directory: packages/example_module
+        run: fvm dart run flutter_embedding_cli:generate web-react
+
+      - name: Build Angular example app
+        working-directory: packages/example_module/embedding/web-angular/example
+        run: |
+          # Build with correct base-href - the module now uses document.baseURI 
+          # which automatically respects the <base href="..."> tag
+          npx ng build --base-href /flutter_embedding/angular/
+
+      - name: Build React example app
+        working-directory: packages/example_module/embedding/web-react/example
+        run: |
+          # Build with correct PUBLIC_URL - the module now uses document.baseURI
+          # which automatically respects the deployment path
+          PUBLIC_URL=/flutter_embedding/react npx react-scripts build
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p _site/angular
+          mkdir -p _site/react
+          
+          # Create .nojekyll to prevent Jekyll processing
+          touch _site/.nojekyll
+          
+          # Copy landing page
+          cp gh-pages/index.html _site/
+          
+          # Copy Angular build output
+          cp -r packages/example_module/embedding/web-angular/example/dist/web-angular-example-app/browser/* _site/angular/
+          
+          # Copy React build output
+          cp -r packages/example_module/embedding/web-react/example/build/* _site/react/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,7 +1,34 @@
 //{{=<% %>=}}
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import type { ClientStreamingCall, DuplexStreamingCall, MethodInfo, RpcOptions, RpcTransport, ServerStreamingCall, UnaryCall } from "@protobuf-ts/runtime-rpc";
 import { FlutterEmbeddingState } from './types';
+
+/**
+ * Configuration options for the Flutter Embedding module.
+ */
+export interface FlutterEmbeddingConfig {
+    /**
+     * Base path where Flutter assets are located.
+     * Defaults to using document.baseURI + 'flutter/' which respects the HTML <base href="..."> tag.
+     * Examples:
+     * - '/flutter/' for root deployment
+     * - '/my-app/flutter/' for subdirectory deployment
+     * - 'flutter/' to use relative path from document.baseURI
+     */
+    basePath?: string;
+}
+
+/**
+ * Injection token for Flutter Embedding configuration.
+ * Use this to provide custom configuration when importing the module.
+ * 
+ * @example
+ * // In your app.module.ts or app.config.ts:
+ * providers: [
+ *   { provide: FLUTTER_EMBEDDING_CONFIG, useValue: { basePath: '/my-app/flutter/' } }
+ * ]
+ */
+export const FLUTTER_EMBEDDING_CONFIG = new InjectionToken<FlutterEmbeddingConfig>('FLUTTER_EMBEDDING_CONFIG');
 
 export class MyRpcTransport implements RpcTransport {
     state: FlutterEmbeddingState;
@@ -75,18 +102,37 @@ declare let _flutter: any; // flutter.js is loaded in index.html
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let flutterApp: any | null = null;
 
+/**
+ * Resolves the Flutter base path from configuration or defaults to document.baseURI + 'flutter/'.
+ * This ensures Flutter assets are found correctly regardless of deployment path.
+ */
+function resolveFlutterBasePath(basePath?: string): string {
+    if (basePath) {
+        // Ensure path ends with /
+        return basePath.endsWith('/') ? basePath : basePath + '/';
+    }
+    // Default: use document.baseURI which respects <base href="...">
+    return new URL('flutter/', document.baseURI).href;
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class FlutterEmbeddingService {
+    private basePath: string;
+
+    constructor(@Optional() @Inject(FLUTTER_EMBEDDING_CONFIG) config?: FlutterEmbeddingConfig) {
+        this.basePath = resolveFlutterBasePath(config?.basePath);
+    }
+
     async startEngine(): Promise<any> {
         if (_flutter === undefined) {
-            throw new Error('Flutter is not initialized, make sure to add <script src="%PUBLIC_URL%/flutter/flutter.js" defer></script> to your index.html file');
+            throw new Error('Flutter is not initialized, make sure to add <script src="flutter/flutter.js" defer></script> to your index.html file');
         }
         if (flutterApp) return flutterApp;
         // with webassembly
         /*const engineInitializer = await new Promise<any>((resolve) => {
-          _flutter.buildConfig = { "builds": [{ "compileTarget": "dart2wasm", "renderer": "skwasm", "mainWasmPath": window.location.origin + "/flutter/main.dart.wasm", "jsSupportRuntimePath": window.location.origin + "/flutter/main.dart.mjs" }, { "compileTarget": "dart2js", "renderer": "canvaskit", "mainJsPath": window.location.origin + "/flutter/main.dart.js" }] };
+          _flutter.buildConfig = { "builds": [{ "compileTarget": "dart2wasm", "renderer": "skwasm", "mainWasmPath": this.basePath + "main.dart.wasm", "jsSupportRuntimePath": this.basePath + "main.dart.mjs" }, { "compileTarget": "dart2js", "renderer": "canvaskit", "mainJsPath": this.basePath + "main.dart.js" }] };
           _flutter.loader.load({
             onEntrypointLoaded: resolve,
           })
@@ -95,12 +141,12 @@ export class FlutterEmbeddingService {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const engineInitializer = await new Promise<any>((resolve) => {
             _flutter.loader.loadEntrypoint({
-                entrypointUrl: window.location.origin + '/flutter/main.dart.js',
+                entrypointUrl: this.basePath + 'main.dart.js',
                 onEntrypointLoaded: resolve,
             })
         })
         const appRunner = await engineInitializer?.initializeEngine({
-            assetBase: window.location.origin + '/flutter/',
+            assetBase: this.basePath,
             multiViewEnabled: true,
         })
 
@@ -114,9 +160,25 @@ export class FlutterEmbeddingService {
 }
 
 export const FlutterEmbedding = {
-    startEngine: async () => {
-        const service = new FlutterEmbeddingService();
-        return service.startEngine();
+    startEngine: async (config?: FlutterEmbeddingConfig) => {
+        const basePath = resolveFlutterBasePath(config?.basePath);
+        if (_flutter === undefined) {
+            throw new Error('Flutter is not initialized, make sure to add <script src="flutter/flutter.js" defer></script> to your index.html file');
+        }
+        if (flutterApp) return flutterApp;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const engineInitializer = await new Promise<any>((resolve) => {
+            _flutter.loader.loadEntrypoint({
+                entrypointUrl: basePath + 'main.dart.js',
+                onEntrypointLoaded: resolve,
+            })
+        })
+        const appRunner = await engineInitializer?.initializeEngine({
+            assetBase: basePath,
+            multiViewEnabled: true,
+        })
+        flutterApp = await appRunner.runApp();
+        return flutterApp;
     }
 }
 

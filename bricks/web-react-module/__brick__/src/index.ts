@@ -1,4 +1,5 @@
-export { FlutterEmbedding, FlutterEmbeddingView, MyRpcTransport } from './FlutterEmbeddingView';
+export { FlutterEmbedding, FlutterEmbeddingView, MyRpcTransport, startEngine } from './FlutterEmbeddingView';
+export type { FlutterEmbeddingConfig } from './FlutterEmbeddingView';
 export type {
     FlutterEmbeddingApp,
     FlutterEmbeddingState,

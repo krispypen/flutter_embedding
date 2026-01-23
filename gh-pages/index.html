@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flutter Embedding Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b4e 100%);
+      color: #e8e6f0;
+      overflow-x: hidden;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    .glow-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .glow-orb-1 {
+      width: 500px;
+      height: 500px;
+      background: #6366f1;
+      top: -200px;
+      right: -100px;
+    }
+
+    .glow-orb-2 {
+      width: 400px;
+      height: 400px;
+      background: #06b6d4;
+      bottom: -150px;
+      left: -100px;
+    }
+
+    .container {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .flutter-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #06b6d4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: #a1a1c7;
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 60px;
+      line-height: 1.6;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(99, 102, 241, 0.15);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card p {
+      color: #8888a8;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-angular:hover {
+      border-color: rgba(221, 0, 49, 0.4);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(221, 0, 49, 0.2);
+    }
+
+    .card-react:hover {
+      border-color: rgba(97, 218, 251, 0.4);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(97, 218, 251, 0.2);
+    }
+
+    .arrow {
+      position: absolute;
+      bottom: 32px;
+      right: 32px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover .arrow {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(4px);
+    }
+
+    .arrow svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+    }
+
+    footer {
+      margin-top: 80px;
+      text-align: center;
+      color: #6b6b8a;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: #c4b5fd;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow-orb glow-orb-1"></div>
+  <div class="glow-orb glow-orb-2"></div>
+  
+  <div class="container">
+    <svg class="flutter-logo" viewBox="0 0 24 24" fill="none">
+      <path d="M14.314 0L2.3 12 6 15.7 21.684 0h-7.37zm0 11.066L7.7 17.766l3.7 3.7 10.284-10.4h-7.37z" fill="#54C5F8"/>
+      <path d="M7.7 17.766l3.7 3.7 2.897-2.897-6.6-6.6z" fill="#01579B"/>
+      <path d="L7.7 17.766l6.6-6.6L7.7 17.766z" fill="#29B6F6"/>
+      <path d="M7.7 17.766L11.4 21.466l3.6-3.6H7.7z" fill="#01579B"/>
+    </svg>
+    
+    <h1>Flutter Embedding Demo</h1>
+    <p class="subtitle">
+      Embed Flutter modules seamlessly into your web applications. 
+      Choose a framework to see the demo in action.
+    </p>
+    
+    <div class="cards">
+      <a href="./angular/" class="card card-angular">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031"/>
+          <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F"/>
+          <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z" fill="white"/>
+        </svg>
+        <h2>Angular Demo</h2>
+        <p>Experience Flutter embedded in an Angular application with Material Design components.</p>
+        <div class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+      
+      <a href="./react/" class="card card-react">
+        <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="2.5" fill="#61DAFB"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(60 12 12)"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(120 12 12)"/>
+        </svg>
+        <h2>React Demo</h2>
+        <p>See Flutter running inside a React application with MUI components and hooks.</p>
+        <div class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </a>
+    </div>
+    
+    <footer>
+      <p>
+        Built with <a href="https://github.com/krispypen/flutter_embedding" target="_blank" rel="noopener">Flutter Embedding</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

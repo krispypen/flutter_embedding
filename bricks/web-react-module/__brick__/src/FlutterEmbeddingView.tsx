@@ -75,19 +75,63 @@ export class MyRpcTransport implements RpcTransport {
     }
 }
 
+/**
+ * Configuration options for the Flutter Embedding module.
+ */
+export interface FlutterEmbeddingConfig {
+    /**
+     * Base path where Flutter assets are located.
+     * Defaults to using document.baseURI + 'flutter/' which respects the HTML <base> tag
+     * and works correctly with subdirectory deployments.
+     * Examples:
+     * - '/flutter/' for root deployment
+     * - '/my-app/flutter/' for subdirectory deployment
+     * - 'flutter/' to use relative path from document.baseURI
+     */
+    basePath?: string;
+}
+
+/**
+ * Resolves the Flutter base path from configuration or defaults to document.baseURI + 'flutter/'.
+ * This ensures Flutter assets are found correctly regardless of deployment path.
+ */
+function resolveFlutterBasePath(basePath?: string): string {
+    if (basePath) {
+        // Ensure path ends with /
+        return basePath.endsWith('/') ? basePath : basePath + '/';
+    }
+    // Default: use document.baseURI which respects <base href="..."> or PUBLIC_URL
+    return new URL('flutter/', document.baseURI).href;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let _flutter: any; // flutter.js is loaded in index.html
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let flutterApp: any | null = null;
 
-export async function startEngine() {
+/**
+ * Starts the Flutter engine with optional configuration.
+ * @param config Optional configuration object with basePath for Flutter assets
+ * @returns The Flutter app instance
+ * 
+ * @example
+ * // Default: uses document.baseURI + 'flutter/'
+ * await startEngine();
+ * 
+ * @example
+ * // Custom base path for subdirectory deployment
+ * await startEngine({ basePath: '/my-app/flutter/' });
+ */
+export async function startEngine(config?: FlutterEmbeddingConfig) {
+    const basePath = resolveFlutterBasePath(config?.basePath);
+    
     if (_flutter === undefined) {
         throw new Error('Flutter is not initialized, make sure to add <script src="%PUBLIC_URL%/flutter/flutter.js" defer></script> to your index.html file');
     }
     if (flutterApp) return flutterApp;
     // with webassembly
     /*const engineInitializer = await new Promise<any>((resolve) => {
-      _flutter.buildConfig = { "builds": [{ "compileTarget": "dart2wasm", "renderer": "skwasm", "mainWasmPath": window.location.origin + "/flutter/main.dart.wasm", "jsSupportRuntimePath": window.location.origin + "/flutter/main.dart.mjs" }, { "compileTarget": "dart2js", "renderer": "canvaskit", "mainJsPath": window.location.origin + "/flutter/main.dart.js" }] };
+      _flutter.buildConfig = { "builds": [{ "compileTarget": "dart2wasm", "renderer": "skwasm", "mainWasmPath": basePath + "main.dart.wasm", "jsSupportRuntimePath": basePath + "main.dart.mjs" }, { "compileTarget": "dart2js", "renderer": "canvaskit", "mainJsPath": basePath + "main.dart.js" }] };
       _flutter.loader.load({
         onEntrypointLoaded: resolve,
       })
@@ -96,12 +140,12 @@ export async function startEngine() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const engineInitializer = await new Promise<any>((resolve) => {
         _flutter.loader.loadEntrypoint({
-            entrypointUrl: window.location.origin + '/flutter/main.dart.js',
+            entrypointUrl: basePath + 'main.dart.js',
             onEntrypointLoaded: resolve,
         })
     })
     const appRunner = await engineInitializer?.initializeEngine({
-        assetBase: window.location.origin + '/flutter/',
+        assetBase: basePath,
         multiViewEnabled: true,
     })
 

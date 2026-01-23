@@ -1,4 +1,5 @@
-export { FlutterEmbedding, FlutterEmbeddingService, MyRpcTransport } from './flutter-embedding.service';
+export { FlutterEmbedding, FlutterEmbeddingService, MyRpcTransport, FLUTTER_EMBEDDING_CONFIG } from './flutter-embedding.service';
+export type { FlutterEmbeddingConfig } from './flutter-embedding.service';
 export { FlutterEmbeddingViewComponent } from './flutter-embedding-view.component';
 export { FlutterEmbeddingModule } from './flutter-embedding.module';
 export type {
