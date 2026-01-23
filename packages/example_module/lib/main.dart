@@ -1,7 +1,5 @@
 import 'package:counter_embedding/counter_embedding.dart' hide ThemeMode;
 import 'package:flutter/material.dart';
-import 'package:flutter_embedding/flutter_embedding.dart';
-import 'package:grpc/grpc.dart' hide ConnectionState;
 
 void main(List<String> args) {
   FlutterError.onError = (FlutterErrorDetails details) {

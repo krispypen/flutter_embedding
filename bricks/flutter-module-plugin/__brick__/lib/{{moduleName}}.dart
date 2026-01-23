@@ -11,7 +11,8 @@ export 'handovers/{{snake_name}}.pbgrpc.dart';
 import 'handovers/{{snake_name}}.pbgrpc.dart';
 {{/handoversToFlutterServices}}
 
-export 'package:grpc/grpc.dart';
+export 'package:grpc/grpc.dart' hide ConnectionState;
+export 'package:flutter_embedding/flutter_embedding.dart';
 
 import '{{moduleName}}_platform_interface.dart';
 
