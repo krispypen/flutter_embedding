@@ -68,11 +68,11 @@ jobs:
 
       - name: Generate Web Angular module
         working-directory: packages/example_module
-        run: fvm dart run flutter_embedding_cli:generate web-angular
+        run: fvm dart run flutter_embedding_cli:generate web-angular --example
 
       - name: Generate Web React module
         working-directory: packages/example_module
-        run: fvm dart run flutter_embedding_cli:generate web-react
+        run: fvm dart run flutter_embedding_cli:generate web-react --example
 
       - name: Build Angular example app
         working-directory: packages/example_module/embedding/web-angular/example

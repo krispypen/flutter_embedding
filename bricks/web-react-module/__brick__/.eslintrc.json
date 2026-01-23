@@ -36,6 +36,7 @@
     // 6. Specifies files to lint
     "ignorePatterns": [
         "dist/",
-        "node_modules/"
+        "node_modules/",
+        "src/handovers/**"
     ]
 }
