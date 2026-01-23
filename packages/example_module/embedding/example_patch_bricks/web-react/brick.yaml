@@ -1,0 +1,7 @@
+name: web_react_example_app
+description: Web React example for embedding Flutter
+repository: https://krispypen.be
+version: 0.0.1
+
+vars:
+  

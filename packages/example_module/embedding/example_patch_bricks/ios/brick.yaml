@@ -1,0 +1,9 @@
+name: ios_example_app
+description: ttt
+repository: https://krispypen.be
+version: 0.0.1
+
+vars:
+  module_path:
+    type: string
+    description: The path to the flutter module
