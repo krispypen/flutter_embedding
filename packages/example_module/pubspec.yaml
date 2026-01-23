@@ -16,8 +16,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   grpc: ^4.0.0
   protobuf: ^2.0.1
-  counter_embedding:
-    path: embedding/counter_embedding
 
 dev_dependencies:
   flutter_test:

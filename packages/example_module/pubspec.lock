@@ -73,13 +73,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
-  counter_embedding:
-    dependency: "direct main"
-    description:
-      path: "embedding/counter_embedding"
-      relative: true
-    source: path
-    version: "0.0.1"
   crypto:
     dependency: transitive
     description:
@@ -125,20 +118,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_embedding:
-    dependency: transitive
-    description:
-      path: "../flutter_embedding"
-      relative: true
-    source: path
-    version: "0.0.1-beta.4"
   flutter_embedding_cli:
     dependency: "direct dev"
     description:
       path: "../flutter_embedding_cli"
       relative: true
     source: path
-    version: "0.0.1-beta.4"
+    version: "0.0.1-beta.5"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -320,14 +306,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
-  plugin_platform_interface:
-    dependency: transitive
-    description:
-      name: plugin_platform_interface
-      sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.8"
   pool:
     dependency: transitive
     description:
@@ -503,4 +481,4 @@ packages:
     version: "3.1.3"
 sdks:
   dart: ">=3.9.2 <4.0.0"
-  flutter: ">=3.27.0"
+  flutter: ">=3.18.0-18.0.pre.54"
