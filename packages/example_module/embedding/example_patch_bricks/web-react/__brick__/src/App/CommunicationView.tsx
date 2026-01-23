@@ -143,7 +143,7 @@ function CommunicationView({
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
-      <Typography variant="h6">Communication Settings</Typography>
+      <Typography variant="h6">Communication</Typography>
 
       {/* Environment Selection */}
       <FormControl fullWidth size="small">

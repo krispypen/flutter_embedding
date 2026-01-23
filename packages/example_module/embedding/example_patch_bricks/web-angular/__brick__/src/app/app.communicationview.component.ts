@@ -40,7 +40,7 @@ const ENVIRONMENTS = ['MOCK', 'TST'];
   ],
   template: `
     <div style="display: flex; flex-direction: column; gap: 16px; padding: 16px;">
-      <h2>Communication Settings</h2>
+      <h2>Communication</h2>
 
       <!-- Environment Selection -->
       <mat-form-field style="width: 100%;">
