@@ -79,6 +79,7 @@ jobs:
         run: |
           # Build with correct base-href - the module now uses document.baseURI 
           # which automatically respects the <base href="..."> tag
+          npm install
           npx ng build --base-href /flutter_embedding/angular/
 
       - name: Build React example app
@@ -86,6 +87,7 @@ jobs:
         run: |
           # Build with correct PUBLIC_URL - the module now uses document.baseURI
           # which automatically respects the deployment path
+          npm install
           PUBLIC_URL=/flutter_embedding/react npx react-scripts build
 
       - name: Prepare deployment directory

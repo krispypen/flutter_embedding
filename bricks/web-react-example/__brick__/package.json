@@ -4,7 +4,7 @@
   "scripts": {
     "prestart": "rimraf node_modules/.cache/",
     "start": "react-scripts start",
-    "prebuild": "cd ../../flutter_module && fvm flutter build web --base-href /flutter/ --output=../examples/react-web/public/flutter",
+    "build:flutter": "cd ../../../ && fvm flutter build web --base-href /flutter/ --output=embedding/web-react/example/public/flutter",
     "build": "react-scripts build",
     "test": "react-scripts test"
   },
