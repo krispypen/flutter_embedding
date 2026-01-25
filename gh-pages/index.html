@@ -13,11 +13,14 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Flutter Embedding CLI - Transform your Flutter app into an embeddable module for iOS, Android, React Native, React Web, and Angular with type-safe Protocol Buffer communication.">
+    <meta name="description"
+        content="Flutter Embedding CLI - Transform your Flutter app into an embeddable module for iOS, Android, React Native, React Web, and Angular with type-safe Protocol Buffer communication.">
     <title>Flutter Embedding CLI - Embed Flutter Anywhere</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -191,8 +194,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         h1 {
@@ -605,9 +615,17 @@
             border-radius: 50%;
         }
 
-        .code-dot-red { background: #ff5f56; }
-        .code-dot-yellow { background: #ffbd2e; }
-        .code-dot-green { background: #27c93f; }
+        .code-dot-red {
+            background: #ff5f56;
+        }
+
+        .code-dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .code-dot-green {
+            background: #27c93f;
+        }
 
         .code-title {
             margin-left: 12px;
@@ -626,11 +644,25 @@
             margin: 0;
         }
 
-        .code-comment { color: #6b6b8a; }
-        .code-keyword { color: #c792ea; }
-        .code-string { color: #c3e88d; }
-        .code-command { color: #82aaff; }
-        .code-flag { color: #ffcb6b; }
+        .code-comment {
+            color: #6b6b8a;
+        }
+
+        .code-keyword {
+            color: #c792ea;
+        }
+
+        .code-string {
+            color: #c3e88d;
+        }
+
+        .code-command {
+            color: #82aaff;
+        }
+
+        .code-flag {
+            color: #ffcb6b;
+        }
 
         /* Comparison Table */
         .comparison {
@@ -739,7 +771,9 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .nav-links, .nav-cta {
+
+            .nav-links,
+            .nav-cta {
                 display: none;
             }
 
@@ -778,13 +812,14 @@
         <div class="container">
             <a href="#" class="nav-logo">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#39cefd"/>
-                    <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#03569b"/>
+                    <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#39cefd" />
+                    <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#03569b" />
                 </svg>
                 <span>Flutter Embedding</span>
             </a>
             <ul class="nav-links">
                 <li><a href="#demo">Demo</a></li>
+                <li><a href="#use-case">Use Case</a></li>
                 <li><a href="#why">Why</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#platforms">Platforms</a></li>
@@ -793,7 +828,8 @@
             <div class="nav-cta">
                 <a href="https://github.com/krispypen/flutter_embedding" target="_blank" class="btn btn-secondary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                     </svg>
                     GitHub
                 </a>
@@ -803,7 +839,7 @@
             </div>
             <button class="mobile-menu-btn">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                    <path d="M3 12h18M3 6h18M3 18h18" />
                 </svg>
             </button>
         </div>
@@ -812,74 +848,85 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <svg class="flutter-logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64" height="64">
+            <svg class="flutter-logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="64" height="64">
                 <g transform="matrix(.061615 0 0 .061615 -1.430818 -1.2754)">
                     <defs>
-                        <path id="A" d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"/>
+                        <path id="A"
+                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
                     </defs>
                     <clipPath id="B">
-                        <use xlink:href="#A"/>
+                        <use xlink:href="#A" />
                     </clipPath>
                     <g clip-path="url(#B)">
-                        <path d="M360.3 779.7L520 939.5 959.4 500H639.9z" fill="#39cefd"/>
+                        <path d="M360.3 779.7L520 939.5 959.4 500H639.9z" fill="#39cefd" />
                     </g>
                     <defs>
-                        <path id="C" d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"/>
+                        <path id="C"
+                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
                     </defs>
                     <clipPath id="D">
-                        <use xlink:href="#C"/>
+                        <use xlink:href="#C" />
                     </clipPath>
-                    <path clip-path="url(#D)" d="M639.9 20.7h319.5l-679 679.1L120.6 540z" fill="#39cefd"/>
+                    <path clip-path="url(#D)" d="M639.9 20.7h319.5l-679 679.1L120.6 540z" fill="#39cefd" />
                     <defs>
-                        <path id="E" d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"/>
+                        <path id="E"
+                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
                     </defs>
                     <clipPath id="F">
-                        <use xlink:href="#E"/>
+                        <use xlink:href="#E" />
                     </clipPath>
-                    <path clip-path="url(#F)" d="M520 939.5l119.9 119.8h319.5L679.8 779.7z" fill="#03569b"/>
+                    <path clip-path="url(#F)" d="M520 939.5l119.9 119.8h319.5L679.8 779.7z" fill="#03569b" />
                     <defs>
-                        <path id="G" d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"/>
+                        <path id="G"
+                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
                     </defs>
                     <clipPath id="H">
-                        <use xlink:href="#G"/>
+                        <use xlink:href="#G" />
                     </clipPath>
-                    <linearGradient id="I" gradientUnits="userSpaceOnUse" x1="566.635" y1="970.339" x2="685.65" y2="851.324">
-                        <stop offset="0" stop-color="#1a237e" stop-opacity=".4"/>
-                        <stop offset="1" stop-color="#1a237e" stop-opacity="0"/>
+                    <linearGradient id="I" gradientUnits="userSpaceOnUse" x1="566.635" y1="970.339" x2="685.65"
+                        y2="851.324">
+                        <stop offset="0" stop-color="#1a237e" stop-opacity=".4" />
+                        <stop offset="1" stop-color="#1a237e" stop-opacity="0" />
                     </linearGradient>
-                    <path clip-path="url(#H)" d="M757 857.4l-77.2-77.7L520 939.5z" fill="url(#I)"/>
+                    <path clip-path="url(#H)" d="M757 857.4l-77.2-77.7L520 939.5z" fill="url(#I)" />
                     <defs>
-                        <path id="J" d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"/>
+                        <path id="J"
+                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
                     </defs>
                     <clipPath id="K">
-                        <use xlink:href="#J"/>
+                        <use xlink:href="#J" />
                     </clipPath>
                     <g clip-path="url(#K)">
-                        <path d="M360.282 779.645L520.086 619.84 679.9 779.645 520.086 939.45z" fill="#16b9fd"/>
+                        <path d="M360.282 779.645L520.086 619.84 679.9 779.645 520.086 939.45z" fill="#16b9fd" />
                     </g>
-                    <radialGradient id="L" cx="7824.659" cy="-2855.979" r="5082.889" gradientTransform="matrix(0.25,0,0,-0.25,-1812,-622.5)" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stop-color="#fff" stop-opacity=".1"/>
-                        <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+                    <radialGradient id="L" cx="7824.659" cy="-2855.979" r="5082.889"
+                        gradientTransform="matrix(0.25,0,0,-0.25,-1812,-622.5)" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stop-color="#fff" stop-opacity=".1" />
+                        <stop offset="1" stop-color="#fff" stop-opacity="0" />
                     </radialGradient>
-                    <path d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" fill="url(#L)"/>
+                    <path
+                        d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"
+                        fill="url(#L)" />
                 </g>
             </svg>
 
             <h1>Embed Flutter Anywhere</h1>
             <p class="subtitle">
-                Transform your Flutter application into an embeddable module for iOS, Android, React Native, React Web, and Angular — with type-safe Protocol Buffer communication.
+                Transform your Flutter application into an embeddable module for iOS, Android, React Native, React Web,
+                and Angular — with type-safe Protocol Buffer communication.
             </p>
 
             <div class="hero-cta">
                 <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank" class="btn btn-primary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
                     </svg>
                     Get Started
                 </a>
                 <a href="#demo" class="btn btn-secondary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 3 19 12 5 21 5 3"/>
+                        <polygon points="5 3 19 12 5 21 5 3" />
                     </svg>
                     See Demos
                 </a>
@@ -888,10 +935,11 @@
             <div class="install-command">
                 <span>$</span>
                 <code>dart pub add dev:flutter_embedding_cli</code>
-                <button onclick="navigator.clipboard.writeText('dart pub add dev:flutter_embedding_cli')" title="Copy to clipboard">
+                <button onclick="navigator.clipboard.writeText('dart pub add dev:flutter_embedding_cli')"
+                    title="Copy to clipboard">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
                     </svg>
                 </button>
             </div>
@@ -903,40 +951,123 @@
         <div class="container">
             <div class="section-header">
                 <h2>Live Demos</h2>
-                <p>Experience Flutter embedded in real web frameworks. These demos show bidirectional communication in action.</p>
+                <p>Experience Flutter embedded in real web frameworks. These demos show bidirectional communication in
+                    action.</p>
             </div>
 
             <div class="cards">
                 <a href="./angular/" class="card card-angular">
                     <svg class="card-icon" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031"/>
-                        <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F"/>
-                        <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z" fill="white"/>
+                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031" />
+                        <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F" />
+                        <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z"
+                            fill="white" />
                     </svg>
                     <h3>Angular Demo</h3>
                     <p>Flutter embedded in an Angular application with full handover communication.</p>
                     <div class="arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                     </div>
                 </a>
 
                 <a href="./react/" class="card card-react">
                     <svg class="card-icon" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="2.5" fill="#61DAFB"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(60 12 12)"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(120 12 12)"/>
+                        <circle cx="12" cy="12" r="2.5" fill="#61DAFB" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                            transform="rotate(60 12 12)" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                            transform="rotate(120 12 12)" />
                     </svg>
                     <h3>React Demo</h3>
                     <p>Flutter running inside a React application with seamless integration.</p>
                     <div class="arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
                     </div>
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Case Section -->
+    <section id="use-case">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Perfect Use Case: SDK Development</h2>
+                <p>Build your SDK once in Flutter, distribute it to clients on any platform</p>
+            </div>
+
+            <div class="why-card" style="max-width: 900px; margin: 0 auto;">
+                <h3>
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                            <line x1="12" y1="22.08" x2="12" y2="12" />
+                        </svg>
+                    </div>
+                    Building a UI-Based SDK?
+                </h3>
+                <p style="font-size: 1.1rem; margin-bottom: 24px;">
+                    Imagine you're developing an SDK with rich UI components — a payment flow, an onboarding wizard, a chat interface, or any complex user experience. Your clients are diverse: some build native iOS apps, others use Android, React Native, or web frameworks like React and Angular.
+                </p>
+                <p style="font-size: 1.1rem; margin-bottom: 24px;">
+                    <strong>Without Flutter Embedding CLI:</strong> You'd need to build and maintain separate codebases for each platform — native Swift/Kotlin, React Native bridges, web components. That's 5+ implementations to keep in sync.
+                </p>
+                <p style="font-size: 1.1rem; margin-bottom: 32px;">
+                    <strong>With Flutter Embedding CLI:</strong> Build your SDK once in Flutter, then generate ready-to-distribute packages for every platform. Your clients integrate it like any other native library — they don't even need to know it's Flutter inside.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">1</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">Codebase</div>
+                        <div style="color: #8888a8; font-size: 0.9rem;">Flutter SDK</div>
+                    </div>
+                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">5</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">Platforms</div>
+                        <div style="color: #8888a8; font-size: 0.9rem;">iOS, Android, RN, React, Angular</div>
+                    </div>
+                    <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">∞</div>
+                        <div style="font-weight: 600; margin-bottom: 4px;">Clients</div>
+                        <div style="color: #8888a8; font-size: 0.9rem;">No Flutter knowledge needed</div>
+                    </div>
+                </div>
+
+                <ul style="margin-top: 32px;">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <strong>Native-looking packages:</strong> CocoaPods for iOS, AAR for Android, npm for web — clients integrate using familiar tools
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <strong>Type-safe API:</strong> Protocol Buffers ensure your SDK's interface is consistent and validated across all platforms
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <strong>Ship faster:</strong> Fix bugs and add features once, regenerate packages, and all clients benefit simultaneously
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <strong>Pixel-perfect consistency:</strong> Your UI looks and behaves identically regardless of which platform your client uses
+                    </li>
+                </ul>
             </div>
         </div>
     </section>
@@ -954,27 +1085,36 @@
                     <h3>
                         <div class="icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                             </svg>
                         </div>
                         The Problem with Add-to-App
                     </h3>
-                    <p>Flutter's official "add-to-app" approach is notoriously complex and painful to set up. It requires:</p>
+                    <p>Flutter's official "add-to-app" approach is notoriously complex and painful to set up. It
+                        requires:</p>
                     <ul>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
                             Manual configuration of build systems
                         </li>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
                             Managing framework dependencies across platforms
                         </li>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
                             Writing boilerplate communication code
                         </li>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
                             Error-prone and time-consuming setup
                         </li>
                     </ul>
@@ -984,27 +1124,36 @@
                     <h3>
                         <div class="icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"/>
+                                <polyline points="20 6 9 17 4 12" />
                             </svg>
                         </div>
                         The Solution
                     </h3>
-                    <p>Flutter Embedding CLI eliminates this pain. With a single command, it generates production-ready modules with:</p>
+                    <p>Flutter Embedding CLI eliminates this pain. With a single command, it generates production-ready
+                        modules with:</p>
                     <ul>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
                             Pre-configured build setup and dependency management
                         </li>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
                             Type-safe communication using Protocol Buffers
                         </li>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
                             Ready-to-use example apps for immediate testing
                         </li>
                         <li>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
                             Proper packaging (CocoaPods, AAR, npm)
                         </li>
                     </ul>
@@ -1051,7 +1200,8 @@
                     </tbody>
                 </table>
                 <p style="color: #8888a8; font-size: 0.9rem; margin-top: 20px; text-align: center;">
-                    Proto files generate Dart code plus native code for all platforms: iOS (Swift), Android (Java), React Native (TypeScript), React Web (TypeScript), and Angular Web (TypeScript).
+                    Proto files generate Dart code plus native code for all platforms: iOS (Swift), Android (Java),
+                    React Native (TypeScript), React Web (TypeScript), and Angular Web (TypeScript).
                 </p>
             </div>
         </div>
@@ -1069,61 +1219,72 @@
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+                            <path
+                                d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
                         </svg>
                     </div>
                     <h3>Define Your Own API</h3>
-                    <p>Use Protocol Buffers to define your exact communication contract. Theme switching, user data, complex objects — the possibilities are endless.</p>
+                    <p>Use Protocol Buffers to define your exact communication contract. Theme switching, user data,
+                        complex objects — the possibilities are endless.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"/>
+                            <path
+                                d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" />
                         </svg>
                     </div>
                     <h3>Bidirectional Communication</h3>
-                    <p>Define services for Flutter-to-host and host-to-Flutter calls. Both directions are fully type-safe with generated code.</p>
+                    <p>Define services for Flutter-to-host and host-to-Flutter calls. Both directions are fully
+                        type-safe with generated code.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                            <polyline points="16 18 22 12 16 6" />
+                            <polyline points="8 6 2 12 8 18" />
                         </svg>
                     </div>
                     <h3>Auto-Generated Code</h3>
-                    <p>Write your proto once, get type-safe clients and services generated for Dart, Swift, Java, and TypeScript automatically.</p>
+                    <p>Write your proto once, get type-safe clients and services generated for Dart, Swift, Java, and
+                        TypeScript automatically.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                     </div>
                     <h3>Multiple Views (Web)</h3>
-                    <p>Web platforms support multiple Flutter views within the same application, each with independent communication channels.</p>
+                    <p>Web platforms support multiple Flutter views within the same application, each with independent
+                        communication channels.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
                         </svg>
                     </div>
                     <h3>Start Parameters</h3>
-                    <p>Pass structured initialization data when launching Flutter. Define your StartParams message in proto — include whatever your app needs.</p>
+                    <p>Pass structured initialization data when launching Flutter. Define your StartParams message in
+                        proto — include whatever your app needs.</p>
                 </div>
 
                 <div class="feature-card">
                     <div class="feature-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                            <path
+                                d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
                         </svg>
                     </div>
                     <h3>Ready-to-Ship Packages</h3>
-                    <p>Generates CocoaPods for iOS, AAR for Android, and npm packages for web — ready for distribution to your teams.</p>
+                    <p>Generates CocoaPods for iOS, AAR for Android, and npm packages for web — ready for distribution
+                        to your teams.</p>
                 </div>
             </div>
         </div>
@@ -1140,7 +1301,8 @@
             <div class="platforms-grid">
                 <div class="platform-card">
                     <svg class="platform-icon" viewBox="0 0 24 24" fill="#A2AAAD">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                     </svg>
                     <h3>iOS</h3>
                     <p>CocoaPods integration</p>
@@ -1148,7 +1310,8 @@
 
                 <div class="platform-card">
                     <svg class="platform-icon" viewBox="0 0 24 24" fill="#3DDC84">
-                        <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z"/>
+                        <path
+                            d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
                     </svg>
                     <h3>Android</h3>
                     <p>AAR module</p>
@@ -1156,10 +1319,12 @@
 
                 <div class="platform-card">
                     <svg class="platform-icon" viewBox="0 0 24 24" fill="#61DAFB">
-                        <circle cx="12" cy="12" r="2.5"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(60 12 12)"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(120 12 12)"/>
+                        <circle cx="12" cy="12" r="2.5" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                            transform="rotate(60 12 12)" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                            transform="rotate(120 12 12)" />
                     </svg>
                     <h3>React Native</h3>
                     <p>Cross-platform module</p>
@@ -1167,10 +1332,12 @@
 
                 <div class="platform-card">
                     <svg class="platform-icon" viewBox="0 0 24 24" fill="#61DAFB">
-                        <circle cx="12" cy="12" r="2.5"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(60 12 12)"/>
-                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" transform="rotate(120 12 12)"/>
+                        <circle cx="12" cy="12" r="2.5" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                            transform="rotate(60 12 12)" />
+                        <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                            transform="rotate(120 12 12)" />
                     </svg>
                     <h3>Web (React)</h3>
                     <p>npm package</p>
@@ -1178,9 +1345,10 @@
 
                 <div class="platform-card">
                     <svg class="platform-icon" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031"/>
-                        <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F"/>
-                        <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z" fill="white"/>
+                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031" />
+                        <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F" />
+                        <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z"
+                            fill="white" />
                     </svg>
                     <h3>Web (Angular)</h3>
                     <p>npm package</p>
@@ -1201,7 +1369,8 @@
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>Configure</h3>
-                    <p>Add flutter_embedding to your pubspec.yaml and define your proto handovers for type-safe communication.</p>
+                    <p>Add flutter_embedding to your pubspec.yaml and define your proto handovers for type-safe
+                        communication.</p>
                 </div>
 
                 <div class="step">
@@ -1245,7 +1414,8 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-top: 40px;">
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-top: 40px;">
                 <div class="code-block" style="margin: 0;">
                     <div class="code-header">
                         <div class="code-dot code-dot-red"></div>
@@ -1295,7 +1465,8 @@
             </div>
 
             <p style="text-align: center; color: #8888a8; margin-top: 32px; font-size: 0.95rem;">
-                Define your services and messages in proto files — the CLI generates type-safe code for all platforms automatically.
+                Define your services and messages in proto files — the CLI generates type-safe code for all platforms
+                automatically.
             </p>
         </div>
     </section>
@@ -1306,19 +1477,22 @@
             <div class="footer-links">
                 <a href="https://github.com/krispypen/flutter_embedding" target="_blank">
                     <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        <path
+                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                     </svg>
                     GitHub
                 </a>
                 <a href="https://pub.dev/packages/flutter_embedding" target="_blank">
                     <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v6.86l-7-3.5V8.82zm9 10.36v-6.86l7-3.5v6.86l-7 3.5z"/>
+                        <path
+                            d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v6.86l-7-3.5V8.82zm9 10.36v-6.86l7-3.5v6.86l-7 3.5z" />
                     </svg>
                     flutter_embedding
                 </a>
                 <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank">
                     <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v6.86l-7-3.5V8.82zm9 10.36v-6.86l7-3.5v6.86l-7 3.5z"/>
+                        <path
+                            d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v6.86l-7-3.5V8.82zm9 10.36v-6.86l7-3.5v6.86l-7 3.5z" />
                     </svg>
                     flutter_embedding_cli
                 </a>
