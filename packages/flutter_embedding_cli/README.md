@@ -8,6 +8,10 @@ A command-line tool for generating modules that allow embedding Flutter into nat
 
 ![Screenshot 2](https://raw.githubusercontent.com/krispypen/flutter_embedding/main/assets/demo.gif)
 
+## Live Demo
+
+[Live Demo](https://krispypen.github.io/flutter_embedding/#demo)
+
 ## Why Flutter Embedding CLI?
 
 Flutter's official "add-to-app" approach is notoriously complex and painful to set up. It requires manual configuration of build systems, managing framework dependencies across platforms, and writing boilerplate communication code — all of which is error-prone and time-consuming.

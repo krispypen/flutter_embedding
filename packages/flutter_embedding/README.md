@@ -8,7 +8,13 @@ A Flutter plugin that enables seamless embedding of Flutter modules into native 
 
 ## Screenshot
 
-![Screenshot](https://raw.githubusercontent.com/krispypen/flutter_embedding/main/assets/demo.gif)
+![Screenshot 1](https://raw.githubusercontent.com/krispypen/flutter_embedding/main/assets/counter_embedding.png)
+
+![Screenshot 2](https://raw.githubusercontent.com/krispypen/flutter_embedding/main/assets/demo.gif)
+
+## Live Demo
+
+[Live Demo](https://krispypen.github.io/flutter_embedding/#demo)
 
 ## Features
 
