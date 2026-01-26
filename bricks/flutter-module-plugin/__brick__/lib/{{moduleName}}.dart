@@ -14,21 +14,12 @@ import 'handovers/{{snake_name}}.pbgrpc.dart';
 export 'package:grpc/grpc.dart' hide ConnectionState;
 export 'package:flutter_embedding/flutter_embedding.dart';
 
-import '{{moduleName}}_platform_interface.dart';
-
-class FlutterModulePlugin {
-  Future<String?> getPlatformVersion() {
-    return FlutterModulePluginPlatform.instance.getPlatformVersion();
-  }
-}
-
 class FlutterModuleEmbeddingController extends EmbeddingController {
   Completer<{{startParamsMessage}}> startParams = Completer<{{startParamsMessage}}>();
 
   FlutterModuleEmbeddingController(super.args) {
     startConfig.future.then((startConfig) {
       if (startConfig['startParams'] != null) {
-        print('startParams: ${startConfig['startParams']}');
         startParams.complete({{startParamsMessage}}.fromBuffer(List<int>.from(startConfig['startParams'])));
       }
     });
