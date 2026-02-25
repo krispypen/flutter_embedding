@@ -307,10 +307,12 @@ The patch brick will be applied after the base example app is generated, allowin
 - For React Native: Node.js and npm
 - For Web: Node.js and npm
 - Protocol Buffers compiler (`protoc`) with language-specific plugins:
-  - Dart: `protoc-gen-dart`
-  - Java: `protoc-gen-grpc-java`
-  - Swift: `protoc-gen-swift` and `protoc-gen-grpc-swift-2`
-  - TypeScript: `protoc-gen-ts`
+
+```bash
+dart pub global activate protoc_plugin 20.0.1
+brew install protoc-gen-js protoc-gen-doc swift-protobuf grpc-swift protoc-gen-grpc-web
+npm install -g "@protobuf-ts/plugin"
+```
 
 ## License
 
