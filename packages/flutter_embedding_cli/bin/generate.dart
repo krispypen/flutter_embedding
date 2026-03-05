@@ -204,6 +204,9 @@ void main(List<String> arguments) async {
         final target = DirectoryGeneratorTarget(Directory(flutterRnEmbeddingPath));
 
         await generator.generate(target, vars: brickVars);
+        // We also build the iOS and Android modules, but they are not used in the real react native module
+        await updateSwiftHandoverServices(verbose, 'embedding/$moduleName/ios/Classes/');
+        await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         await updateReactNativeHandoverServices(verbose, '$flutterRnEmbeddingPath/src/handovers');
 
         await runCommand('fvm', ['flutter', 'build', 'aar'], verbose);
