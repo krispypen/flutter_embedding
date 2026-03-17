@@ -99,8 +99,8 @@ void main(List<String> arguments) async {
     {
       final brick = localBricks
           ? Brick.path(('${localBricksPath.path}/flutter-module-plugin'))
-          : Brick.git(
-              GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/flutter-module-plugin'));
+          : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+              path: 'bricks/flutter-module-plugin', ref: 'main'));
       final generator = await MasonGenerator.fromBrick(brick);
       final path = '${Directory.current.path}/embedding/$moduleName';
       final target = DirectoryGeneratorTarget(Directory(path));
@@ -127,7 +127,8 @@ void main(List<String> arguments) async {
           print('Generating iOS example app');
           final brick = localBricks
               ? Brick.path(('${localBricksPath.path}/ios-example'))
-              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/ios-example'));
+              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                  path: 'bricks/ios-example', ref: 'main'));
           final generator = await MasonGenerator.fromBrick(brick);
 
           final target = DirectoryGeneratorTarget(Directory(iosExamplePath));
@@ -167,8 +168,8 @@ void main(List<String> arguments) async {
           print('Generating Android example ${brickVars['exampleAndroidPackageName']}');
           final brick = localBricks
               ? Brick.path(('${localBricksPath.path}/android-example'))
-              : Brick.git(
-                  GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/android-example'));
+              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                  path: 'bricks/android-example', ref: 'main'));
           final generator = await MasonGenerator.fromBrick(brick);
 
           final target = DirectoryGeneratorTarget(Directory(androidExamplePath));
@@ -197,8 +198,8 @@ void main(List<String> arguments) async {
         brickVars['flutterRnEmbeddingPath'] = flutterRnEmbeddingPath;
         final brick = localBricks
             ? Brick.path(('${localBricksPath.path}/react-native-module'))
-            : Brick.git(
-                GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-module'));
+            : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                path: 'bricks/react-native-module', ref: 'main'));
 
         final generator = await MasonGenerator.fromBrick(brick);
         final target = DirectoryGeneratorTarget(Directory(flutterRnEmbeddingPath));
@@ -241,8 +242,8 @@ void main(List<String> arguments) async {
           print('Generating React Native example app');
           final brick = localBricks
               ? Brick.path(('${localBricksPath.path}/react-native-example'))
-              : Brick.git(
-                  GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/react-native-example'));
+              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                  path: 'bricks/react-native-example', ref: 'main'));
 
           final generator = await MasonGenerator.fromBrick(brick);
           final target = DirectoryGeneratorTarget(Directory(flutterRnEmbeddingExamplePath));
@@ -272,7 +273,8 @@ void main(List<String> arguments) async {
         final flutterREmbeddingPath = '${Directory.current.path}/embedding/web-react/module';
         final brick = localBricks
             ? Brick.path(('${localBricksPath.path}/web-react-module'))
-            : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/web-react-module'));
+            : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                path: 'bricks/web-react-module', ref: 'main'));
 
         final generator = await MasonGenerator.fromBrick(brick);
         final target = DirectoryGeneratorTarget(Directory(flutterREmbeddingPath));
@@ -305,8 +307,8 @@ void main(List<String> arguments) async {
           print('Generating Web React example app');
           final brick = localBricks
               ? Brick.path(('${localBricksPath.path}/web-react-example'))
-              : Brick.git(
-                  GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/web-react-example'));
+              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                  path: 'bricks/web-react-example', ref: 'main'));
           final generator = await MasonGenerator.fromBrick(brick);
           final target = DirectoryGeneratorTarget(Directory(flutterReactEmbeddingExamplePath));
           await generator.generate(target, vars: brickVars);
@@ -333,8 +335,8 @@ void main(List<String> arguments) async {
         final flutterAngularEmbeddingPath = '${Directory.current.path}/embedding/web-angular/module';
         final brick = localBricks
             ? Brick.path(('${localBricksPath.path}/web-angular-module'))
-            : Brick.git(
-                GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/web-angular-module'));
+            : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                path: 'bricks/web-angular-module', ref: 'main'));
 
         final generator = await MasonGenerator.fromBrick(brick);
         final target = DirectoryGeneratorTarget(Directory(flutterAngularEmbeddingPath));
@@ -366,8 +368,8 @@ void main(List<String> arguments) async {
           print('Generating Web Angular example app');
           final brick = localBricks
               ? Brick.path(('${localBricksPath.path}/web-angular-example'))
-              : Brick.git(
-                  GitPath('https://github.com/krispypen/flutter_embedding.git', path: 'bricks/web-angular-example'));
+              : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
+                  path: 'bricks/web-angular-example', ref: 'main'));
           final generator = await MasonGenerator.fromBrick(brick);
           final target = DirectoryGeneratorTarget(Directory(flutterAngularEmbeddingExamplePath));
           await generator.generate(target, vars: brickVars);
