@@ -59,6 +59,11 @@ public enum FlutterEmbeddingGRPCCore {
             let serviceName = service.fullyQualifiedService
             self.fullyQualifiedMethod = "/\(serviceName)/\(method)"
         }
+
+        public init(service: ServiceDescriptor, method: String, type: RPCType?) {
+            let serviceName = service.fullyQualifiedService
+            self.fullyQualifiedMethod = "/\(serviceName)/\(method)"
+        }
         
         public func hash(into hasher: inout Hasher) {
             hasher.combine(self.fullyQualifiedMethod)
@@ -66,6 +71,39 @@ public enum FlutterEmbeddingGRPCCore {
         
         public static func == (lhs: MethodDescriptor, rhs: MethodDescriptor) -> Bool {
             return lhs.fullyQualifiedMethod == rhs.fullyQualifiedMethod
+        }
+
+        public enum RPCType: Hashable, Sendable, CaseIterable {
+            /// An RPC with one request and one response message.
+            case unary
+            /// An RPC where the client streams request messages and the server replies with one response
+            /// message.
+            case clientStreaming
+            /// An RPC where the client sends one request message and the server replies with a stream of
+            /// response messages.
+            case serverStreaming
+            /// An RPC where client and server may send each other a stream of messages.
+            case bidirectionalStreaming
+
+            /// Whether the RPC streams request messages.
+            public var isRequestStreaming: Bool {
+                switch self {
+                case .clientStreaming, .bidirectionalStreaming:
+                    return true
+                case .unary, .serverStreaming:
+                    return false
+                }
+            }
+
+            /// Whether the RPC streams response messages.
+            public var isResponseStreaming: Bool {
+                switch self {
+                case .serverStreaming, .bidirectionalStreaming:
+                    return true
+                case .unary, .clientStreaming:
+                    return false
+                }
+            }
         }
     }
     
