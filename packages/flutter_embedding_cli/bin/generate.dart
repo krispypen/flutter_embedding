@@ -108,7 +108,9 @@ void main(List<String> arguments) async {
       print('Generated Flutter module plugin $moduleName in: $path');
 
       await updateDartHandoverServices(verbose, 'embedding/$moduleName/lib/handovers');
-      await runCommand('fvm', ['flutter', 'pub', 'add', '$moduleName:{path: embedding/$moduleName}'], verbose);
+      if (!_hasDependency(moduleName)) {
+        await runCommand('fvm', ['flutter', 'pub', 'add', '$moduleName:{path: embedding/$moduleName}'], verbose);
+      }
     }
     switch (results.command?.name) {
       case 'ios':
@@ -464,6 +466,12 @@ String getFlutterModuleVersion() {
   final pubspec = File('pubspec.yaml');
   final flutterModuleVersion = loadYaml(pubspec.readAsStringSync())['version'];
   return flutterModuleVersion.toString();
+}
+
+bool _hasDependency(String name) {
+  final pubspec = File('pubspec.yaml');
+  final dependencies = loadYaml(pubspec.readAsStringSync())['dependencies'] as YamlMap?;
+  return dependencies != null && dependencies.containsKey(name);
 }
 
 String _getFlutterBaseModuleName() {
