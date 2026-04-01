@@ -9,7 +9,6 @@ import UIKit
 import flutter_embedding
 import {{moduleName}}
 
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 class ExampleHandoversToHostService: HandoversToHostService.SimpleServiceProtocol {
     
     var increment: Int = 1
@@ -70,10 +69,7 @@ class CommunicationView: UIViewController {
     private var currentIncrement = 1
     
     let handoversToHostService: ExampleHandoversToHostService? = {
-        if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
             return ExampleHandoversToHostService()
-        }
-        return nil
     }()
     
     // UI Elements
@@ -96,9 +92,7 @@ class CommunicationView: UIViewController {
     
     weak var contentViewController: ContentView? {
         didSet {
-            if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
                 handoversToHostService?.contentViewController = contentViewController
-            }
         }
     }
     
@@ -278,9 +272,8 @@ class CommunicationView: UIViewController {
     }
     
     func startEngine(completion: @escaping (Bool, Error?) -> Void) {
-        if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
             guard let handoversToHostService = handoversToHostService else {
-                let error = NSError(domain: "FlutterEmbedding", code: -1, userInfo: [NSLocalizedDescriptionKey: "iOS 18.0 or later is required"])
+                let error = NSError(domain: "FlutterEmbedding", code: -1, userInfo: [NSLocalizedDescriptionKey: "handoversToHostService not found"])
                 completion(false, error)
                 return
             }
@@ -295,10 +288,6 @@ class CommunicationView: UIViewController {
                     completion(false, error)
                 }
             }
-        } else {
-            let error = NSError(domain: "FlutterEmbedding", code: -1, userInfo: [NSLocalizedDescriptionKey: "iOS 18.0 or later is required"])
-            completion(false, error)
-        }
     }
 }
 

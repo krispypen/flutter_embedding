@@ -34,7 +34,6 @@ public final class {{flutterEmbeddingName}} {
         return self.channel!
     }
     
-    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
     public func startEngine(
         startParams: {{startParamsMessage}},
         {{#handoversToHostServices}}
@@ -103,7 +102,6 @@ public final class {{flutterEmbeddingName}} {
 }
 
 /// FlutterEmbeddingGRPCCore Transport that uses invokeHandover directly on {{flutterEmbeddingName}}
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 public struct {{flutterEmbeddingName}}Transport: FlutterEmbeddingGRPCCore.ClientTransport {
     private let flutterModuleEmbedding: {{flutterEmbeddingName}}
     
@@ -117,7 +115,6 @@ public struct {{flutterEmbeddingName}}Transport: FlutterEmbeddingGRPCCore.Client
 }
 
 /// Stream implementation that routes calls through {{flutterEmbeddingName}}.invokeHandover
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 public struct FlutterEmbeddingGRPCStream: FlutterEmbeddingGRPCCore.ClientTransportStream {
     private let flutterModuleEmbedding: {{flutterEmbeddingName}}
     
@@ -215,7 +212,6 @@ public struct FlutterEmbeddingGRPCStream: FlutterEmbeddingGRPCCore.ClientTranspo
 
 extension {{flutterEmbeddingName}} {
     {{#handoversToFlutterServices}}
-    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
     public func {{name}}() -> {{type}}.Client<{{flutterEmbeddingName}}Transport> {
         let transport = {{flutterEmbeddingName}}Transport(flutterModuleEmbedding: self)
         let client = FlutterEmbeddingGRPCCore.GRPCClient(transport: transport)
@@ -226,7 +222,6 @@ extension {{flutterEmbeddingName}} {
 
 
 
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 private class GRPCHandoverResponder: HandoverResponderProtocol {
     private var methodHandlers: [String: MethodHandler] = [:]
     
@@ -314,7 +309,6 @@ private class GRPCHandoverResponder: HandoverResponderProtocol {
 
 
 // Fake server transport for router (not actually used for transport)
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 private struct FakeServerTransport: FlutterEmbeddingGRPCCore.ServerTransport {
     typealias Bytes = Data
     

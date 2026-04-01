@@ -168,8 +168,10 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
   final files = Directory(outputPath).listSync(recursive: true).where((file) => file.path.endsWith('.swift')).toList();
   for (final file in files) {
     final content = File(file.path).readAsStringSync();
-    final newContent =
-        content.replaceAll('import FlutterEmbeddingProtobuf', '').replaceAll('import FlutterEmbeddingGRPCCore', '');
+    final newContent = content
+        .replaceAll('import FlutterEmbeddingProtobuf', '')
+        .replaceAll('import FlutterEmbeddingGRPCCore', '')
+        .replaceAll('iOS 18.0', 'iOS 10.0');
     File(file.path).writeAsStringSync(newContent);
   }
 }

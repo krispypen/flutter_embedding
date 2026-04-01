@@ -7,7 +7,6 @@ import Foundation
 import Flutter
 
 /// FlutterEmbeddingGRPCCore Transport that proxies all calls through the embeddingchannel
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 public struct EmbeddingChannelGRPCTransport: FlutterEmbeddingGRPCCore.ClientTransport {
     private let embeddingChannel: EmbeddingChannel
     
@@ -21,7 +20,6 @@ public struct EmbeddingChannelGRPCTransport: FlutterEmbeddingGRPCCore.ClientTran
 }
 
 /// Stream implementation that routes calls through embeddingchannel
-@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 public struct EmbeddingChannelGRPCStream: FlutterEmbeddingGRPCCore.ClientTransportStream {
     private let embeddingChannel: EmbeddingChannel
     
