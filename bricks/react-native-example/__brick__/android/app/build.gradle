@@ -82,8 +82,8 @@ android {
         applicationId "com.flutterrnembeddingexample"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode project.hasProperty('projVersionCode') ? project.property('projVersionCode') as Integer : 1
+        versionName project.hasProperty('projVersionName') ? project.property('projVersionName') : "1.0"
     }
     signingConfigs {
         debug {
