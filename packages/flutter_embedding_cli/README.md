@@ -310,7 +310,7 @@ The patch brick will be applied after the base example app is generated, allowin
 
 ```bash
 dart pub global activate protoc_plugin 20.0.1
-brew install protoc-gen-js protoc-gen-doc swift-protobuf grpc-swift protoc-gen-grpc-web
+brew install protoc-gen-js protoc-gen-doc swift-protobuf grpc-swift protoc-gen-grpc-web protoc-gen-grpc-java
 npm install -g "@protobuf-ts/plugin"
 ```
 

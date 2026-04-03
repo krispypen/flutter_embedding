@@ -92,6 +92,10 @@ void main(List<String> arguments) async {
       'webAngularPackageName': webAngularPackageName,
       'webReactPackageName': webReactPackageName,
       'reactNativePackageName': reactNativePackageName,
+      'exampleReactNativePackageName': getExampleReactNativePackageName(),
+      'exampleReactNativePackageNameFolder': getExampleReactNativePackageName()?.replaceAll('.', '/'),
+      'exampleReactNativeAppName': getExampleReactNativeAppName(),
+      'exampleReactNativeBundleIdentifier': getExampleReactNativeBundleIdentifier(),
       'flutterEmbeddingPackageName': _getFlutterEmbeddingPackageName(),
       'flutterEmbeddingPackageNameFolder': _getFlutterEmbeddingPackageName().replaceAll('.', '/'),
     };
@@ -258,6 +262,42 @@ void main(List<String> arguments) async {
             final exampleReactNativePatchTarget = DirectoryGeneratorTarget(Directory(flutterRnEmbeddingExamplePath));
             await exampleReactNativePatchGenerator.generate(exampleReactNativePatchTarget, vars: brickVars);
           }
+
+          final exampleRnPackageName = brickVars['exampleReactNativePackageName'];
+          final exampleRnPackageNameFolder = brickVars['exampleReactNativePackageNameFolder'];
+          final exampleRnAppName = brickVars['exampleReactNativeAppName'];
+          final exampleRnBundleIdentifier = brickVars['exampleReactNativeBundleIdentifier'];
+
+          final androidAppPath = '$flutterRnEmbeddingExamplePath/android/app';
+          final appBuildGradle = File('$androidAppPath/build.gradle');
+          appBuildGradle.writeAsStringSync(appBuildGradle
+              .readAsStringSync()
+              .replaceAll('com.flutterrnembeddingexample', exampleRnPackageName));
+
+          final stringsXml = File('$androidAppPath/src/main/res/values/strings.xml');
+          stringsXml.writeAsStringSync(stringsXml
+              .readAsStringSync()
+              .replaceAll('FlutterRNEmbeddingExample', exampleRnAppName));
+
+          final oldKotlinDir = Directory('$androidAppPath/src/main/java/com/flutterrnembeddingexample');
+          if (oldKotlinDir.existsSync()) {
+            final newKotlinDir = Directory('$androidAppPath/src/main/java/$exampleRnPackageNameFolder');
+            newKotlinDir.createSync(recursive: true);
+            for (final file in oldKotlinDir.listSync().whereType<File>()) {
+              final content = file.readAsStringSync().replaceAll('com.flutterrnembeddingexample', exampleRnPackageName);
+              File('${newKotlinDir.path}/${file.uri.pathSegments.last}').writeAsStringSync(content);
+            }
+            oldKotlinDir.deleteSync(recursive: true);
+          }
+
+          final rnXcodeProject =
+              File('$flutterRnEmbeddingExamplePath/ios/FlutterRNEmbeddingExample.xcodeproj/project.pbxproj');
+          if (rnXcodeProject.existsSync()) {
+            rnXcodeProject.writeAsStringSync(rnXcodeProject
+                .readAsStringSync()
+                .replaceAll('org.reactjs.native.example.\$(PRODUCT_NAME:rfc1034identifier)', exampleRnBundleIdentifier));
+          }
+
           // fix permissions for gradlew, permissions are lost after generating a brick
           await runCommand('chmod', ['u+x', '$flutterRnEmbeddingExamplePath/android/gradlew'], verbose);
         }
@@ -445,6 +485,21 @@ String? getExampleIosBundleIdentifier() {
 String? getExampleIosDisplayName() {
   final exampleIosDisplayName = flutterEmbeddingConfig?['ios']?['example']?['display_name'];
   return exampleIosDisplayName?.toString() ?? 'Flutter Embedding Example';
+}
+
+String? getExampleReactNativePackageName() {
+  final exampleReactNativePackageName = flutterEmbeddingConfig?['react_native']?['example']?['package_name'];
+  return exampleReactNativePackageName?.toString() ?? '${_getFlutterEmbeddingPackageName()}.example';
+}
+
+String? getExampleReactNativeAppName() {
+  final exampleReactNativeAppName = flutterEmbeddingConfig?['react_native']?['example']?['app_name'];
+  return exampleReactNativeAppName?.toString() ?? 'Flutter Embedding Example';
+}
+
+String? getExampleReactNativeBundleIdentifier() {
+  final exampleReactNativeBundleIdentifier = flutterEmbeddingConfig?['react_native']?['example']?['bundle_identifier'];
+  return exampleReactNativeBundleIdentifier?.toString() ?? '${_getFlutterEmbeddingPackageName()}.example';
 }
 
 String? getExampleReactNativePatchBrickPath() {
