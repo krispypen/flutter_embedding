@@ -117,7 +117,7 @@ Future<void> generatePodHelper(
     if (podName == 'SwiftProtobuf') {
       continue; // Skip SwiftProtobuf - it comes through FlutterEmbeddingModule dependencies
     }
-    //writeStream.write('  s.dependency "$podName"\n');
+    writeStream.write('  s.dependency "$podName"\n');
   }
 
   writeStream.write('end\n\n');
