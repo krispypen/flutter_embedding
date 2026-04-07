@@ -126,7 +126,7 @@ void main(List<String> arguments) async {
 
         await generateZip(Directory('embedding/ios/sdk'), verbose);
         await generatePodSpecs(Directory('embedding/ios/sdk'));
-        await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be');
+        await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false);
         print('iOS module generated in: ${Directory.current.path}/embedding/ios/sdk');
         final iosExamplePath = '${Directory.current.path}/embedding/ios/example';
         if (results.command?.flag('example') == true) {
@@ -233,7 +233,7 @@ void main(List<String> arguments) async {
         await generateZip(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), verbose);
         await generatePodSpecs(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'));
         await generatePodHelper(
-            Directory('.'), Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), 'https://krispypen.be');
+            Directory('.'), Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), 'https://krispypen.be', true);
 
         File('$flutterRnEmbeddingPath/ios-rn/Flutter/Release/Flutter.podspec')
             .copySync('$flutterRnEmbeddingPath/ios-rn/Flutter/Flutter.podspec');
@@ -270,14 +270,12 @@ void main(List<String> arguments) async {
 
           final androidAppPath = '$flutterRnEmbeddingExamplePath/android/app';
           final appBuildGradle = File('$androidAppPath/build.gradle');
-          appBuildGradle.writeAsStringSync(appBuildGradle
-              .readAsStringSync()
-              .replaceAll('com.flutterrnembeddingexample', exampleRnPackageName));
+          appBuildGradle.writeAsStringSync(
+              appBuildGradle.readAsStringSync().replaceAll('com.flutterrnembeddingexample', exampleRnPackageName));
 
           final stringsXml = File('$androidAppPath/src/main/res/values/strings.xml');
-          stringsXml.writeAsStringSync(stringsXml
-              .readAsStringSync()
-              .replaceAll('FlutterRNEmbeddingExample', exampleRnAppName));
+          stringsXml.writeAsStringSync(
+              stringsXml.readAsStringSync().replaceAll('FlutterRNEmbeddingExample', exampleRnAppName));
 
           final oldKotlinDir = Directory('$androidAppPath/src/main/java/com/flutterrnembeddingexample');
           if (oldKotlinDir.existsSync()) {
@@ -293,9 +291,8 @@ void main(List<String> arguments) async {
           final rnXcodeProject =
               File('$flutterRnEmbeddingExamplePath/ios/FlutterRNEmbeddingExample.xcodeproj/project.pbxproj');
           if (rnXcodeProject.existsSync()) {
-            rnXcodeProject.writeAsStringSync(rnXcodeProject
-                .readAsStringSync()
-                .replaceAll('org.reactjs.native.example.\$(PRODUCT_NAME:rfc1034identifier)', exampleRnBundleIdentifier));
+            rnXcodeProject.writeAsStringSync(rnXcodeProject.readAsStringSync().replaceAll(
+                'org.reactjs.native.example.\$(PRODUCT_NAME:rfc1034identifier)', exampleRnBundleIdentifier));
           }
 
           // fix permissions for gradlew, permissions are lost after generating a brick

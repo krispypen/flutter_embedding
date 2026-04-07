@@ -13,6 +13,7 @@ Future<void> generatePodHelper(
   Directory flutterModuleDirectory,
   Directory buildDirectory,
   String gitRepo,
+  bool withDependencies,
 ) async {
   final envNames = ['Release', 'Debug'];
 
@@ -113,11 +114,13 @@ Future<void> generatePodHelper(
   writeStream.write('  }\n');
   writeStream.write('  s.static_framework = true\n\n');
 
-  for (final podName in podFilelock.specRepo.trunk) {
-    if (podName == 'SwiftProtobuf') {
-      continue; // Skip SwiftProtobuf - it comes through FlutterEmbeddingModule dependencies
+  if (withDependencies) {
+    for (final podName in podFilelock.specRepo.trunk) {
+      if (podName == 'SwiftProtobuf') {
+        continue; // Skip SwiftProtobuf - it comes through FlutterEmbeddingModule dependencies
+      }
+      writeStream.write('  s.dependency "$podName"\n');
     }
-    writeStream.write('  s.dependency "$podName"\n');
   }
 
   writeStream.write('end\n\n');
