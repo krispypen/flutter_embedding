@@ -168,7 +168,7 @@ void main(List<String> arguments) async {
         final androidSdkPath = 'embedding/android/sdk';
         Directory('$androidSdkPath/host/outputs/repo').createSync(recursive: true);
         await runCommand(
-            'fvm', ['flutter', 'build', 'aar', '--output=${Directory.current.path}/$androidSdkPath'], verbose);
+            'fvm', ['flutter', 'build', 'aar', '--output=${Directory.current.path}/$androidSdkPath', '--build-number=${flutterModuleVersion}'], verbose);
         final androidExamplePath = '${Directory.current.path}/embedding/android/example';
         if (results.command?.flag('example') == true) {
           print('Generating Android example ${brickVars['exampleAndroidPackageName']}');
@@ -216,7 +216,7 @@ void main(List<String> arguments) async {
         await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         await updateReactNativeHandoverServices(verbose, '$flutterRnEmbeddingPath/src/handovers');
 
-        await runCommand('fvm', ['flutter', 'build', 'aar'], verbose);
+        await runCommand('fvm', ['flutter', 'build', 'aar', '--build-number=${flutterModuleVersion}'], verbose);
 
         final flutterDir = Directory('$flutterRnEmbeddingPath/android/Flutter');
         if (flutterDir.existsSync()) {

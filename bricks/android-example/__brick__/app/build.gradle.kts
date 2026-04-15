@@ -51,8 +51,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     // Start Flutter dependencies
-    debugImplementation("{{{androidPackage}}}:flutter_debug:1.0")
-    //add("profileImplementation", "{{{androidPackage}}}:flutter_profile:1.0")
-    releaseImplementation("{{{androidPackage}}}:flutter_release:1.0")
+    debugImplementation("{{{androidPackage}}}:flutter_debug:{{flutterModuleVersion}}")
+    //add("profileImplementation", "{{{androidPackage}}}:flutter_profile:{{flutterModuleVersion}}")
+    releaseImplementation("{{{androidPackage}}}:flutter_release:{{flutterModuleVersion}}")
     // End Flutter dependencies
 }

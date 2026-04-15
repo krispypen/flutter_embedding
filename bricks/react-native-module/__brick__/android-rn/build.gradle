@@ -69,9 +69,9 @@ repositories {
 
 dependencies {
     // Start Flutter dependencies
-    debugImplementation '{{androidPackage}}:flutter_debug:1.0'
+    debugImplementation '{{androidPackage}}:flutter_debug:{{flutterModuleVersion}}'
 
-    releaseImplementation '{{androidPackage}}:flutter_release:1.0'
+    releaseImplementation '{{androidPackage}}:flutter_release:{{flutterModuleVersion}}'
     // End Flutter dependencies
 
     //noinspection GradleDynamicVersion
