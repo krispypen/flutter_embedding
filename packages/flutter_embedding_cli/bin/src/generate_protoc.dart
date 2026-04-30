@@ -68,8 +68,10 @@ Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--dart_out=grpc:$outputPath',
           '--proto_path',
           '${Directory.current.path}/embedding/protos',
@@ -80,8 +82,10 @@ Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--dart_out=grpc:$outputPath',
           '--proto_path',
           '${Directory.current.path}/embedding/protos',
@@ -100,8 +104,10 @@ Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--java_out=$outputPath',
           '--grpc-java_out=$outputPath',
           '--proto_path',
@@ -113,8 +119,10 @@ Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--java_out=$outputPath',
           '--grpc-java_out=grpc:$outputPath',
           '--proto_path',
@@ -135,8 +143,10 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--swift_out=$outputPath',
           '--swift_opt=Visibility=Public',
           '--grpc-swift-2_out=$outputPath',
@@ -151,8 +161,10 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--swift_out=$outputPath',
           '--swift_opt=Visibility=Public',
           '--grpc-swift-2_out=$outputPath',
@@ -185,8 +197,10 @@ Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) 
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--ts_out=$outputPath',
           '--ts_opt=server_generic,client_none',
           '--proto_path',
@@ -198,8 +212,10 @@ Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) 
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--ts_out=$outputPath',
           '--proto_path',
           '${Directory.current.path}/embedding/protos',
@@ -219,8 +235,10 @@ Future<void> updateGrpcWebHandoverServices(bool verbose, String outputPath) asyn
     // create outputPath if needed
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--ts_out=$outputPath',
           '--ts_opt=server_generic,client_none',
           '--proto_path',
@@ -232,8 +250,10 @@ Future<void> updateGrpcWebHandoverServices(bool verbose, String outputPath) asyn
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
     await runCommand(
-        'protoc',
+        'fvm',
         [
+          'exec',
+          'protoc',
           '--ts_out=$outputPath',
           '--proto_path',
           '${Directory.current.path}/embedding/protos',
