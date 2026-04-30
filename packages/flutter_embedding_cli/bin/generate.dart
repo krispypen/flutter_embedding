@@ -58,6 +58,8 @@ void main(List<String> arguments) async {
       exit(0);
     }
 
+    useFVM = File('.fvmrc').existsSync();
+
     final localBricksPath = Directory('${Directory.current.path}/../../bricks');
 
     final flutterModuleVersion = getFlutterModuleVersion();
@@ -113,18 +115,15 @@ void main(List<String> arguments) async {
 
       await updateDartHandoverServices(verbose, 'embedding/$moduleName/lib/handovers');
       if (!_hasDependency(moduleName)) {
-        await runCommand('fvm', ['flutter', 'pub', 'add', '$moduleName:{path: embedding/$moduleName}'], verbose);
+        await runFlutterCommand(['pub', 'add', '$moduleName:{path: embedding/$moduleName}'], verbose);
       }
     }
-    // make sure it's available and pub get will not try to install it while doing protoc (parse issues)
-    await runCommand('fvm', ['dart', 'pub', 'global', 'activate', 'protoc_plugin', '20.0.1'], verbose);
     switch (results.command?.name) {
       case 'ios':
         print('Generating iOS module for bundle identifier: ${brickVars['iosBundleIdentifier']}');
-        // execute fvm flutter build ios-framework --cocoapods --output=build/ios/sdk
         await updateSwiftHandoverServices(verbose, 'embedding/$moduleName/ios/Classes/');
-        await runCommand(
-            'fvm', ['flutter', 'build', 'ios-framework', '--cocoapods', '--output=embedding/ios/sdk'], verbose);
+        await runFlutterCommand(
+            ['build', 'ios-framework', '--cocoapods', '--output=embedding/ios/sdk'], verbose);
 
         await generateZip(Directory('embedding/ios/sdk'), verbose);
         await generatePodSpecs(Directory('embedding/ios/sdk'));
@@ -169,10 +168,8 @@ void main(List<String> arguments) async {
         await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         final androidSdkPath = 'embedding/android/sdk';
         Directory('$androidSdkPath/host/outputs/repo').createSync(recursive: true);
-        await runCommand(
-            'fvm',
+        await runFlutterCommand(
             [
-              'flutter',
               'build',
               'aar',
               '--output=${Directory.current.path}/$androidSdkPath',
@@ -226,7 +223,7 @@ void main(List<String> arguments) async {
         await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         await updateReactNativeHandoverServices(verbose, '$flutterRnEmbeddingPath/src/handovers');
 
-        await runCommand('fvm', ['flutter', 'build', 'aar', '--build-number=${flutterModuleVersion}'], verbose);
+        await runFlutterCommand(['build', 'aar', '--build-number=${flutterModuleVersion}'], verbose);
 
         final flutterDir = Directory('$flutterRnEmbeddingPath/android/Flutter');
         if (flutterDir.existsSync()) {
@@ -235,9 +232,8 @@ void main(List<String> arguments) async {
         Directory('$flutterRnEmbeddingPath/android/Flutter').createSync(recursive: true);
         await runCommand(
             'cp', ['-r', 'build/host/outputs/repo', '$flutterRnEmbeddingPath/android-rn/Flutter/'], verbose);
-        await runCommand(
-            'fvm',
-            ['flutter', 'build', 'ios-framework', '--cocoapods', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'],
+        await runFlutterCommand(
+            ['build', 'ios-framework', '--cocoapods', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'],
             verbose);
 
         await generateZip(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), verbose);
@@ -332,10 +328,8 @@ void main(List<String> arguments) async {
 
         await updateGrpcWebHandoverServices(verbose, '$flutterREmbeddingPath/src/handovers');
 
-        await runCommand(
-            'fvm',
+        await runFlutterCommand(
             [
-              'flutter',
               'build',
               'web',
               '--source-maps',
@@ -394,10 +388,8 @@ void main(List<String> arguments) async {
 
         await updateGrpcWebHandoverServices(verbose, '$flutterAngularEmbeddingPath/src/lib/handovers');
 
-        await runCommand(
-            'fvm',
+        await runFlutterCommand(
             [
-              'flutter',
               'build',
               'web',
               '--source-maps',

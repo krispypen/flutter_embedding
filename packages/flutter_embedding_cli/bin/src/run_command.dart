@@ -1,6 +1,40 @@
 import 'dart:convert';
 import 'dart:io';
 
+/// Whether to use fvm (Flutter Version Manager) when invoking flutter/dart/protoc.
+///
+/// When true, commands are invoked via `fvm` (e.g. `fvm flutter ...`,
+/// `fvm exec protoc ...`). When false, the underlying tools are invoked directly.
+bool useFVM = false;
+
+/// Runs a `flutter` command, optionally prefixed with `fvm` when [useFVM] is true.
+Future<void> runFlutterCommand(
+  List<String> arguments,
+  bool verbose, {
+  String directory = '.',
+}) async {
+  await runCommand(
+    useFVM ? 'fvm' : 'flutter',
+    useFVM ? ['flutter', ...arguments] : arguments,
+    verbose,
+    directory: directory,
+  );
+}
+
+/// Runs a `protoc` command, optionally prefixed with `fvm exec` when [useFVM] is true.
+Future<void> runProtocCommand(
+  List<String> arguments,
+  bool verbose, {
+  String directory = '.',
+}) async {
+  await runCommand(
+    useFVM ? 'fvm' : 'protoc',
+    useFVM ? ['exec', 'protoc', ...arguments] : arguments,
+    verbose,
+    directory: directory,
+  );
+}
+
 /// Exception thrown when a command execution fails.
 class CommandException implements Exception {
   /// The command that was executed.

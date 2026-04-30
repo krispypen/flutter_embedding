@@ -65,33 +65,36 @@ Future<List<Map<String, String>>> getServicesFromProto(YamlList protoPaths) asyn
 Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
-  if (handoversToHostProtoPaths.isNotEmpty) {
-    Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
-        [
-          'exec',
-          'protoc',
-          '--dart_out=grpc:$outputPath',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToHostProtoPaths.join(',')
-        ],
-        verbose);
-  }
-  if (handoversToFlutterProtoPaths.isNotEmpty) {
-    Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
-        [
-          'exec',
-          'protoc',
-          '--dart_out=grpc:$outputPath',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToFlutterProtoPaths.join(',')
-        ],
-        verbose);
+  try {
+    if (handoversToHostProtoPaths.isNotEmpty) {
+      Directory(outputPath).createSync(recursive: true);
+      await runProtocCommand(
+          [
+            '--dart_out=grpc:$outputPath',
+            '--proto_path',
+            '${Directory.current.path}/embedding/protos',
+            handoversToHostProtoPaths.join(',')
+          ],
+          verbose);
+    }
+    if (handoversToFlutterProtoPaths.isNotEmpty) {
+      Directory(outputPath).createSync(recursive: true);
+      await runProtocCommand(
+          [
+            '--dart_out=grpc:$outputPath',
+            '--proto_path',
+            '${Directory.current.path}/embedding/protos',
+            handoversToFlutterProtoPaths.join(',')
+          ],
+          verbose);
+    }
+  } on CommandException catch (e) {
+    stderr.writeln(e.toString());
+    final activateCmd = useFVM
+        ? 'fvm dart pub global activate protoc_plugin 20.0.1'
+        : 'dart pub global activate protoc_plugin 20.0.1';
+    stderr.writeln('Make sure protoc_plugin is installed with "$activateCmd"');
+    rethrow;
   }
 }
 
@@ -103,11 +106,8 @@ Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--java_out=$outputPath',
           '--grpc-java_out=$outputPath',
           '--proto_path',
@@ -118,11 +118,8 @@ Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
   }
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--java_out=$outputPath',
           '--grpc-java_out=grpc:$outputPath',
           '--proto_path',
@@ -142,11 +139,8 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
   // available options see: https://github.com/grpc/grpc-swift-protobuf/blob/main/Sources/protoc-gen-grpc-swift-2/Options.swift
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--swift_out=$outputPath',
           '--swift_opt=Visibility=Public',
           '--grpc-swift-2_out=$outputPath',
@@ -160,11 +154,8 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
 
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--swift_out=$outputPath',
           '--swift_opt=Visibility=Public',
           '--grpc-swift-2_out=$outputPath',
@@ -196,11 +187,8 @@ Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) 
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--ts_out=$outputPath',
           '--ts_opt=server_generic,client_none',
           '--proto_path',
@@ -211,11 +199,8 @@ Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) 
   }
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--ts_out=$outputPath',
           '--proto_path',
           '${Directory.current.path}/embedding/protos',
@@ -234,11 +219,8 @@ Future<void> updateGrpcWebHandoverServices(bool verbose, String outputPath) asyn
   if (handoversToHostProtoPaths.isNotEmpty) {
     // create outputPath if needed
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--ts_out=$outputPath',
           '--ts_opt=server_generic,client_none',
           '--proto_path',
@@ -249,11 +231,8 @@ Future<void> updateGrpcWebHandoverServices(bool verbose, String outputPath) asyn
   }
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runCommand(
-        'fvm',
+    await runProtocCommand(
         [
-          'exec',
-          'protoc',
           '--ts_out=$outputPath',
           '--proto_path',
           '${Directory.current.path}/embedding/protos',
