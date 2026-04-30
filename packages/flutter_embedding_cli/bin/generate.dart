@@ -116,6 +116,8 @@ void main(List<String> arguments) async {
         await runCommand('fvm', ['flutter', 'pub', 'add', '$moduleName:{path: embedding/$moduleName}'], verbose);
       }
     }
+    // make sure it's available and pub get will not try to install it while doing protoc (parse issues)
+    await runCommand('fvm', ['dart', 'pub', 'global', 'activate', 'protoc_plugin', '20.0.1'], verbose);
     switch (results.command?.name) {
       case 'ios':
         print('Generating iOS module for bundle identifier: ${brickVars['iosBundleIdentifier']}');
@@ -168,7 +170,15 @@ void main(List<String> arguments) async {
         final androidSdkPath = 'embedding/android/sdk';
         Directory('$androidSdkPath/host/outputs/repo').createSync(recursive: true);
         await runCommand(
-            'fvm', ['flutter', 'build', 'aar', '--output=${Directory.current.path}/$androidSdkPath', '--build-number=${flutterModuleVersion}'], verbose);
+            'fvm',
+            [
+              'flutter',
+              'build',
+              'aar',
+              '--output=${Directory.current.path}/$androidSdkPath',
+              '--build-number=${flutterModuleVersion}'
+            ],
+            verbose);
         final androidExamplePath = '${Directory.current.path}/embedding/android/example';
         if (results.command?.flag('example') == true) {
           print('Generating Android example ${brickVars['exampleAndroidPackageName']}');
