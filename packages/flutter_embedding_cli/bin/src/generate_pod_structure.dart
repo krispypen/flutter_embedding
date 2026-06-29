@@ -14,6 +14,7 @@ Future<void> generatePodHelper(
   Directory buildDirectory,
   String gitRepo,
   bool withDependencies,
+  bool seperateFlutterPodspec,
 ) async {
   final envNames = ['Release', 'Debug'];
 
@@ -37,7 +38,9 @@ Future<void> generatePodHelper(
   writeStream.write('def install_all_flutter_pods (options={})\n');
   writeStream.write('  prefix = options[:path] ||=  File.expand_path(__dir__)\n');
 
-  writeStream.write('  pod "Flutter", :podspec => File.join(prefix, "Release", "Flutter.podspec")\n');
+  if (seperateFlutterPodspec) {
+    writeStream.write('  pod "Flutter", :podspec => File.join(prefix, "Release", "Flutter.podspec")\n');
+  }
 
   // Filter out SwiftProtobuf from direct pod declarations since it's already a dependency
   // of FlutterEmbeddingModule and will be available transitively

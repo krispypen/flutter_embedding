@@ -122,12 +122,12 @@ void main(List<String> arguments) async {
       case 'ios':
         print('Generating iOS module for bundle identifier: ${brickVars['iosBundleIdentifier']}');
         await updateSwiftHandoverServices(verbose, 'embedding/$moduleName/ios/Classes/');
-        await runFlutterCommand(
-            ['build', 'ios-framework', '--cocoapods', '--output=embedding/ios/sdk'], verbose);
+        // using --no-cocoapods here makes the Flutter.framework part of the FlutterEmbeddingModule.xcframework, so the podhelper should also not contain a direct pod declaration for Flutter, since it will be included in the FlutterEmbeddingModule.xcframework
+        await runFlutterCommand(['build', 'ios-framework', '--no-cocoapods', '--output=embedding/ios/sdk'], verbose);
 
         await generateZip(Directory('embedding/ios/sdk'), verbose);
         await generatePodSpecs(Directory('embedding/ios/sdk'));
-        await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false);
+        await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false, false);
         print('iOS module generated in: ${Directory.current.path}/embedding/ios/sdk');
         final iosExamplePath = '${Directory.current.path}/embedding/ios/example';
         if (results.command?.flag('example') == true) {
@@ -168,14 +168,12 @@ void main(List<String> arguments) async {
         await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         final androidSdkPath = 'embedding/android/sdk';
         Directory('$androidSdkPath/host/outputs/repo').createSync(recursive: true);
-        await runFlutterCommand(
-            [
-              'build',
-              'aar',
-              '--output=${Directory.current.path}/$androidSdkPath',
-              '--build-number=${flutterModuleVersion}'
-            ],
-            verbose);
+        await runFlutterCommand([
+          'build',
+          'aar',
+          '--output=${Directory.current.path}/$androidSdkPath',
+          '--build-number=${flutterModuleVersion}'
+        ], verbose);
         final androidExamplePath = '${Directory.current.path}/embedding/android/example';
         if (results.command?.flag('example') == true) {
           print('Generating Android example ${brickVars['exampleAndroidPackageName']}');
@@ -233,13 +231,12 @@ void main(List<String> arguments) async {
         await runCommand(
             'cp', ['-r', 'build/host/outputs/repo', '$flutterRnEmbeddingPath/android-rn/Flutter/'], verbose);
         await runFlutterCommand(
-            ['build', 'ios-framework', '--cocoapods', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'],
-            verbose);
+            ['build', 'ios-framework', '--cocoapods', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'], verbose);
 
         await generateZip(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), verbose);
         await generatePodSpecs(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'));
         await generatePodHelper(
-            Directory('.'), Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), 'https://krispypen.be', true);
+            Directory('.'), Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), 'https://krispypen.be', true, true);
 
         File('$flutterRnEmbeddingPath/ios-rn/Flutter/Release/Flutter.podspec')
             .copySync('$flutterRnEmbeddingPath/ios-rn/Flutter/Flutter.podspec');
@@ -328,17 +325,15 @@ void main(List<String> arguments) async {
 
         await updateGrpcWebHandoverServices(verbose, '$flutterREmbeddingPath/src/handovers');
 
-        await runFlutterCommand(
-            [
-              'build',
-              'web',
-              '--source-maps',
-              '--profile',
-              '--base-href',
-              '/flutter/',
-              '--output=$flutterREmbeddingPath/public/flutter/'
-            ],
-            verbose);
+        await runFlutterCommand([
+          'build',
+          'web',
+          '--source-maps',
+          '--profile',
+          '--base-href',
+          '/flutter/',
+          '--output=$flutterREmbeddingPath/public/flutter/'
+        ], verbose);
         await runCommand('npm', ['install'], directory: flutterREmbeddingPath, verbose);
         await runCommand('npm', ['run', 'ci'], directory: flutterREmbeddingPath, verbose);
         await runCommand('npm', ['run', 'build'], directory: flutterREmbeddingPath, verbose);
@@ -388,17 +383,15 @@ void main(List<String> arguments) async {
 
         await updateGrpcWebHandoverServices(verbose, '$flutterAngularEmbeddingPath/src/lib/handovers');
 
-        await runFlutterCommand(
-            [
-              'build',
-              'web',
-              '--source-maps',
-              '--profile',
-              '--base-href',
-              '/flutter/',
-              '--output=$flutterAngularEmbeddingPath/public/flutter/'
-            ],
-            verbose);
+        await runFlutterCommand([
+          'build',
+          'web',
+          '--source-maps',
+          '--profile',
+          '--base-href',
+          '/flutter/',
+          '--output=$flutterAngularEmbeddingPath/public/flutter/'
+        ], verbose);
         await runCommand('npm', ['install'], directory: flutterAngularEmbeddingPath, verbose);
         await runCommand('npm', ['run', 'build'], directory: flutterAngularEmbeddingPath, verbose);
         await runCommand('npm', ['pack', '.'], directory: flutterAngularEmbeddingPath, verbose);
