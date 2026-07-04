@@ -8,6 +8,7 @@ import 'src/generate_pod_spec.dart';
 import 'src/generate_pod_structure.dart';
 import 'src/generate_protoc.dart';
 import 'src/generate_zip.dart';
+import 'src/gradle_init_script.dart';
 import 'src/run_command.dart';
 
 /// Exception thrown when configuration is invalid or missing.
@@ -168,6 +169,7 @@ void main(List<String> arguments) async {
         await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         final androidSdkPath = 'embedding/android/sdk';
         Directory('$androidSdkPath/host/outputs/repo').createSync(recursive: true);
+        await ensureAarJavadocDisabled(verbose);
         await runFlutterCommand([
           'build',
           'aar',
@@ -221,6 +223,7 @@ void main(List<String> arguments) async {
         await updateJavaHandoverServices(verbose, 'embedding/$moduleName/android/src/main/java/');
         await updateReactNativeHandoverServices(verbose, '$flutterRnEmbeddingPath/src/handovers');
 
+        await ensureAarJavadocDisabled(verbose);
         await runFlutterCommand(['build', 'aar', '--build-number=${flutterModuleVersion}'], verbose);
 
         final flutterDir = Directory('$flutterRnEmbeddingPath/android/Flutter');

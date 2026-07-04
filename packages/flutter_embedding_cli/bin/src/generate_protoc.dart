@@ -63,38 +63,27 @@ Future<List<Map<String, String>>> getServicesFromProto(YamlList protoPaths) asyn
 ///
 /// Output is written to [outputPath].
 Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
+  await runDartCommand(['pub', 'global', 'activate', 'protoc_plugin', '20.0.1'], verbose);
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
-  try {
-    if (handoversToHostProtoPaths.isNotEmpty) {
-      Directory(outputPath).createSync(recursive: true);
-      await runProtocCommand(
-          [
-            '--dart_out=grpc:$outputPath',
-            '--proto_path',
-            '${Directory.current.path}/embedding/protos',
-            handoversToHostProtoPaths.join(',')
-          ],
-          verbose);
-    }
-    if (handoversToFlutterProtoPaths.isNotEmpty) {
-      Directory(outputPath).createSync(recursive: true);
-      await runProtocCommand(
-          [
-            '--dart_out=grpc:$outputPath',
-            '--proto_path',
-            '${Directory.current.path}/embedding/protos',
-            handoversToFlutterProtoPaths.join(',')
-          ],
-          verbose);
-    }
-  } on CommandException catch (e) {
-    stderr.writeln(e.toString());
-    final activateCmd = useFVM
-        ? 'fvm dart pub global activate protoc_plugin 20.0.1'
-        : 'dart pub global activate protoc_plugin 20.0.1';
-    stderr.writeln('Make sure protoc_plugin is installed with "$activateCmd"');
-    rethrow;
+
+  if (handoversToHostProtoPaths.isNotEmpty) {
+    Directory(outputPath).createSync(recursive: true);
+    await runProtocCommand([
+      '--dart_out=grpc:$outputPath',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToHostProtoPaths.join(',')
+    ], verbose);
+  }
+  if (handoversToFlutterProtoPaths.isNotEmpty) {
+    Directory(outputPath).createSync(recursive: true);
+    await runProtocCommand([
+      '--dart_out=grpc:$outputPath',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToFlutterProtoPaths.join(',')
+    ], verbose);
   }
 }
 
@@ -106,27 +95,23 @@ Future<void> updateJavaHandoverServices(bool verbose, String outputPath) async {
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--java_out=$outputPath',
-          '--grpc-java_out=$outputPath',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToHostProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--java_out=$outputPath',
+      '--grpc-java_out=$outputPath',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToHostProtoPaths.join(',')
+    ], verbose);
   }
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--java_out=$outputPath',
-          '--grpc-java_out=grpc:$outputPath',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToFlutterProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--java_out=$outputPath',
+      '--grpc-java_out=grpc:$outputPath',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToFlutterProtoPaths.join(',')
+    ], verbose);
   }
 }
 
@@ -139,32 +124,28 @@ Future<void> updateSwiftHandoverServices(bool verbose, String outputPath) async 
   // available options see: https://github.com/grpc/grpc-swift-protobuf/blob/main/Sources/protoc-gen-grpc-swift-2/Options.swift
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--swift_out=$outputPath',
-          '--swift_opt=Visibility=Public',
-          '--grpc-swift-2_out=$outputPath',
-          '--grpc-swift-2_opt=Client=false,Visibility=Public,GRPCProtobufModuleName=FlutterEmbeddingProtobuf,GRPCModuleName=FlutterEmbeddingGRPCCore',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToHostProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--swift_out=$outputPath',
+      '--swift_opt=Visibility=Public',
+      '--grpc-swift-2_out=$outputPath',
+      '--grpc-swift-2_opt=Client=false,Visibility=Public,GRPCProtobufModuleName=FlutterEmbeddingProtobuf,GRPCModuleName=FlutterEmbeddingGRPCCore',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToHostProtoPaths.join(',')
+    ], verbose);
   }
 
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--swift_out=$outputPath',
-          '--swift_opt=Visibility=Public',
-          '--grpc-swift-2_out=$outputPath',
-          '--grpc-swift-2_opt=Server=false,Visibility=Public,GRPCProtobufModuleName=FlutterEmbeddingProtobuf,GRPCModuleName=FlutterEmbeddingGRPCCore',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToFlutterProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--swift_out=$outputPath',
+      '--swift_opt=Visibility=Public',
+      '--grpc-swift-2_out=$outputPath',
+      '--grpc-swift-2_opt=Server=false,Visibility=Public,GRPCProtobufModuleName=FlutterEmbeddingProtobuf,GRPCModuleName=FlutterEmbeddingGRPCCore',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToFlutterProtoPaths.join(',')
+    ], verbose);
   }
 
   // now we need to remove all the "import FlutterEmbeddingProtobuf" and "import FlutterEmbeddingGRPCCore" from the generated files
@@ -187,26 +168,22 @@ Future<void> updateReactNativeHandoverServices(bool verbose, String outputPath) 
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
   if (handoversToHostProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--ts_out=$outputPath',
-          '--ts_opt=server_generic,client_none',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToHostProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--ts_out=$outputPath',
+      '--ts_opt=server_generic,client_none',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToHostProtoPaths.join(',')
+    ], verbose);
   }
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--ts_out=$outputPath',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToFlutterProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--ts_out=$outputPath',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToFlutterProtoPaths.join(',')
+    ], verbose);
   }
 }
 
@@ -219,25 +196,21 @@ Future<void> updateGrpcWebHandoverServices(bool verbose, String outputPath) asyn
   if (handoversToHostProtoPaths.isNotEmpty) {
     // create outputPath if needed
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--ts_out=$outputPath',
-          '--ts_opt=server_generic,client_none',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToHostProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--ts_out=$outputPath',
+      '--ts_opt=server_generic,client_none',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToHostProtoPaths.join(',')
+    ], verbose);
   }
   if (handoversToFlutterProtoPaths.isNotEmpty) {
     Directory(outputPath).createSync(recursive: true);
-    await runProtocCommand(
-        [
-          '--ts_out=$outputPath',
-          '--proto_path',
-          '${Directory.current.path}/embedding/protos',
-          handoversToFlutterProtoPaths.join(',')
-        ],
-        verbose);
+    await runProtocCommand([
+      '--ts_out=$outputPath',
+      '--proto_path',
+      '${Directory.current.path}/embedding/protos',
+      handoversToFlutterProtoPaths.join(',')
+    ], verbose);
   }
 }

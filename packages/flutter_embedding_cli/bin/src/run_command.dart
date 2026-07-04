@@ -21,6 +21,20 @@ Future<void> runFlutterCommand(
   );
 }
 
+/// Runs a `dart` command, optionally prefixed with `fvm` when [useFVM] is true.
+Future<void> runDartCommand(
+  List<String> arguments,
+  bool verbose, {
+  String directory = '.',
+}) async {
+  await runCommand(
+    useFVM ? 'fvm' : 'dart',
+    useFVM ? ['dart', ...arguments] : arguments,
+    verbose,
+    directory: directory,
+  );
+}
+
 /// Runs a `protoc` command, optionally prefixed with `fvm exec` when [useFVM] is true.
 Future<void> runProtocCommand(
   List<String> arguments,
