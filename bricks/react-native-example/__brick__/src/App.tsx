@@ -100,6 +100,9 @@ const HomeScreen = ({ navigation }: StackScreenProps<RootStackParamList, 'Home'>
 
     communicationViewRef.current.startEngine((success, error) => {
       if (success) {
+        // Track engine state here too: CommunicationView won't re-notify on a
+        // restart after stopEngine, since its own state never flipped back
+        setIsEngineStarted(true);
         Alert.alert('Engine started', 'The Flutter engine started successfully');
       } else {
         Alert.alert('Error', 'Something went wrong when starting the engine: ' + (error?.message || 'Unknown error'));
@@ -109,6 +112,8 @@ const HomeScreen = ({ navigation }: StackScreenProps<RootStackParamList, 'Home'>
 
   const stopEngine = () => {
     FlutterEmbeddingModule.stopEngine();
+    setIsEngineStarted(false);
+    setHandoversToFlutterServiceClient(null);
     setIsFlutterInView(false);
   };
 
@@ -175,7 +180,13 @@ const HomeScreen = ({ navigation }: StackScreenProps<RootStackParamList, 'Home'>
       <CommunicationView
         ref={communicationViewRef}
         onFlutterExit={handleFlutterExit}
-        onEngineStateChange={setIsEngineStarted}
+        onEngineStateChange={(started: boolean) => {
+          // Ignore the initial false: CommunicationView remounts when the
+          // responsive layout switches and must not reset the engine state
+          if (started) {
+            setIsEngineStarted(true);
+          }
+        }}
         onHandoversToFlutterServiceClientChange={setHandoversToFlutterServiceClient}
       />
     </ScrollView>
