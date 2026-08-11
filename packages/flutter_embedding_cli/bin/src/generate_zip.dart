@@ -44,3 +44,44 @@ Future<void> generateZip(Directory buildDirectory, bool verbose) async {
     Directory(join(envDirectory.path, 'Frameworks')).deleteSync(recursive: true);
   }
 }
+
+/// Creates a zip archive of the generated module/sdk artifacts and example app.
+///
+/// Zips the [contents] paths (relative to [directory]) into [zipName] inside
+/// [directory], skipping paths that don't exist. When [password] is provided
+/// the archive is protected with it (classic `zip -P` encryption).
+Future<void> generateSdkZip(
+  Directory directory,
+  String zipName,
+  List<String> contents,
+  List<String> exclusions,
+  String? password,
+  bool verbose,
+) async {
+  final existingContents = contents
+      .where((content) => FileSystemEntity.typeSync(join(directory.path, content)) != FileSystemEntityType.notFound)
+      .toList();
+  if (existingContents.isEmpty) {
+    print('Skipping $zipName: nothing to zip in ${directory.path}');
+    return;
+  }
+
+  // delete any previous archive, otherwise zip updates it in place and stale entries survive
+  final zipFile = File(join(directory.path, zipName));
+  if (zipFile.existsSync()) {
+    zipFile.deleteSync();
+  }
+
+  await runCommand(
+      'zip',
+      [
+        if (password != null) ...['-P', password],
+        '-r',
+        zipName,
+        ...existingContents,
+        if (exclusions.isNotEmpty) ...['-x', ...exclusions],
+      ],
+      directory: directory.path,
+      verbose);
+  print('SDK zip generated: ${zipFile.path}');
+}

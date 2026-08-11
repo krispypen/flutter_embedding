@@ -26,32 +26,48 @@ void main(List<String> arguments) async {
         'ios',
         ArgParser()
           ..addFlag('example', abbr: 'e', help: 'Generate example app')
-          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output')
+          ..addFlag('zip', help: 'Create a zip archive of the generated sdk and example app')
+          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip'))
     ..addCommand(
         'android',
         ArgParser()
           ..addFlag('example', abbr: 'e', help: 'Generate example app')
-          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output')
+          ..addFlag('zip', help: 'Create a zip archive of the generated sdk and example app')
+          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip'))
     ..addCommand(
         'react-native',
         ArgParser()
           ..addFlag('example', abbr: 'e', help: 'Generate example app')
-          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output')
+          ..addFlag('zip', help: 'Create a zip archive of the generated module package and example app')
+          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip'))
     ..addCommand(
         'web-react',
         ArgParser()
           ..addFlag('example', abbr: 'e', help: 'Generate example react web app')
-          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output')
+          ..addFlag('zip', help: 'Create a zip archive of the generated module package and example app')
+          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip'))
     ..addCommand(
         'web-angular',
         ArgParser()
           ..addFlag('example', abbr: 'e', help: 'Generate example angular web app')
-          ..addFlag('verbose', abbr: 'v', help: 'Verbose output'))
+          ..addFlag('verbose', abbr: 'v', help: 'Verbose output')
+          ..addFlag('zip', help: 'Create a zip archive of the generated module package and example app')
+          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip'))
     ..addFlag('help', abbr: 'h', negatable: false, help: 'Show help');
 
   try {
     final ArgResults results = parser.parse(arguments);
     final verbose = results.command?.flag('verbose') ?? false;
+    final createZip = results.command?.flag('zip') ?? false;
+    final zipPassword = results.command?['zip-password'] as String?;
+    if (zipPassword != null && !createZip) {
+      stderr.writeln('Error: --zip-password requires --zip.');
+      exit(64); // EX_USAGE
+    }
 
     if (results['help']) {
       print('Usage: flutter_embedding_cli [options] <command> <arguments>');
@@ -158,9 +174,18 @@ void main(List<String> arguments) async {
           xcodeProject.writeAsStringSync(newXcodeProjectContent);
         }
         if (Directory(iosExamplePath).existsSync()) {
+          // remove the previous sdk copy first, otherwise cp nests a stale sdk folder inside it on re-runs
+          final exampleFlutterDir = Directory('$iosExamplePath/Flutter');
+          if (exampleFlutterDir.existsSync()) {
+            exampleFlutterDir.deleteSync(recursive: true);
+          }
           await runCommand('cp', ['-r', 'embedding/ios/sdk', '$iosExamplePath/Flutter/'], verbose);
           print(
               'Example app sdk in: $iosExamplePath, you can now run (cd embedding/ios/example && pod install && open FlutterEmbeddingExample.xcworkspace) in this directory to install the example app');
+        }
+        if (createZip) {
+          await generateSdkZip(Directory('${Directory.current.path}/embedding/ios'), 'ios_sdk.zip',
+              ['example', 'sdk'], ['example/Pods/*'], zipPassword, verbose);
         }
 
         break;
@@ -200,9 +225,23 @@ void main(List<String> arguments) async {
           await runCommand('chmod', ['u+x', '$androidExamplePath/gradlew'], verbose);
         }
         if (Directory(androidExamplePath).existsSync()) {
+          // remove the previous sdk copy first, otherwise cp nests a stale sdk folder inside it on re-runs
+          final exampleFlutterDir = Directory('$androidExamplePath/Flutter');
+          if (exampleFlutterDir.existsSync()) {
+            exampleFlutterDir.deleteSync(recursive: true);
+          }
           await runCommand('cp', ['-r', 'embedding/android/sdk', '$androidExamplePath/Flutter/'], verbose);
           print(
               'Example app sdk in: $androidExamplePath, you can now run (cd embedding/android/example && ./gradlew build) in this directory to build the example app');
+        }
+        if (createZip) {
+          await generateSdkZip(
+              Directory('${Directory.current.path}/embedding/android'),
+              'android_sdk.zip',
+              ['example', 'sdk'],
+              ['example/.gradle/*', 'example/.kotlin/*', 'example/build/*', 'example/app/build/*'],
+              zipPassword,
+              verbose);
         }
         break;
       case 'react-native':
@@ -325,6 +364,21 @@ void main(List<String> arguments) async {
               verbose);
           print('Example app sdk in: $flutterRnEmbeddingExamplePath');
         }
+        if (createZip) {
+          await generateSdkZip(
+              Directory('${Directory.current.path}/embedding/react-native'),
+              'react-native_sdk.zip',
+              ['example', 'module/$reactNativePackageName-$flutterModuleVersion.tgz'],
+              [
+                'example/node_modules/*',
+                'example/ios/Pods/*',
+                'example/android/.gradle/*',
+                'example/android/build/*',
+                'example/android/app/build/*',
+              ],
+              zipPassword,
+              verbose);
+        }
         break;
       case 'web-react':
         print('Generating Web React module');
@@ -383,6 +437,15 @@ void main(List<String> arguments) async {
           print(
               'Example app sdk in: $flutterReactEmbeddingExamplePath, you can now run (cd embedding/web-react/example && npm install && npm start) in this directory to start the example app');
         }
+        if (createZip) {
+          await generateSdkZip(
+              Directory('${Directory.current.path}/embedding/web-react'),
+              'web-react_sdk.zip',
+              ['example', 'module/$webReactPackageName-$flutterModuleVersion.tgz'],
+              ['example/node_modules/*', 'example/build/*', 'example/dist/*'],
+              zipPassword,
+              verbose);
+        }
         break;
       case 'web-angular':
         print('Generating Web Angular module');
@@ -440,6 +503,15 @@ void main(List<String> arguments) async {
               verbose);
           print(
               'Example app sdk in: $flutterAngularEmbeddingExamplePath, you can now run (cd embedding/web-angular/example && npm install && npm start) in this directory to start the example app');
+        }
+        if (createZip) {
+          await generateSdkZip(
+              Directory('${Directory.current.path}/embedding/web-angular'),
+              'web-angular_sdk.zip',
+              ['example', 'module/$webAngularPackageName-$flutterModuleVersion.tgz'],
+              ['example/node_modules/*', 'example/.angular/*', 'example/dist/*'],
+              zipPassword,
+              verbose);
         }
 
         break;
