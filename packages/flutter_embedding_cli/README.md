@@ -152,12 +152,14 @@ dart run flutter_embedding_cli:generate [options] <command> [arguments]
 Generate iOS Flutter module and optionally create an example app:
 
 ```bash
-dart run flutter_embedding_cli:generate ios [--example] [--verbose]
+dart run flutter_embedding_cli:generate ios [--example] [--verbose] [--zip] [--zip-password <password>]
 ```
 
 **Options:**
 - `--example`, `-e`: Generate an example iOS app alongside the module
 - `--verbose`, `-v`: Show verbose output
+- `--zip`: Create a distributable `ios_sdk.zip` archive (see [SDK Zip Archives](#sdk-zip-archives))
+- `--zip-password`: Password-protect the zip archive (requires `--zip`)
 
 **What it does:**
 1. Generates a Flutter module plugin with Swift handover services from proto files
@@ -166,35 +168,41 @@ dart run flutter_embedding_cli:generate ios [--example] [--verbose]
 4. Creates Podspec files for CocoaPods integration
 5. Generates a Pod helper file
 6. If `--example` is specified, creates a complete example iOS app
+7. If `--zip` is specified, creates `embedding/ios/ios_sdk.zip`
 
 #### Android Module Generation
 
 Generate Android Flutter module and optionally create an example app:
 
 ```bash
-dart run flutter_embedding_cli:generate android [--example] [--verbose]
+dart run flutter_embedding_cli:generate android [--example] [--verbose] [--zip] [--zip-password <password>]
 ```
 
 **Options:**
 - `--example`, `-e`: Generate an example Android app alongside the module
 - `--verbose`, `-v`: Show verbose output
+- `--zip`: Create a distributable `android_sdk.zip` archive (see [SDK Zip Archives](#sdk-zip-archives))
+- `--zip-password`: Password-protect the zip archive (requires `--zip`)
 
 **What it does:**
 1. Generates a Flutter module plugin with Java handover services from proto files
 2. Builds the Flutter Android Archive (AAR)
 3. If `--example` is specified, creates a complete example Android app
+4. If `--zip` is specified, creates `embedding/android/android_sdk.zip`
 
 #### React Native Module Generation
 
 Generate React Native Flutter module and optionally create an example app:
 
 ```bash
-dart run flutter_embedding_cli:generate react-native [--example] [--verbose]
+dart run flutter_embedding_cli:generate react-native [--example] [--verbose] [--zip] [--zip-password <password>]
 ```
 
 **Options:**
 - `--example`, `-e`: Generate an example React Native app alongside the module
 - `--verbose`, `-v`: Show verbose output
+- `--zip`: Create a distributable `react-native_sdk.zip` archive (see [SDK Zip Archives](#sdk-zip-archives))
+- `--zip-password`: Password-protect the zip archive (requires `--zip`)
 
 **What it does:**
 1. Generates the React Native module structure with TypeScript handover services
@@ -203,42 +211,65 @@ dart run flutter_embedding_cli:generate react-native [--example] [--verbose]
 4. Generates ZIP files and Podspecs for iOS
 5. Runs npm install, ci, and pack commands (packaging the module)
 6. If `--example` is specified, creates a complete example React Native app
+7. If `--zip` is specified, creates `embedding/react-native/react-native_sdk.zip`
 
 #### Web React Module Generation
 
 Generate a React web module and optionally create an example app:
 
 ```bash
-dart run flutter_embedding_cli:generate web-react [--example] [--verbose]
+dart run flutter_embedding_cli:generate web-react [--example] [--verbose] [--zip] [--zip-password <password>]
 ```
 
 **Options:**
 - `--example`, `-e`: Generate an example React web app alongside the module
 - `--verbose`, `-v`: Show verbose output
+- `--zip`: Create a distributable `web-react_sdk.zip` archive (see [SDK Zip Archives](#sdk-zip-archives))
+- `--zip-password`: Password-protect the zip archive (requires `--zip`)
 
 **What it does:**
 1. Generates the React web module structure with TypeScript handover services
 2. Builds Flutter for web with source maps
 3. Runs npm install, ci, build, and pack commands
 4. If `--example` is specified, creates a complete example React web app
+5. If `--zip` is specified, creates `embedding/web-react/web-react_sdk.zip`
 
 #### Web Angular Module Generation
 
 Generate an Angular web module and optionally create an example app:
 
 ```bash
-dart run flutter_embedding_cli:generate web-angular [--example] [--verbose]
+dart run flutter_embedding_cli:generate web-angular [--example] [--verbose] [--zip] [--zip-password <password>]
 ```
 
 **Options:**
 - `--example`, `-e`: Generate an example Angular web app alongside the module
 - `--verbose`, `-v`: Show verbose output
+- `--zip`: Create a distributable `web-angular_sdk.zip` archive (see [SDK Zip Archives](#sdk-zip-archives))
+- `--zip-password`: Password-protect the zip archive (requires `--zip`)
 
 **What it does:**
 1. Generates the Angular web module structure with TypeScript handover services
 2. Builds Flutter for web with source maps
 3. Runs npm install, build, and pack commands
 4. If `--example` is specified, creates a complete example Angular web app
+5. If `--zip` is specified, creates `embedding/web-angular/web-angular_sdk.zip`
+
+### SDK Zip Archives
+
+Every command supports `--zip` to bundle the generated artifacts into a single distributable archive, created in the platform's `embedding/<platform>/` directory. The archive contains the module/sdk artifacts plus the example app (when present), while regenerable dependency and build directories are excluded:
+
+| Command | Archive | Contents | Excluded |
+|---|---|---|---|
+| `ios` | `ios_sdk.zip` | `example/`, `sdk/` | `example/Pods/` |
+| `android` | `android_sdk.zip` | `example/`, `sdk/` | `example/.gradle/`, `example/.kotlin/`, `example/build/`, `example/app/build/` |
+| `react-native` | `react-native_sdk.zip` | `example/`, `module/<package>-<version>.tgz` | `example/node_modules/`, `example/ios/Pods/`, `example/android/{.gradle,build,app/build}/` |
+| `web-react` | `web-react_sdk.zip` | `example/`, `module/<package>-<version>.tgz` | `example/node_modules/`, `example/build/`, `example/dist/` |
+| `web-angular` | `web-angular_sdk.zip` | `example/`, `module/<package>-<version>.tgz` | `example/node_modules/`, `example/.angular/`, `example/dist/` |
+
+The unzipped layout preserves the relative paths the example apps rely on (e.g. the React Native example installs the module from `../module/<package>-<version>.tgz`, the Android example resolves the Maven repo at `../sdk/host/outputs/repo`), so a recipient can unzip and build the example right away after restoring the excluded dependencies (`pod install`, `npm install`, ...).
+
+With `--zip-password <password>` the archive is protected using zip's classic password protection (`zip -P`). Note that this is ZipCrypto encryption: good enough to keep casual eyes out of a customer deliverable, but not strong cryptography. Any existing archive is replaced on each run.
 
 ### Multiple Views (Web Only)
 
@@ -262,26 +293,31 @@ All generated artifacts are placed in the `embedding/` directory:
 
 - `embedding/ios/sdk/` - iOS framework and CocoaPods files
 - `embedding/ios/example/` - Example iOS app (if `--example` flag used)
+- `embedding/ios/ios_sdk.zip` - Distributable archive (if `--zip` flag used)
 
 ### Android
 
 - `embedding/android/sdk/` - Android AAR files
 - `embedding/android/example/` - Example Android app (if `--example` flag used)
+- `embedding/android/android_sdk.zip` - Distributable archive (if `--zip` flag used)
 
 ### React Native
 
 - `embedding/react-native/module/` - React Native module package
 - `embedding/react-native/example/` - Example React Native app (if `--example` flag used)
+- `embedding/react-native/react-native_sdk.zip` - Distributable archive (if `--zip` flag used)
 
 ### Web React
 
 - `embedding/web-react/module/` - React web module package
 - `embedding/web-react/example/` - Example React web app (if `--example` flag used)
+- `embedding/web-react/web-react_sdk.zip` - Distributable archive (if `--zip` flag used)
 
 ### Web Angular
 
 - `embedding/web-angular/module/` - Angular web module package
 - `embedding/web-angular/example/` - Example Angular web app (if `--example` flag used)
+- `embedding/web-angular/web-angular_sdk.zip` - Distributable archive (if `--zip` flag used)
 
 ## Patch Bricks
 
