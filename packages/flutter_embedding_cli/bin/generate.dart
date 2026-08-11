@@ -224,17 +224,24 @@ void main(List<String> arguments) async {
         await updateReactNativeHandoverServices(verbose, '$flutterRnEmbeddingPath/src/handovers');
 
         await ensureAarJavadocDisabled(verbose);
-        await runFlutterCommand(['build', 'aar', '--build-number=${flutterModuleVersion}'], verbose);
+        // no profile aar needed: the react-native module's build.gradle only consumes flutter_debug and flutter_release
+        await runFlutterCommand(['build', 'aar', '--no-profile', '--build-number=$flutterModuleVersion'], verbose);
 
-        final flutterDir = Directory('$flutterRnEmbeddingPath/android/Flutter');
+        final flutterDir = Directory('$flutterRnEmbeddingPath/android-rn/Flutter');
         if (flutterDir.existsSync()) {
-          Directory('$flutterRnEmbeddingPath/android/Flutter').deleteSync(recursive: true);
+          flutterDir.deleteSync(recursive: true);
         }
-        Directory('$flutterRnEmbeddingPath/android/Flutter').createSync(recursive: true);
+        flutterDir.createSync(recursive: true);
         await runCommand(
             'cp', ['-r', 'build/host/outputs/repo', '$flutterRnEmbeddingPath/android-rn/Flutter/'], verbose);
+        final iosFlutterDir = Directory('$flutterRnEmbeddingPath/ios-rn/Flutter');
+        if (iosFlutterDir.existsSync()) {
+          iosFlutterDir.deleteSync(recursive: true);
+        }
+        // no profile framework needed: podhelper.rb and the podspecs only reference Debug and Release
         await runFlutterCommand(
-            ['build', 'ios-framework', '--cocoapods', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'], verbose);
+            ['build', 'ios-framework', '--cocoapods', '--no-profile', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'],
+            verbose);
 
         await generateZip(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), verbose);
         await generatePodSpecs(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'));
@@ -246,6 +253,12 @@ void main(List<String> arguments) async {
 
         await runCommand('npm', ['install'], directory: flutterRnEmbeddingPath, verbose);
         await runCommand('npm', ['run', 'ci'], directory: flutterRnEmbeddingPath, verbose);
+        // remove tarballs of previous versions so they don't accumulate in the generated module
+        for (final entity in Directory(flutterRnEmbeddingPath).listSync()) {
+          if (entity is File && entity.path.endsWith('.tgz')) {
+            entity.deleteSync();
+          }
+        }
         await runCommand('npm', ['pack', '.'], directory: flutterRnEmbeddingPath, verbose);
         print('React Native module generated in: $flutterRnEmbeddingPath');
         print('React Native module package: $flutterRnEmbeddingPath/$reactNativePackageName-$flutterModuleVersion.tgz');
