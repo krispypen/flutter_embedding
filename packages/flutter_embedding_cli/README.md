@@ -21,7 +21,7 @@ Flutter's official "add-to-app" approach is notoriously complex and painful to s
 - ✅ Pre-configured build setup and dependency management
 - ✅ Type-safe communication between Flutter and host using Protocol Buffers
 - ✅ Ready-to-use example apps for immediate testing
-- ✅ Proper packaging (CocoaPods for iOS, AAR for Android, npm packages for web)
+- ✅ Proper packaging (CocoaPods and/or Swift Package Manager for iOS, AAR for Android, npm packages for web)
 
 Stop wrestling with build configurations. Start shipping features.
 
@@ -41,7 +41,7 @@ Flutter's official [Pigeon](https://pub.dev/packages/pigeon) package is great fo
 
 This CLI tool helps developers create the module and example applications for integrating Flutter modules into existing native mobile and web applications. It supports the following platforms:
 
-- **iOS** - Native iOS framework with CocoaPods integration
+- **iOS** - Native iOS framework with CocoaPods and/or Swift Package Manager integration
 - **Android** - Android Archive (AAR) module
 - **React Native** - Cross-platform React Native module
 - **Web (React)** - React web component module
@@ -91,6 +91,13 @@ flutter_embedding:
   
   # Platform-specific configuration (all optional)
   ios:
+    # Optional: dependency manager to generate iOS SDK packaging (and example
+    # app) for. Defaults to cocoapods. Supported values:
+    # - cocoapods: per-configuration Frameworks.zip files with podspecs and a
+    #   podhelper (Debug frameworks in Debug builds, Release in Release builds)
+    # - swift_package_manager: a local Swift package with hybrid xcframeworks
+    #   (Release slice on devices, Debug slice on simulators)
+    package_manager: cocoapods
     example:
       bundle_identifier: com.example.ios.app
       display_name: My iOS App
@@ -163,12 +170,11 @@ dart run flutter_embedding_cli:generate ios [--example] [--verbose] [--zip] [--z
 
 **What it does:**
 1. Generates a Flutter module plugin with Swift handover services from proto files
-2. Builds the Flutter iOS framework with CocoaPods support
-3. Generates ZIP files of the iOS SDK
-4. Creates Podspec files for CocoaPods integration
-5. Generates a Pod helper file
-6. If `--example` is specified, creates a complete example iOS app
-7. If `--zip` is specified, creates `embedding/ios/ios_sdk.zip`
+2. Builds the Flutter iOS frameworks (xcframeworks per build configuration)
+3. With `ios.package_manager: cocoapods` (the default): zips the frameworks per configuration and generates Podspec files and a Pod helper, so the host app links the Debug frameworks in Debug builds and the Release frameworks in Release builds
+4. With `ios.package_manager: swift_package_manager`: generates a local Swift package in `embedding/ios/sdk/FlutterEmbeddingModule/` containing hybrid xcframeworks (Release slice for physical devices, Debug slice for simulators, since SPM cannot switch frameworks per build configuration) and a `Package.swift` exposing them as a single `FlutterEmbeddingModule` library product
+5. If `--example` is specified, creates a complete example iOS app matching the configured package manager: a Podfile-based app (run `pod install` and open the `.xcworkspace`), or an app whose Xcode project references the local Swift package directly (just open the `.xcodeproj`)
+6. If `--zip` is specified, creates `embedding/ios/ios_sdk.zip`
 
 #### Android Module Generation
 
@@ -292,6 +298,7 @@ All generated artifacts are placed in the `embedding/` directory:
 ### iOS
 
 - `embedding/ios/sdk/` - iOS framework and CocoaPods files
+- `embedding/ios/sdk/FlutterEmbeddingModule/` - Local Swift package (if `ios.package_manager` is `swift_package_manager`)
 - `embedding/ios/example/` - Example iOS app (if `--example` flag used)
 - `embedding/ios/ios_sdk.zip` - Distributable archive (if `--zip` flag used)
 

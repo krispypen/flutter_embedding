@@ -4,12 +4,24 @@ import 'package:args/args.dart';
 import 'package:mason/mason.dart';
 import 'package:yaml/yaml.dart';
 
+import 'src/generate_hybrid_xcframeworks.dart';
 import 'src/generate_pod_spec.dart';
 import 'src/generate_pod_structure.dart';
 import 'src/generate_protoc.dart';
+import 'src/generate_spm_package.dart';
 import 'src/generate_zip.dart';
 import 'src/gradle_init_script.dart';
 import 'src/run_command.dart';
+
+/// iOS SDK packaging via CocoaPods: per-configuration Frameworks.zip files
+/// with podspecs and a podhelper, so the host app links the Debug frameworks
+/// in Debug builds and the Release frameworks in Release builds.
+const iosPackageManagerCocoapods = 'cocoapods';
+
+/// iOS SDK packaging via Swift Package Manager: a local Swift package with
+/// hybrid xcframeworks (Release slice for physical devices, Debug slice for
+/// simulators), since SPM cannot switch frameworks per build configuration.
+const iosPackageManagerSpm = 'swift_package_manager';
 
 /// Exception thrown when configuration is invalid or missing.
 class ConfigurationException implements Exception {
@@ -91,9 +103,11 @@ void main(List<String> arguments) async {
     final webAngularPackageName = _getWebAngularPackageName();
     final webReactPackageName = _getWebReactPackageName();
     final reactNativePackageName = _getReactNativePackageName();
+    final iosPackageManager = getIosPackageManager();
 
     final bool localBricks = localBricksPath.existsSync();
     final brickVars = <String, dynamic>{
+      'iosSpmExample': iosPackageManager != iosPackageManagerCocoapods,
       'flutterModuleVersion': flutterModuleVersion,
       'startParamsMessage': await getStartParamsMessage(),
       'handoversToHostServices': await getHandoversToHostServices(),
@@ -142,10 +156,33 @@ void main(List<String> arguments) async {
         // using --no-cocoapods here makes the Flutter.framework part of the FlutterEmbeddingModule.xcframework, so the podhelper should also not contain a direct pod declaration for Flutter, since it will be included in the FlutterEmbeddingModule.xcframework
         await runFlutterCommand(['build', 'ios-framework', '--no-cocoapods', '--output=embedding/ios/sdk'], verbose);
 
-        await generateZip(Directory('embedding/ios/sdk'), verbose);
-        await generatePodSpecs(Directory('embedding/ios/sdk'));
-        await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false, false);
+        // flutter build ios-framework only recreates the Debug/Profile/Release
+        // directories, so remove sdk-root output of the other package manager
+        // that would otherwise linger after a package_manager switch
+        final spmPackageDirectory = Directory('embedding/ios/sdk/$spmPackageName');
+        final podHelperFile = File('embedding/ios/sdk/podhelper.rb');
+        switch (iosPackageManager) {
+          case iosPackageManagerSpm:
+            print('Generating Swift package (hybrid Release device + Debug simulator frameworks)');
+            if (podHelperFile.existsSync()) {
+              podHelperFile.deleteSync();
+            }
+            await generateHybridXcframeworks(
+                Directory('embedding/ios/sdk'), Directory('${spmPackageDirectory.path}/Frameworks'), verbose);
+            await generateSpmPackage(spmPackageDirectory);
+          case iosPackageManagerCocoapods:
+            if (spmPackageDirectory.existsSync()) {
+              spmPackageDirectory.deleteSync(recursive: true);
+            }
+            await generateZip(Directory('embedding/ios/sdk'), verbose);
+            await generatePodSpecs(Directory('embedding/ios/sdk'));
+            await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false, false);
+        }
         print('iOS module generated in: ${Directory.current.path}/embedding/ios/sdk');
+        if (iosPackageManager != iosPackageManagerCocoapods) {
+          print(
+              'Swift package in: ${Directory.current.path}/embedding/ios/sdk/$spmPackageName, add it to your Xcode project via File > Add Package Dependencies... > Add Local...');
+        }
         final iosExamplePath = '${Directory.current.path}/embedding/ios/example';
         if (results.command?.flag('example') == true) {
           print('Generating iOS example app');
@@ -172,6 +209,24 @@ void main(List<String> arguments) async {
               .replaceAll('com.example.FlutterEmbeddingExample', brickVars['exampleIosBundleIdentifier'])
               .replaceAll('Flutter Embedding Example', brickVars['exampleIosDisplayName']);
           xcodeProject.writeAsStringSync(newXcodeProjectContent);
+          if (iosPackageManager != iosPackageManagerCocoapods) {
+            // the SPM example integrates through the local Swift package in the
+            // Xcode project itself (see the iosSpmExample sections in the brick's
+            // project.pbxproj), so the CocoaPods files (including leftovers from a
+            // previous cocoapods-flavored generation) only cause confusion here
+            for (final path in ['Podfile', 'Podfile.lock']) {
+              final file = File('$iosExamplePath/$path');
+              if (file.existsSync()) {
+                file.deleteSync();
+              }
+            }
+            for (final path in ['FlutterEmbeddingExample.xcworkspace', 'Pods']) {
+              final directory = Directory('$iosExamplePath/$path');
+              if (directory.existsSync()) {
+                directory.deleteSync(recursive: true);
+              }
+            }
+          }
         }
         if (Directory(iosExamplePath).existsSync()) {
           // remove the previous sdk copy first, otherwise cp nests a stale sdk folder inside it on re-runs
@@ -179,9 +234,18 @@ void main(List<String> arguments) async {
           if (exampleFlutterDir.existsSync()) {
             exampleFlutterDir.deleteSync(recursive: true);
           }
-          await runCommand('cp', ['-r', 'embedding/ios/sdk', '$iosExamplePath/Flutter/'], verbose);
-          print(
-              'Example app sdk in: $iosExamplePath, you can now run (cd embedding/ios/example && pod install && open FlutterEmbeddingExample.xcworkspace) in this directory to install the example app');
+          if (iosPackageManager == iosPackageManagerCocoapods) {
+            await runCommand('cp', ['-r', 'embedding/ios/sdk', '$iosExamplePath/Flutter/'], verbose);
+            print(
+                'Example app sdk in: $iosExamplePath, you can now run (cd embedding/ios/example && pod install && open FlutterEmbeddingExample.xcworkspace) in this directory to install the example app');
+          } else {
+            // the SPM example only needs the Swift package, not the podhelper/podspec/zip files
+            exampleFlutterDir.createSync(recursive: true);
+            await runCommand(
+                'cp', ['-r', 'embedding/ios/sdk/$spmPackageName', '$iosExamplePath/Flutter/'], verbose);
+            print(
+                'Example app sdk in: $iosExamplePath, you can now run (cd embedding/ios/example && open FlutterEmbeddingExample.xcodeproj) in this directory to open the example app');
+          }
         }
         if (createZip) {
           await generateSdkZip(Directory('${Directory.current.path}/embedding/ios'), 'ios_sdk.zip',
@@ -535,6 +599,26 @@ void main(List<String> arguments) async {
     stderr.writeln('Stack trace: $stackTrace');
     exit(1);
   }
+}
+
+/// The dependency manager to generate iOS SDK packaging (and example app) for.
+///
+/// Configured via `flutter_embedding.ios.package_manager` in pubspec.yaml,
+/// defaults to CocoaPods.
+String getIosPackageManager() {
+  const allowed = [iosPackageManagerCocoapods, iosPackageManagerSpm];
+  final packageManager = flutterEmbeddingConfig?['ios']?['package_manager'];
+  if (packageManager == null) {
+    return iosPackageManagerCocoapods;
+  }
+  final value = packageManager.toString();
+  if (!allowed.contains(value)) {
+    throw ConfigurationException(
+      'The "flutter_embedding.ios.package_manager" value "$value" is not supported. '
+      'Supported values: ${allowed.join(', ')}.',
+    );
+  }
+  return value;
 }
 
 String? getExampleIosPatchBrickPath() {

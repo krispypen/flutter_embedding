@@ -1,3 +1,7 @@
 
 # FVM Version Cache
+.metals/
 .fvm/
+
+# lockfile of the gRPC codegen package in the flutter-module-plugin brick
+bricks/flutter-module-plugin/__brick__/ios/Package.resolved
