@@ -22,3 +22,7 @@ vars:
   handoversToFlutterServices:
     type: list
     description: List of gRPC services for communication from host to Flutter
+  iosSpmExample:
+    type: boolean
+    description: Whether the example app integrates the SDK via Swift Package Manager instead of CocoaPods
+    default: false

@@ -40,6 +40,7 @@ flutter_embedding:
       - handovers_to_flutter_service.proto
     start_params: StartParams
   ios:
+    package_manager: swift_package_manager
     example:
       brick_patch: embedding/example_patch_bricks/ios
   android:
