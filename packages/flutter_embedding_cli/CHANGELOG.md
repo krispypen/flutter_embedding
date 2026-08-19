@@ -1,3 +1,8 @@
+## 1.0.0
+
+* stable release
+* support for SPM
+
 ## 0.0.1-beta.5
 
 * add support for web
