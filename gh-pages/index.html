@@ -16,588 +16,675 @@
     <meta name="description"
         content="Flutter Embedding CLI - Transform your Flutter app into an embeddable module for iOS, Android, React Native, React Web, and Angular with type-safe Protocol Buffer communication.">
     <title>Flutter Embedding CLI - Embed Flutter Anywhere</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
     <style>
+        /* Style guide shared with krispypen.be: white + pale sky sections,
+           bright Flutter blue, deep navy, and a handful of playful accents. */
+        @font-face {
+            font-family: 'Google Sans Flex';
+            src: url('fonts/GoogleSansFlex-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Google Sans Flex';
+            src: url('fonts/GoogleSansFlex-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Google Sans Flex';
+            src: url('fonts/GoogleSansFlex-SemiBold.ttf') format('truetype');
+            font-weight: 600;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Google Sans Flex';
+            src: url('fonts/GoogleSansFlex-Bold.ttf') format('truetype');
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Google Sans Code';
+            src: url('fonts/GoogleSansCode-Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Google Sans Code';
+            src: url('fonts/GoogleSansCode-Medium.ttf') format('truetype');
+            font-weight: 500;
+            font-display: swap;
+        }
+
+        :root {
+            --white: #FFFFFF;
+            --sky: #E7F8FF;
+            --sky-faint: #F3FCFF;
+            --sky-mid: #DCF5FF;
+            --blue: #027DFD;
+            --blue-dark: #0553B1;
+            --navy: #042B59;
+            --navy-deep: #042449;
+            --teal: #1CDAC5;
+            --teal-bright: #00F6DB;
+            --teal-pale: #DFF9F4;
+            --teal-ink: #0B7264;
+            --yellow: #FFF275;
+            --yellow-pale: #FCFCE2;
+            --yellow-ink: #7A6200;
+            --purple-pale: #F1EAFE;
+            --purple: #833EF2;
+            --body: #4A4A4A;
+            --border: #DADCE0;
+            --nav-border: #E8EAED;
+            --card-border: #E1EEF5;
+            --chip-border: #B8EAFE;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #2d1b4e 100%);
-            color: #e8e6f0;
-            overflow-x: hidden;
+            font-family: 'Google Sans Flex', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--white);
+            color: var(--body);
             line-height: 1.6;
+            font-size: 15.5px;
+            overflow-x: hidden;
         }
 
-        .bg-grid {
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 0;
+        h1,
+        h2,
+        h3 {
+            color: var(--navy);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
         }
 
-        .glow-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.3;
-            pointer-events: none;
+        a {
+            color: var(--blue-dark);
+            text-decoration: none;
         }
 
-        .glow-orb-1 {
-            width: 500px;
-            height: 500px;
-            background: #6366f1;
-            top: -200px;
-            right: -100px;
-        }
-
-        .glow-orb-2 {
-            width: 400px;
-            height: 400px;
-            background: #06b6d4;
-            bottom: -150px;
-            left: -100px;
-        }
-
-        .glow-orb-3 {
-            width: 300px;
-            height: 300px;
-            background: #8b5cf6;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        code {
+            font-family: 'Google Sans Code', ui-monospace, SFMono-Regular, Menlo, monospace;
         }
 
         .container {
-            position: relative;
-            max-width: 1200px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 0 24px;
-            z-index: 1;
+            padding-left: 48px;
+            padding-right: 48px;
+        }
+
+        .band {
+            padding-top: 88px;
+            padding-bottom: 88px;
+        }
+
+        .band--sky-faint {
+            background: var(--sky-faint);
+        }
+
+        .band--navy {
+            background: var(--navy);
+        }
+
+        /* Labels & headings */
+        .eyebrow {
+            font-family: 'Google Sans Code', monospace;
+            font-size: 12.5px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--blue);
+        }
+
+        .band--navy .eyebrow {
+            color: var(--teal);
+        }
+
+        .section-title {
+            font-size: clamp(30px, 4vw, 40px);
+            margin-top: 14px;
+        }
+
+        .band--navy .section-title {
+            color: var(--white);
+        }
+
+        .section-intro {
+            margin-top: 16px;
+            max-width: 560px;
+            font-size: 17px;
+        }
+
+        .band--navy .section-intro {
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        /* Pill buttons */
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 26px;
+            border-radius: 40px;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 15.5px;
+            font-weight: 600;
+            line-height: 1.2;
+            border: 1.5px solid transparent;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .pill:hover {
+            background: var(--blue-dark);
+        }
+
+        .pill--outline {
+            background: transparent;
+            color: var(--navy);
+            border-color: var(--border);
+        }
+
+        .pill--outline:hover {
+            background: var(--sky-faint);
+        }
+
+        .pill--teal {
+            background: var(--teal);
+            color: var(--navy);
+        }
+
+        .pill--teal:hover {
+            background: var(--teal-bright);
+        }
+
+        .pill svg {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
         }
 
         /* Navigation */
         nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            background: rgba(15, 15, 35, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--white);
+            border-bottom: 1px solid var(--nav-border);
         }
 
         nav .container {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 16px 24px;
+            gap: 28px;
+            padding-top: 14px;
+            padding-bottom: 14px;
         }
 
-        .nav-logo {
+        .nav-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: inherit;
+            gap: 10px;
+            margin-right: auto;
         }
 
-        .nav-logo svg {
-            width: 32px;
-            height: 32px;
+        .nav-brand .mark {
+            width: 14px;
+            height: 14px;
+            background: var(--blue);
+            border-radius: 4px;
+            flex-shrink: 0;
         }
 
-        .nav-logo span {
+        .nav-brand span {
+            font-size: 18px;
             font-weight: 600;
-            font-size: 1.1rem;
+            color: var(--navy);
+            line-height: 1.2;
+            white-space: nowrap;
         }
 
         .nav-links {
             display: flex;
-            gap: 32px;
+            align-items: center;
+            gap: 28px;
             list-style: none;
         }
 
         .nav-links a {
-            color: #a1a1c7;
-            text-decoration: none;
+            font-size: 15px;
             font-weight: 500;
-            transition: color 0.2s ease;
+            color: var(--navy);
+            line-height: 1.2;
+            transition: color 0.15s ease;
         }
 
         .nav-links a:hover {
-            color: #fff;
+            color: var(--blue);
         }
 
-        .nav-cta {
-            display: flex;
-            gap: 12px;
+        nav .pill {
+            padding: 10px 22px;
+            font-size: 15px;
         }
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: #e8e6f0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Hero Section */
+        /* Hero */
         .hero {
-            padding: 160px 0 100px;
-            text-align: center;
+            background:
+                radial-gradient(640px 420px at 88% 12%, rgba(28, 218, 197, 0.16), transparent 60%),
+                radial-gradient(560px 400px at 8% 92%, rgba(255, 242, 117, 0.28), transparent 60%),
+                linear-gradient(180deg, var(--sky), var(--sky-faint));
+            padding-top: 96px;
+            padding-bottom: 96px;
         }
 
-        .flutter-logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 24px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #06b6d4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            color: #a1a1c7;
-            max-width: 700px;
-            margin: 0 auto 40px;
-        }
-
-        .hero-cta {
+        .hero .container {
             display: flex;
-            gap: 16px;
-            justify-content: center;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .hero-chip {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--white);
+            border: 1px solid var(--chip-border);
+            border-radius: 40px;
+            font-family: 'Google Sans Code', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--blue);
+        }
+
+        .hero h1 {
+            font-size: clamp(46px, 6.5vw, 76px);
+            line-height: 1.0;
+            margin-top: 26px;
+        }
+
+        .hero-sub {
+            max-width: 540px;
+            font-size: 19px;
+            margin-top: 22px;
+        }
+
+        .hero-actions {
+            display: flex;
             flex-wrap: wrap;
-            margin-bottom: 60px;
+            gap: 14px;
+            margin-top: 34px;
         }
 
-        .hero-cta .btn {
-            padding: 14px 28px;
-            font-size: 1rem;
-        }
-
-        /* Install Command */
         .install-command {
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            margin-top: 26px;
             padding: 12px 20px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            color: #a5b4fc;
+            background: var(--white);
+            border: 1px solid var(--chip-border);
+            border-radius: 40px;
+            font-family: 'Google Sans Code', monospace;
+            font-size: 13.5px;
+            color: var(--navy);
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .install-command .prompt {
+            color: var(--teal-ink);
         }
 
         .install-command code {
-            color: #06b6d4;
+            color: var(--blue-dark);
+            white-space: nowrap;
         }
 
         .install-command button {
             background: none;
             border: none;
-            color: #6b6b8a;
+            color: var(--border);
             cursor: pointer;
             padding: 4px;
-            transition: color 0.2s ease;
+            display: flex;
+            transition: color 0.15s ease;
         }
 
         .install-command button:hover {
-            color: #fff;
+            color: var(--blue);
         }
 
-        /* Section Styles */
-        section {
-            padding: 100px 0;
+        /* Hero sticker collage */
+        .hero-collage {
+            position: relative;
+            width: 400px;
+            height: 380px;
+            flex-shrink: 0;
         }
 
+        .sticker {
+            position: absolute;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 10px 24px rgba(4, 43, 89, 0.14);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sticker svg {
+            display: block;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        /* Section header block */
         .section-header {
-            text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 44px;
         }
 
-        .section-header h2 {
-            font-size: clamp(1.8rem, 4vw, 2.5rem);
-            font-weight: 700;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .section-header p {
-            color: #8888a8;
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Demo Cards */
-        .demo-section {
-            padding: 80px 0;
-        }
-
-        .cards {
+        /* Pastel cards */
+        .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 32px;
-            max-width: 800px;
-            margin: 0 auto;
+            gap: 24px;
         }
 
         .card {
-            position: relative;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: block;
             border-radius: 24px;
-            padding: 40px 32px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            padding: 30px;
+            color: var(--body);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
+        a.card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(4, 43, 89, 0.10);
         }
 
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(99, 102, 241, 0.15);
+        .card--sky {
+            background: var(--sky-mid);
         }
 
-        .card:hover::before {
-            opacity: 1;
+        .card--teal {
+            background: var(--teal-pale);
         }
 
-        .card-icon {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 24px;
-            position: relative;
-            z-index: 1;
+        .card--yellow {
+            background: var(--yellow-pale);
+        }
+
+        .card--purple {
+            background: var(--purple-pale);
+        }
+
+        .card .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .card .card-icon svg {
+            width: 30px;
+            height: 30px;
         }
 
         .card h3 {
-            font-size: 1.5rem;
+            font-size: 22px;
             font-weight: 600;
-            margin-bottom: 12px;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 10px;
         }
 
         .card p {
-            color: #8888a8;
-            position: relative;
-            z-index: 1;
+            font-size: 15.5px;
         }
 
-        .card-angular:hover {
-            border-color: rgba(221, 0, 49, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(221, 0, 49, 0.2);
-        }
-
-        .card-react:hover {
-            border-color: rgba(97, 218, 251, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 60px rgba(97, 218, 251, 0.2);
-        }
-
-        .arrow {
-            position: absolute;
-            bottom: 32px;
-            right: 32px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
+        .card .card-link {
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            gap: 6px;
+            margin-top: 22px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--blue-dark);
+            line-height: 1.2;
         }
 
-        .card:hover .arrow {
-            background: rgba(255, 255, 255, 0.1);
+        .card .card-link svg {
+            width: 17px;
+            height: 17px;
+            transition: transform 0.15s ease;
+        }
+
+        a.card:hover .card-link svg {
             transform: translateX(4px);
         }
 
-        .arrow svg {
-            width: 20px;
-            height: 20px;
-            stroke: currentColor;
+        /* White tiles (on tinted bands) */
+        .tile {
+            background: var(--white);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 26px;
         }
 
-        /* Why Section */
-        .why-section {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .why-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-        }
-
-        .why-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 40px;
-        }
-
-        .why-card h3 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .why-card h3 .icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .why-card h3 .icon svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .why-card p {
-            color: #a1a1c7;
-            margin-bottom: 20px;
-        }
-
-        .why-card ul {
+        /* Check / cross lists */
+        ul.checks {
             list-style: none;
         }
 
-        .why-card li {
+        ul.checks li {
             display: flex;
             align-items: flex-start;
             gap: 12px;
             margin-bottom: 12px;
-            color: #c4c4e0;
         }
 
-        .why-card li svg {
+        ul.checks li svg {
             width: 20px;
             height: 20px;
-            color: #10b981;
             flex-shrink: 0;
+            margin-top: 3px;
+            color: var(--teal-ink);
+        }
+
+        ul.checks.crosses li svg {
+            color: #9AA0A6;
+        }
+
+        /* Stats */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 24px 20px;
+        }
+
+        .stat .number {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.1;
+        }
+
+        .stat .label {
+            font-weight: 600;
+            color: var(--navy);
+            margin-top: 6px;
+        }
+
+        .stat .detail {
+            font-size: 14px;
             margin-top: 2px;
         }
 
-        /* Features Section */
-        .features-grid {
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 15px;
+        }
+
+        .comparison-table th {
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check {
+            color: var(--teal-ink);
+            font-weight: 600;
+        }
+
+        .cross {
+            color: #9AA0A6;
+        }
+
+        /* Feature cards */
+        .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
+            gap: 20px;
         }
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 16px;
-            padding: 32px;
-            transition: all 0.3s ease;
+        .feature-grid .tile h3 {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 10px;
         }
 
-        .feature-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.1);
-            transform: translateY(-4px);
+        .feature-grid .tile p {
+            font-size: 15px;
         }
 
-        .feature-icon {
-            width: 48px;
-            height: 48px;
+        .icon-chip {
+            width: 44px;
+            height: 44px;
             border-radius: 12px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            background: var(--sky-mid);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
-        .feature-icon svg {
-            width: 24px;
-            height: 24px;
-            color: #a5b4fc;
+        .icon-chip svg {
+            width: 22px;
+            height: 22px;
+            color: var(--blue-dark);
         }
 
-        .feature-card h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .feature-card p {
-            color: #8888a8;
-            font-size: 0.95rem;
-        }
-
-        /* Platforms Section */
-        .platforms-grid {
+        /* Platforms (navy band) */
+        .platform-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
         }
 
         .platform-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--white);
             border-radius: 16px;
-            padding: 32px 24px;
+            padding: 30px 24px;
             text-align: center;
-            transition: all 0.3s ease;
         }
 
-        .platform-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            transform: translateY(-4px);
-        }
-
-        .platform-icon {
-            width: 56px;
-            height: 56px;
-            margin: 0 auto 16px;
+        .platform-card svg {
+            width: 52px;
+            height: 52px;
+            margin-bottom: 14px;
         }
 
         .platform-card h3 {
-            font-size: 1rem;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .platform-card p {
+            font-size: 13.5px;
+        }
+
+        /* Steps */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 48px;
+        }
+
+        .step-chip {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 40px;
+            background: var(--sky-mid);
+            font-family: 'Google Sans Code', monospace;
+            font-size: 11.5px;
+            font-weight: 500;
+            letter-spacing: 1.2px;
+            color: var(--blue-dark);
+            margin-bottom: 16px;
+        }
+
+        .steps h3 {
+            font-size: 18px;
             font-weight: 600;
             margin-bottom: 8px;
         }
 
-        .platform-card p {
-            color: #6b6b8a;
-            font-size: 0.85rem;
+        .steps p {
+            font-size: 15px;
         }
 
-        /* How It Works Section */
-        .how-section {
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 32px;
-            margin-bottom: 60px;
-        }
-
-        .step {
-            text-align: center;
-            position: relative;
-        }
-
-        .step-number {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin: 0 auto 20px;
-        }
-
-        .step h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .step p {
-            color: #8888a8;
-        }
-
-        /* Code Block */
+        /* Code blocks */
         .code-block {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--navy-deep);
             border-radius: 16px;
             overflow: hidden;
-            max-width: 800px;
-            margin: 0 auto;
         }
 
         .code-header {
@@ -605,8 +692,7 @@
             align-items: center;
             gap: 8px;
             padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .code-dot {
@@ -616,365 +702,289 @@
         }
 
         .code-dot-red {
-            background: #ff5f56;
+            background: #FF5F56;
         }
 
         .code-dot-yellow {
-            background: #ffbd2e;
+            background: #FFBD2E;
         }
 
         .code-dot-green {
-            background: #27c93f;
+            background: #27C93F;
         }
 
         .code-title {
             margin-left: 12px;
-            font-size: 0.85rem;
-            color: #6b6b8a;
+            font-family: 'Google Sans Code', monospace;
+            font-size: 12.5px;
+            color: rgba(231, 248, 255, 0.55);
         }
 
         .code-content {
             padding: 24px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
+            font-family: 'Google Sans Code', monospace;
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #E7F8FF;
             overflow-x: auto;
         }
 
         .code-content pre {
             margin: 0;
+            font-family: inherit;
         }
 
         .code-comment {
-            color: #6b6b8a;
+            color: rgba(231, 248, 255, 0.45);
         }
 
         .code-keyword {
-            color: #c792ea;
+            color: #B8A6FF;
         }
 
         .code-string {
-            color: #c3e88d;
+            color: var(--teal);
         }
 
         .code-command {
-            color: #82aaff;
+            color: #7CC5FF;
         }
 
         .code-flag {
-            color: #ffcb6b;
+            color: var(--yellow);
         }
 
-        /* Comparison Table */
-        .comparison {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 900px;
-            margin: 60px auto 0;
+        .code-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
         }
 
-        .comparison h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 24px;
+        /* Two-column explainer (text + code) */
+        .split {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+            align-items: center;
+        }
+
+        .split h3 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .split p {
+            margin-bottom: 16px;
+        }
+
+        .split p:last-child {
+            margin-bottom: 0;
+        }
+
+        .inline-code {
+            background: var(--sky-mid);
+            color: var(--blue-dark);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        /* CTA */
+        .cta {
             text-align: center;
         }
 
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
+        .cta .section-intro {
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .comparison-table th,
-        .comparison-table td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .comparison-table th {
-            color: #a5b4fc;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .comparison-table td {
-            color: #c4c4e0;
-        }
-
-        .comparison-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .check {
-            color: #10b981;
-        }
-
-        .cross {
-            color: #ef4444;
+        .cta .hero-actions {
+            justify-content: center;
         }
 
         /* Footer */
         footer {
-            padding: 60px 0 40px;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--navy-deep);
+            padding: 44px 0;
+        }
+
+        .footer-top {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: auto;
+        }
+
+        .footer-brand .mark {
+            width: 12px;
+            height: 12px;
+            background: var(--teal);
+            border-radius: 3px;
+        }
+
+        .footer-brand span {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.2;
         }
 
         .footer-links {
             display: flex;
-            justify-content: center;
-            gap: 32px;
-            margin-bottom: 24px;
             flex-wrap: wrap;
+            gap: 24px;
         }
 
         .footer-links a {
-            color: #8888a8;
-            text-decoration: none;
+            font-size: 15px;
             font-weight: 500;
-            transition: color 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.2;
+            transition: color 0.15s ease;
         }
 
         .footer-links a:hover {
-            color: #a5b4fc;
+            color: var(--teal-bright);
         }
 
-        .footer-links svg {
-            width: 20px;
-            height: 20px;
+        .footer-note {
+            margin-top: 26px;
+            font-size: 13.5px;
+            color: rgba(255, 255, 255, 0.55);
         }
 
-        .footer-copyright {
-            color: #6b6b8a;
-            font-size: 0.9rem;
-        }
-
-        .footer-copyright a {
-            color: #a5b4fc;
-            text-decoration: none;
-        }
-
-        /* Mobile Menu */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: #e8e6f0;
-            cursor: pointer;
-            padding: 8px;
+        .footer-note a {
+            color: rgba(255, 255, 255, 0.85);
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-
-            .nav-links,
-            .nav-cta {
+        @media (max-width: 999px) {
+            .hero-collage {
                 display: none;
             }
+        }
 
-            .mobile-menu-btn {
-                display: block;
+        @media (max-width: 760px) {
+            .container {
+                padding-left: 22px;
+                padding-right: 22px;
+            }
+
+            .band {
+                padding-top: 64px;
+                padding-bottom: 64px;
             }
 
             .hero {
-                padding: 120px 0 60px;
+                padding-top: 64px;
+                padding-bottom: 64px;
             }
 
-            .why-grid {
-                grid-template-columns: 1fr;
+            .nav-links {
+                display: none;
             }
 
-            .comparison {
-                padding: 24px;
-                overflow-x: auto;
-            }
-
-            .comparison-table {
-                min-width: 500px;
+            .hero-sub {
+                font-size: 17px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="bg-grid"></div>
-    <div class="glow-orb glow-orb-1"></div>
-    <div class="glow-orb glow-orb-2"></div>
-    <div class="glow-orb glow-orb-3"></div>
-
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <a href="#" class="nav-logo">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#39cefd" />
-                    <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#03569b" />
-                </svg>
+            <a href="#" class="nav-brand">
+                <div class="mark"></div>
                 <span>Flutter Embedding</span>
             </a>
             <ul class="nav-links">
-                <li><a href="#demo">Demo</a></li>
-                <li><a href="#use-case">Use Case</a></li>
+                <li><a href="#demo">Demos</a></li>
                 <li><a href="#why">Why</a></li>
                 <li><a href="#features">Features</a></li>
-                <li><a href="#platforms">Platforms</a></li>
-                <li><a href="#how-it-works">Get Started</a></li>
+                <li><a href="#how-it-works">Get started</a></li>
+                <li><a href="https://github.com/krispypen/flutter_embedding" target="_blank">GitHub</a></li>
             </ul>
-            <div class="nav-cta">
-                <a href="https://github.com/krispypen/flutter_embedding" target="_blank" class="btn btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                    GitHub
-                </a>
-                <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank" class="btn btn-primary">
-                    View on pub.dev
-                </a>
-            </div>
-            <button class="mobile-menu-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 12h18M3 6h18M3 18h18" />
-                </svg>
-            </button>
+            <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank" class="pill">View on pub.dev</a>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
+    <!-- Hero -->
+    <header class="hero">
         <div class="container">
-            <svg class="flutter-logo" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                width="64" height="64">
-                <g transform="matrix(.061615 0 0 .061615 -1.430818 -1.2754)">
-                    <defs>
-                        <path id="A"
-                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
-                    </defs>
-                    <clipPath id="B">
-                        <use xlink:href="#A" />
-                    </clipPath>
-                    <g clip-path="url(#B)">
-                        <path d="M360.3 779.7L520 939.5 959.4 500H639.9z" fill="#39cefd" />
-                    </g>
-                    <defs>
-                        <path id="C"
-                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
-                    </defs>
-                    <clipPath id="D">
-                        <use xlink:href="#C" />
-                    </clipPath>
-                    <path clip-path="url(#D)" d="M639.9 20.7h319.5l-679 679.1L120.6 540z" fill="#39cefd" />
-                    <defs>
-                        <path id="E"
-                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
-                    </defs>
-                    <clipPath id="F">
-                        <use xlink:href="#E" />
-                    </clipPath>
-                    <path clip-path="url(#F)" d="M520 939.5l119.9 119.8h319.5L679.8 779.7z" fill="#03569b" />
-                    <defs>
-                        <path id="G"
-                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
-                    </defs>
-                    <clipPath id="H">
-                        <use xlink:href="#G" />
-                    </clipPath>
-                    <linearGradient id="I" gradientUnits="userSpaceOnUse" x1="566.635" y1="970.339" x2="685.65"
-                        y2="851.324">
-                        <stop offset="0" stop-color="#1a237e" stop-opacity=".4" />
-                        <stop offset="1" stop-color="#1a237e" stop-opacity="0" />
-                    </linearGradient>
-                    <path clip-path="url(#H)" d="M757 857.4l-77.2-77.7L520 939.5z" fill="url(#I)" />
-                    <defs>
-                        <path id="J"
-                            d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z" />
-                    </defs>
-                    <clipPath id="K">
-                        <use xlink:href="#J" />
-                    </clipPath>
-                    <g clip-path="url(#K)">
-                        <path d="M360.282 779.645L520.086 619.84 679.9 779.645 520.086 939.45z" fill="#16b9fd" />
-                    </g>
-                    <radialGradient id="L" cx="7824.659" cy="-2855.979" r="5082.889"
-                        gradientTransform="matrix(0.25,0,0,-0.25,-1812,-622.5)" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stop-color="#fff" stop-opacity=".1" />
-                        <stop offset="1" stop-color="#fff" stop-opacity="0" />
-                    </radialGradient>
-                    <path
-                        d="M959.4 500L679.8 779.7l279.6 279.7H639.9L360.2 779.7 639.9 500h319.5zM639.9 20.7L120.6 540l159.8 159.8 679-679.1H639.9z"
-                        fill="url(#L)" />
-                </g>
-            </svg>
-
-            <h1>Embed Flutter Anywhere</h1>
-            <p class="subtitle">
-                Transform your Flutter application into an embeddable module for iOS, Android, React Native, React Web,
-                and Angular — with type-safe Protocol Buffer communication.
-            </p>
-
-            <div class="hero-cta">
-                <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank" class="btn btn-primary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                    </svg>
-                    Get Started
-                </a>
-                <a href="#demo" class="btn btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 3 19 12 5 21 5 3" />
-                    </svg>
-                    See Demos
-                </a>
-            </div>
-
-            <div class="install-command">
-                <span>$</span>
-                <code>dart pub add dev:flutter_embedding_cli</code>
-                <button onclick="navigator.clipboard.writeText('dart pub add dev:flutter_embedding_cli')"
-                    title="Copy to clipboard">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Demo Section -->
-    <section class="demo-section" id="demo">
-        <div class="container">
-            <div class="section-header">
-                <h2>Live Demos</h2>
-                <p>Experience Flutter embedded in real web frameworks. These demos show bidirectional communication in
-                    action.</p>
-            </div>
-
-            <div class="cards">
-                <a href="./angular/" class="card card-angular">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031" />
-                        <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F" />
-                        <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z"
-                            fill="white" />
-                    </svg>
-                    <h3>Angular Demo</h3>
-                    <p>Flutter embedded in an Angular application with full handover communication.</p>
-                    <div class="arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
+            <div class="hero-copy">
+                <span class="hero-chip">Open-source Flutter tooling</span>
+                <h1>Embed Flutter anywhere</h1>
+                <p class="hero-sub">
+                    Transform your Flutter application into an embeddable module for iOS, Android, React Native,
+                    React Web, and Angular — with type-safe Protocol Buffer communication.
+                </p>
+                <div class="hero-actions">
+                    <a href="#how-it-works" class="pill">
+                        Get started
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>
-                    </div>
-                </a>
+                    </a>
+                    <a href="#demo" class="pill pill--outline">
+                        See live demos
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 17L17 7M8 7h9v9" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="install-command">
+                    <span class="prompt">$</span>
+                    <code>dart pub add dev:flutter_embedding_cli</code>
+                    <button onclick="navigator.clipboard.writeText('dart pub add dev:flutter_embedding_cli')"
+                        title="Copy to clipboard">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
 
-                <a href="./react/" class="card card-react">
-                    <svg class="card-icon" viewBox="0 0 24 24" fill="none">
+            <div class="hero-collage" aria-hidden="true">
+                <div class="circle" style="top: 12px; right: 150px; width: 110px; height: 110px; background: var(--yellow);"></div>
+                <div class="circle" style="bottom: 84px; left: 0; width: 48px; height: 48px; background: var(--teal);"></div>
+                <div class="sticker" style="top: 44px; right: 0; transform: rotate(2deg); padding: 34px; border-radius: 32px;">
+                    <svg width="96" height="96" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#39cefd" opacity="0" />
+                        <path d="M14.5 2L4 12.5l3.2 3.2L20.9 2h-6.4zM14.5 11.6l-5 5L14.5 21.5h6.4l-5-4.95 5-4.95h-6.4z"
+                            fill="#39cefd" />
+                        <path d="M9.5 16.55l2.55 2.5 2.45-2.45-2.5-2.5-2.5 2.45z" fill="#03569b" />
+                    </svg>
+                </div>
+                <div class="sticker" style="top: 6px; left: 44px; transform: rotate(-5deg);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="#A2AAAD">
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                    </svg>
+                </div>
+                <div class="sticker" style="top: 148px; left: 70px; transform: rotate(-3deg);">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="#3DDC84">
+                        <path
+                            d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                    </svg>
+                </div>
+                <div class="sticker" style="bottom: 8px; left: 168px; transform: rotate(3deg);">
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
                         <circle cx="12" cy="12" r="2.5" fill="#61DAFB" />
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
@@ -982,117 +992,162 @@
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
                             transform="rotate(120 12 12)" />
                     </svg>
-                    <h3>React Demo</h3>
-                    <p>Flutter running inside a React application with seamless integration.</p>
-                    <div class="arrow">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
+                </div>
+                <div class="sticker" style="top: 0; right: 118px; transform: rotate(7deg); padding: 10px; border-radius: 18px;">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031" />
+                        <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F" />
+                        <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z"
+                            fill="white" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Demo Section -->
+    <section class="band" id="demo">
+        <div class="container">
+            <div class="section-header">
+                <span class="eyebrow">Live demos</span>
+                <h2 class="section-title">See it running</h2>
+                <p class="section-intro">Experience Flutter embedded in real web frameworks. These demos show
+                    bidirectional communication in action.</p>
+            </div>
+
+            <div class="card-grid">
+                <a href="./angular/" class="card card--purple">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031" />
+                            <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F" />
+                            <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z"
+                                fill="white" />
                         </svg>
                     </div>
+                    <h3>Angular demo</h3>
+                    <p>Flutter embedded in an Angular application with full handover communication.</p>
+                    <span class="card-link">
+                        Open the demo
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </span>
+                </a>
+
+                <a href="./react/" class="card card--sky">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="2.5" fill="#61DAFB" />
+                            <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
+                            <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                                transform="rotate(60 12 12)" />
+                            <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
+                                transform="rotate(120 12 12)" />
+                        </svg>
+                    </div>
+                    <h3>React demo</h3>
+                    <p>Flutter running inside a React application with seamless integration.</p>
+                    <span class="card-link">
+                        Open the demo
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </span>
                 </a>
             </div>
         </div>
     </section>
 
     <!-- Use Case Section -->
-    <section id="use-case">
+    <section class="band band--sky-faint" id="use-case">
         <div class="container">
             <div class="section-header">
-                <h2>The Perfect Use Case: SDK Development</h2>
-                <p>Build your SDK once in Flutter, distribute it to clients on any platform</p>
+                <span class="eyebrow">The perfect use case</span>
+                <h2 class="section-title">Build your SDK once</h2>
+                <p class="section-intro">Imagine you're developing an SDK with rich UI components — a payment flow, an
+                    onboarding wizard, a chat interface. Your clients build native iOS apps, Android apps, React Native
+                    apps, or web apps with React and Angular.</p>
             </div>
 
-            <div class="why-card" style="max-width: 900px; margin: 0 auto;">
-                <h3>
-                    <div class="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                            <line x1="12" y1="22.08" x2="12" y2="12" />
-                        </svg>
-                    </div>
-                    Building a UI-Based SDK?
-                </h3>
-                <p style="font-size: 1.1rem; margin-bottom: 24px;">
-                    Imagine you're developing an SDK with rich UI components — a payment flow, an onboarding wizard, a chat interface, or any complex user experience. Your clients are diverse: some build native iOS apps, others use Android, React Native, or web frameworks like React and Angular.
-                </p>
-                <p style="font-size: 1.1rem; margin-bottom: 24px;">
-                    <strong>Without Flutter Embedding CLI:</strong> You'd need to build and maintain separate codebases for each platform — native Swift/Kotlin, React Native bridges, web components. That's 5+ implementations to keep in sync.
-                </p>
-                <p style="font-size: 1.1rem; margin-bottom: 32px;">
-                    <strong>With Flutter Embedding CLI:</strong> Build your SDK once in Flutter, then generate ready-to-distribute packages for every platform. Your clients integrate it like any other native library — they don't even need to know it's Flutter inside.
-                </p>
-
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                    <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 8px;">1</div>
-                        <div style="font-weight: 600; margin-bottom: 4px;">Codebase</div>
-                        <div style="color: #8888a8; font-size: 0.9rem;">Flutter SDK</div>
-                    </div>
-                    <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 8px;">5</div>
-                        <div style="font-weight: 600; margin-bottom: 4px;">Platforms</div>
-                        <div style="color: #8888a8; font-size: 0.9rem;">iOS, Android, RN, React, Angular</div>
-                    </div>
-                    <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 12px; padding: 20px; text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 8px;">∞</div>
-                        <div style="font-weight: 600; margin-bottom: 4px;">Clients</div>
-                        <div style="color: #8888a8; font-size: 0.9rem;">No Flutter knowledge needed</div>
-                    </div>
+            <div class="stat-grid" style="margin-bottom: 40px;">
+                <div class="tile stat">
+                    <div class="number">1</div>
+                    <div class="label">Codebase</div>
+                    <div class="detail">Flutter SDK</div>
                 </div>
-
-                <ul style="margin-top: 32px;">
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <strong>Native-looking packages:</strong> CocoaPods for iOS, AAR for Android, npm for web — clients integrate using familiar tools
-                    </li>
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <strong>Type-safe API:</strong> Protocol Buffers ensure your SDK's interface is consistent and validated across all platforms
-                    </li>
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <strong>Ship faster:</strong> Fix bugs and add features once, regenerate packages, and all clients benefit simultaneously
-                    </li>
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                        <strong>Pixel-perfect consistency:</strong> Your UI looks and behaves identically regardless of which platform your client uses
-                    </li>
-                </ul>
+                <div class="tile stat">
+                    <div class="number">5</div>
+                    <div class="label">Platforms</div>
+                    <div class="detail">iOS, Android, RN, React, Angular</div>
+                </div>
+                <div class="tile stat">
+                    <div class="number">∞</div>
+                    <div class="label">Clients</div>
+                    <div class="detail">No Flutter knowledge needed</div>
+                </div>
             </div>
+
+            <p style="max-width: 720px; margin-bottom: 12px;">
+                <strong style="color: var(--navy);">Without Flutter Embedding CLI:</strong> you'd build and maintain
+                separate codebases for each platform — native Swift/Kotlin, React Native bridges, web components.
+                That's 5+ implementations to keep in sync.
+            </p>
+            <p style="max-width: 720px; margin-bottom: 32px;">
+                <strong style="color: var(--navy);">With Flutter Embedding CLI:</strong> build your SDK once in
+                Flutter, then generate ready-to-distribute packages for every platform. Your clients integrate it like
+                any other native library — they don't even need to know it's Flutter inside.
+            </p>
+
+            <ul class="checks" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 4px 32px;">
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span><strong style="color: var(--navy);">Native-looking packages:</strong> CocoaPods or Swift
+                        Package Manager for iOS, AAR for Android, npm for web</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span><strong style="color: var(--navy);">Type-safe API:</strong> Protocol Buffers keep your SDK's
+                        interface consistent and validated across all platforms</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span><strong style="color: var(--navy);">Ship faster:</strong> fix bugs and add features once,
+                        regenerate packages, and all clients benefit simultaneously</span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span><strong style="color: var(--navy);">Pixel-perfect consistency:</strong> your UI looks and
+                        behaves identically on every platform</span>
+                </li>
+            </ul>
         </div>
     </section>
 
     <!-- Why Section -->
-    <section class="why-section" id="why">
+    <section class="band" id="why">
         <div class="container">
             <div class="section-header">
-                <h2>Why Flutter Embedding CLI?</h2>
-                <p>Stop wrestling with build configurations. Start shipping features.</p>
+                <span class="eyebrow">Why</span>
+                <h2 class="section-title">Stop wrestling with build configurations</h2>
             </div>
 
-            <div class="why-grid">
-                <div class="why-card">
-                    <h3>
-                        <div class="icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
-                        </div>
-                        The Problem with Add-to-App
-                    </h3>
-                    <p>Flutter's official "add-to-app" approach is notoriously complex and painful to set up. It
-                        requires:</p>
-                    <ul>
+            <div class="card-grid">
+                <div class="card card--yellow">
+                    <h3>The problem with add-to-app</h3>
+                    <p style="margin-bottom: 18px;">Flutter's official "add-to-app" approach is notoriously complex and
+                        painful to set up. It requires:</p>
+                    <ul class="checks crosses">
                         <li>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -1120,18 +1175,11 @@
                     </ul>
                 </div>
 
-                <div class="why-card">
-                    <h3>
-                        <div class="icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                        </div>
-                        The Solution
-                    </h3>
-                    <p>Flutter Embedding CLI eliminates this pain. With a single command, it generates production-ready
-                        modules with:</p>
-                    <ul>
+                <div class="card card--teal">
+                    <h3>The solution</h3>
+                    <p style="margin-bottom: 18px;">Flutter Embedding CLI eliminates this pain. With a single command,
+                        it generates production-ready modules with:</p>
+                    <ul class="checks">
                         <li>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
@@ -1154,16 +1202,17 @@
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            Proper packaging (CocoaPods, AAR, npm)
+                            Proper packaging (CocoaPods or Swift Package Manager, AAR, npm)
                         </li>
                     </ul>
                 </div>
             </div>
 
             <!-- Protobuf vs Pigeon Comparison -->
-            <div class="comparison">
-                <h3>Why Protocol Buffers Instead of Pigeon?</h3>
-                <table class="comparison-table">
+            <div class="tile" style="margin-top: 40px; padding: 34px; overflow-x: auto;">
+                <h3 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Why Protocol Buffers instead of
+                    Pigeon?</h3>
+                <table class="comparison-table" style="min-width: 520px;">
                     <thead>
                         <tr>
                             <th>Feature</th>
@@ -1173,33 +1222,33 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>iOS & Android Support</td>
+                            <td>iOS &amp; Android support</td>
                             <td class="check">✓</td>
                             <td class="check">✓</td>
                         </tr>
                         <tr>
-                            <td>React Native Support</td>
+                            <td>React Native support</td>
                             <td class="check">✓</td>
                             <td class="cross">✗</td>
                         </tr>
                         <tr>
-                            <td>Web (React/Angular) Support</td>
+                            <td>Web (React/Angular) support</td>
                             <td class="check">✓</td>
                             <td class="cross">✗</td>
                         </tr>
                         <tr>
-                            <td>Built-in Schema Evolution</td>
+                            <td>Built-in schema evolution</td>
                             <td class="check">✓ Excellent backward compatibility</td>
                             <td class="cross">Limited</td>
                         </tr>
                         <tr>
-                            <td>Cross-platform Code Generation</td>
+                            <td>Cross-platform code generation</td>
                             <td class="check">✓ One definition, all platforms</td>
                             <td class="cross">Native only</td>
                         </tr>
                     </tbody>
                 </table>
-                <p style="color: #8888a8; font-size: 0.9rem; margin-top: 20px; text-align: center;">
+                <p style="font-size: 14px; margin-top: 18px;">
                     Proto files generate Dart code plus native code for all platforms: iOS (Swift), Android (Java),
                     React Native (TypeScript), React Web (TypeScript), and Angular Web (TypeScript).
                 </p>
@@ -1208,108 +1257,110 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features">
+    <section class="band band--sky-faint" id="features">
         <div class="container">
             <div class="section-header">
-                <h2>Features</h2>
-                <p>Define your communication contract in Protocol Buffers — the possibilities are endless</p>
+                <span class="eyebrow">Features</span>
+                <h2 class="section-title">Define your contract, get everything else</h2>
+                <p class="section-intro">Describe the communication between host and Flutter in Protocol Buffers — the
+                    CLI takes care of the rest.</p>
             </div>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
+            <div class="feature-grid">
+                <div class="tile">
+                    <div class="icon-chip">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" />
                         </svg>
                     </div>
-                    <h3>Define Your Own API</h3>
+                    <h3>Define your own API</h3>
                     <p>Use Protocol Buffers to define your exact communication contract. Theme switching, user data,
                         complex objects — the possibilities are endless.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="tile">
+                    <div class="icon-chip">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" />
                         </svg>
                     </div>
-                    <h3>Bidirectional Communication</h3>
+                    <h3>Bidirectional communication</h3>
                     <p>Define services for Flutter-to-host and host-to-Flutter calls. Both directions are fully
                         type-safe with generated code.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="tile">
+                    <div class="icon-chip">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="16 18 22 12 16 6" />
                             <polyline points="8 6 2 12 8 18" />
                         </svg>
                     </div>
-                    <h3>Auto-Generated Code</h3>
+                    <h3>Auto-generated code</h3>
                     <p>Write your proto once, get type-safe clients and services generated for Dart, Swift, Java, and
                         TypeScript automatically.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="tile">
+                    <div class="icon-chip">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                     </div>
-                    <h3>Multiple Views (Web)</h3>
+                    <h3>Multiple views (web)</h3>
                     <p>Web platforms support multiple Flutter views within the same application, each with independent
                         communication channels.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="tile">
+                    <div class="icon-chip">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                             <polyline points="22,6 12,13 2,6" />
                         </svg>
                     </div>
-                    <h3>Start Parameters</h3>
+                    <h3>Start parameters</h3>
                     <p>Pass structured initialization data when launching Flutter. Define your StartParams message in
                         proto — include whatever your app needs.</p>
                 </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">
+                <div class="tile">
+                    <div class="icon-chip">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
                                 d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
                         </svg>
                     </div>
-                    <h3>Ready-to-Ship Packages</h3>
-                    <p>Generates CocoaPods for iOS, AAR for Android, and npm packages for web — ready for distribution
-                        to your teams.</p>
+                    <h3>Ready-to-ship packages</h3>
+                    <p>Generates CocoaPods or a Swift package for iOS, AAR for Android, and npm packages for web —
+                        ready for distribution to your teams.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Platforms Section -->
-    <section id="platforms" style="background: rgba(0, 0, 0, 0.2);">
+    <section class="band band--navy" id="platforms">
         <div class="container">
             <div class="section-header">
-                <h2>Supported Platforms</h2>
-                <p>One Flutter module, five target platforms</p>
+                <span class="eyebrow">Supported platforms</span>
+                <h2 class="section-title">One Flutter module, five targets</h2>
             </div>
 
-            <div class="platforms-grid">
+            <div class="platform-grid">
                 <div class="platform-card">
-                    <svg class="platform-icon" viewBox="0 0 24 24" fill="#A2AAAD">
+                    <svg viewBox="0 0 24 24" fill="#A2AAAD">
                         <path
                             d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
                     </svg>
                     <h3>iOS</h3>
-                    <p>CocoaPods integration</p>
+                    <p>CocoaPods or Swift Package Manager</p>
                 </div>
 
                 <div class="platform-card">
-                    <svg class="platform-icon" viewBox="0 0 24 24" fill="#3DDC84">
+                    <svg viewBox="0 0 24 24" fill="#3DDC84">
                         <path
                             d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
                     </svg>
@@ -1318,7 +1369,7 @@
                 </div>
 
                 <div class="platform-card">
-                    <svg class="platform-icon" viewBox="0 0 24 24" fill="#61DAFB">
+                    <svg viewBox="0 0 24 24" fill="#61DAFB">
                         <circle cx="12" cy="12" r="2.5" />
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
@@ -1331,7 +1382,7 @@
                 </div>
 
                 <div class="platform-card">
-                    <svg class="platform-icon" viewBox="0 0 24 24" fill="#61DAFB">
+                    <svg viewBox="0 0 24 24" fill="#61DAFB">
                         <circle cx="12" cy="12" r="2.5" />
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none" />
                         <ellipse cx="12" cy="12" rx="10" ry="4" stroke="#61DAFB" stroke-width="1" fill="none"
@@ -1344,7 +1395,7 @@
                 </div>
 
                 <div class="platform-card">
-                    <svg class="platform-icon" viewBox="0 0 24 24" fill="none">
+                    <svg viewBox="0 0 24 24" fill="none">
                         <path d="M12 2L2 7l1.5 12.5L12 22l8.5-2.5L22 7L12 2z" fill="#DD0031" />
                         <path d="M12 2v20l8.5-2.5L22 7L12 2z" fill="#C3002F" />
                         <path d="M12 5.5L6.5 17h2l1.1-2.8h4.8l1.1 2.8h2L12 5.5zm1.4 6.8h-2.8L12 9l1.4 3.3z"
@@ -1358,31 +1409,32 @@
     </section>
 
     <!-- How It Works Section -->
-    <section class="how-section" id="how-it-works">
+    <section class="band" id="how-it-works">
         <div class="container">
             <div class="section-header">
-                <h2>Get Started in 3 Steps</h2>
-                <p>From Flutter app to embeddable module in minutes</p>
+                <span class="eyebrow">Get started</span>
+                <h2 class="section-title">From Flutter app to embeddable module in 3 steps</h2>
             </div>
 
             <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
+                <div class="tile">
+                    <span class="step-chip">STEP 1</span>
                     <h3>Configure</h3>
                     <p>Add flutter_embedding to your pubspec.yaml and define your proto handovers for type-safe
                         communication.</p>
                 </div>
 
-                <div class="step">
-                    <div class="step-number">2</div>
+                <div class="tile">
+                    <span class="step-chip">STEP 2</span>
                     <h3>Generate</h3>
                     <p>Run a single CLI command to generate modules for your target platforms with example apps.</p>
                 </div>
 
-                <div class="step">
-                    <div class="step-number">3</div>
+                <div class="tile">
+                    <span class="step-chip">STEP 3</span>
                     <h3>Integrate</h3>
-                    <p>Import the generated package into your host application and start communicating with Flutter.</p>
+                    <p>Import the generated package into your host application and start communicating with Flutter.
+                    </p>
                 </div>
             </div>
 
@@ -1414,9 +1466,8 @@
                 </div>
             </div>
 
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-top: 40px;">
-                <div class="code-block" style="margin: 0;">
+            <div class="code-grid">
+                <div class="code-block">
                     <div class="code-header">
                         <div class="code-dot code-dot-red"></div>
                         <div class="code-dot code-dot-yellow"></div>
@@ -1439,7 +1490,7 @@
                     </div>
                 </div>
 
-                <div class="code-block" style="margin: 0;">
+                <div class="code-block">
                     <div class="code-header">
                         <div class="code-dot code-dot-red"></div>
                         <div class="code-dot code-dot-yellow"></div>
@@ -1464,57 +1515,99 @@
                 </div>
             </div>
 
-            <p style="text-align: center; color: #8888a8; margin-top: 32px; font-size: 0.95rem;">
+            <p style="margin-top: 28px; font-size: 14.5px;">
                 Define your services and messages in proto files — the CLI generates type-safe code for all platforms
                 automatically.
             </p>
+
+            <!-- iOS: CocoaPods or Swift Package Manager -->
+            <div class="split" style="margin-top: 72px;">
+                <div>
+                    <span class="eyebrow">iOS packaging</span>
+                    <h3 style="margin-top: 14px;">CocoaPods or Swift Package Manager</h3>
+                    <p>
+                        By default the iOS SDK is packaged for CocoaPods: podspecs plus a podhelper that link the Debug
+                        frameworks in Debug builds and the Release frameworks in Release builds of the host app.
+                    </p>
+                    <p>
+                        Host team moved on from CocoaPods? Set <code class="inline-code">package_manager:
+                            swift_package_manager</code> and the CLI generates a local Swift package wrapping all
+                        Flutter xcframeworks instead — and the example app becomes a plain Xcode project that
+                        references that package. No Podfile, no pod install: add the package, build, done.
+                    </p>
+                    <p>
+                        Swift Package Manager cannot switch frameworks per build configuration, so the package ships
+                        hybrid XCFrameworks: the device slice is the Release (AOT) build and the simulator slice is the
+                        Debug (JIT) build. Physical devices always run at full speed and simulators stay debuggable,
+                        whatever the host app's build configuration.
+                    </p>
+                </div>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dot code-dot-red"></div>
+                        <div class="code-dot code-dot-yellow"></div>
+                        <div class="code-dot code-dot-green"></div>
+                        <span class="code-title">pubspec.yaml</span>
+                    </div>
+                    <div class="code-content">
+                        <pre><span class="code-keyword">flutter_embedding</span>:
+  <span class="code-keyword">ios</span>:
+    <span class="code-comment"># cocoapods (default) or swift_package_manager</span>
+    <span class="code-keyword">package_manager</span>: <span class="code-string">swift_package_manager</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="band band--sky-faint cta">
+        <div class="container">
+            <span class="eyebrow">Ready when you are</span>
+            <h2 class="section-title">Embed Flutter in your next project</h2>
+            <p class="section-intro" style="max-width: 520px;">
+                Open source, MIT licensed, and shipped with example apps for every platform. Questions or ideas? Issues
+                and PRs are welcome.
+            </p>
+            <div class="hero-actions" style="margin-top: 30px;">
+                <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank" class="pill">
+                    View on pub.dev
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M7 17L17 7M8 7h9v9" />
+                    </svg>
+                </a>
+                <a href="https://github.com/krispypen/flutter_embedding" target="_blank" class="pill pill--outline">
+                    Star on GitHub
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M7 17L17 7M8 7h9v9" />
+                    </svg>
+                </a>
+            </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-links">
-                <a href="https://github.com/krispypen/flutter_embedding" target="_blank">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                    GitHub
-                </a>
-                <a href="https://pub.dev/packages/flutter_embedding" target="_blank">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v6.86l-7-3.5V8.82zm9 10.36v-6.86l7-3.5v6.86l-7 3.5z" />
-                    </svg>
-                    flutter_embedding
-                </a>
-                <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18l6.9 3.45L12 11.09 5.1 7.63 12 4.18zM4 8.82l7 3.5v6.86l-7-3.5V8.82zm9 10.36v-6.86l7-3.5v6.86l-7 3.5z" />
-                    </svg>
-                    flutter_embedding_cli
-                </a>
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="mark"></div>
+                    <span>Flutter Embedding</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/krispypen/flutter_embedding" target="_blank">GitHub</a>
+                    <a href="https://pub.dev/packages/flutter_embedding" target="_blank">flutter_embedding</a>
+                    <a href="https://pub.dev/packages/flutter_embedding_cli" target="_blank">flutter_embedding_cli</a>
+                    <a href="https://krispypen.be" target="_blank">krispypen.be</a>
+                </div>
             </div>
-            <p class="footer-copyright">
-                Built by <a href="https://github.com/krispypen" target="_blank">krispypen</a> · MIT License
+            <p class="footer-note">
+                Built by <a href="https://krispypen.be" target="_blank">Kris Pypen</a> · MIT License
             </p>
         </div>
     </footer>
-
-    <script>
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>
