@@ -5,7 +5,21 @@ import 'dart:io';
 ///
 /// When true, commands are invoked via `fvm` (e.g. `fvm flutter ...`,
 /// `fvm exec protoc ...`). When false, the underlying tools are invoked directly.
-bool useFVM = false;
+bool useFVM = isRunningViaFvm();
+
+/// Detects whether this process was started via fvm (`fvm dart run ...`).
+///
+/// When launched through fvm, the running Dart SDK lives inside fvm's cache
+/// (e.g. `~/fvm/versions/<version>/bin/cache/dart-sdk/bin/dart`), so the
+/// resolved executable path contains an `fvm` (or `.fvm`) directory segment.
+bool isRunningViaFvm() {
+  final executable = Platform.resolvedExecutable;
+  final cachePath = Platform.environment['FVM_CACHE_PATH'];
+  if (cachePath != null && cachePath.isNotEmpty && executable.startsWith(cachePath)) {
+    return true;
+  }
+  return executable.split(Platform.pathSeparator).any((segment) => segment == 'fvm' || segment == '.fvm');
+}
 
 /// Runs a `flutter` command, optionally prefixed with `fvm` when [useFVM] is true.
 Future<void> runFlutterCommand(

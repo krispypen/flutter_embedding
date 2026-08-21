@@ -87,8 +87,6 @@ void main(List<String> arguments) async {
       exit(0);
     }
 
-    useFVM = File('.fvmrc').existsSync();
-
     final localBricksPath = Directory('${Directory.current.path}/../../bricks');
 
     final flutterModuleVersion = getFlutterModuleVersion();
