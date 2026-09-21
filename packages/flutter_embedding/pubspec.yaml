@@ -14,15 +14,15 @@ topics:
   - embedding-react-native
 
 environment:
-  sdk: ^3.6.0
-  flutter: ">=3.27.0"
+  sdk: ^3.8.0
+  flutter: ">=3.32.0"
 
 dependencies:
   flutter:
     sdk: flutter
   web: ^1.1.1
-  grpc: ^4.0.0
-  protobuf: ">=2.0.1"
+  grpc: ^5.1.0
+  protobuf: ^6.1.0
 
 dev_dependencies:
   flutter_lints: ^3.0.1

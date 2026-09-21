@@ -63,7 +63,7 @@ Future<List<Map<String, String>>> getServicesFromProto(YamlList protoPaths) asyn
 ///
 /// Output is written to [outputPath].
 Future<void> updateDartHandoverServices(bool verbose, String outputPath) async {
-  await runDartCommand(['pub', 'global', 'activate', 'protoc_plugin', '20.0.1'], verbose);
+  await runDartCommand(['pub', 'global', 'activate', 'protoc_plugin', '25.1.0'], verbose);
   final handoversToHostProtoPaths = flutterEmbeddingConfig['handovers']['to_host'];
   final handoversToFlutterProtoPaths = flutterEmbeddingConfig['handovers']['to_flutter'];
 

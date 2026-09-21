@@ -6,7 +6,7 @@ publish_to: none
 
 environment:
   sdk: ^3.8.1
-  flutter: '>=3.3.0'
+  flutter: '>=3.32.0'
 
 dependencies:
   flutter:
@@ -15,9 +15,10 @@ dependencies:
     git:
       url: https://github.com/krispypen/flutter_embedding.git
       path: packages/flutter_embedding
-      ref: main
+      ref: grpc-5
   plugin_platform_interface: ^2.0.2
-  grpc: ^4.0.0
+  grpc: ^5.1.0
+  protobuf: ^6.1.0
 
 dev_dependencies:
   flutter_test:

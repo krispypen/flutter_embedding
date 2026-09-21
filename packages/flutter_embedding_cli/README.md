@@ -352,7 +352,7 @@ The patch brick will be applied after the base example app is generated, allowin
 - Protocol Buffers compiler (`protoc`) with language-specific plugins:
 
 ```bash
-dart pub global activate protoc_plugin 20.0.1
+dart pub global activate protoc_plugin 25.1.0
 brew install protoc-gen-js protoc-gen-doc swift-protobuf grpc-swift protoc-gen-grpc-web protoc-gen-grpc-java
 npm install -g "@protobuf-ts/plugin"
 ```
