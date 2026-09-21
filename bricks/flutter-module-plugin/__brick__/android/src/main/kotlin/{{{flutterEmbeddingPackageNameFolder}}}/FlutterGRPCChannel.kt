@@ -66,7 +66,7 @@ class FlutterGRPCChannel(
                 // Serialize the request to bytes using the method descriptor's marshaller
                 val requestMarshaller = methodDescriptor.requestMarshaller
                 val requestInputStream = requestMarshaller.stream(message)
-                val requestBytes = requestInputStream.readAllBytes()
+                val requestBytes = requestInputStream.readBytes()
 
                 // Get the full method name to use as event name
                 val serviceName = methodDescriptor.serviceName!!
