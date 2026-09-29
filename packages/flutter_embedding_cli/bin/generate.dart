@@ -135,7 +135,7 @@ void main(List<String> arguments) async {
       final brick = localBricks
           ? Brick.path(('${localBricksPath.path}/flutter-module-plugin'))
           : Brick.git(GitPath('https://github.com/krispypen/flutter_embedding.git',
-              path: 'bricks/flutter-module-plugin', ref: 'main'));
+              path: 'bricks/flutter-module-plugin', ref: 'grpc-5'));
       final generator = await MasonGenerator.fromBrick(brick);
       final path = '${Directory.current.path}/embedding/$moduleName';
       final target = DirectoryGeneratorTarget(Directory(path));
@@ -174,7 +174,8 @@ void main(List<String> arguments) async {
             }
             await generateZip(Directory('embedding/ios/sdk'), verbose);
             await generatePodSpecs(Directory('embedding/ios/sdk'));
-            await generatePodHelper(Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false, false);
+            await generatePodHelper(
+                Directory('.'), Directory('embedding/ios/sdk'), 'https://krispypen.be', false, false);
         }
         print('iOS module generated in: ${Directory.current.path}/embedding/ios/sdk');
         if (iosPackageManager != iosPackageManagerCocoapods) {
@@ -239,15 +240,14 @@ void main(List<String> arguments) async {
           } else {
             // the SPM example only needs the Swift package, not the podhelper/podspec/zip files
             exampleFlutterDir.createSync(recursive: true);
-            await runCommand(
-                'cp', ['-r', 'embedding/ios/sdk/$spmPackageName', '$iosExamplePath/Flutter/'], verbose);
+            await runCommand('cp', ['-r', 'embedding/ios/sdk/$spmPackageName', '$iosExamplePath/Flutter/'], verbose);
             print(
                 'Example app sdk in: $iosExamplePath, you can now run (cd embedding/ios/example && open FlutterEmbeddingExample.xcodeproj) in this directory to open the example app');
           }
         }
         if (createZip) {
-          await generateSdkZip(Directory('${Directory.current.path}/embedding/ios'), 'ios_sdk.zip',
-              ['example', 'sdk'], ['example/Pods/*'], zipPassword, verbose);
+          await generateSdkZip(Directory('${Directory.current.path}/embedding/ios'), 'ios_sdk.zip', ['example', 'sdk'],
+              ['example/Pods/*'], zipPassword, verbose);
         }
 
         break;
@@ -340,9 +340,13 @@ void main(List<String> arguments) async {
           iosFlutterDir.deleteSync(recursive: true);
         }
         // no profile framework needed: podhelper.rb and the podspecs only reference Debug and Release
-        await runFlutterCommand(
-            ['build', 'ios-framework', '--cocoapods', '--no-profile', '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'],
-            verbose);
+        await runFlutterCommand([
+          'build',
+          'ios-framework',
+          '--cocoapods',
+          '--no-profile',
+          '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'
+        ], verbose);
 
         await generateZip(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'), verbose);
         await generatePodSpecs(Directory('$flutterRnEmbeddingPath/ios-rn/Flutter'));
