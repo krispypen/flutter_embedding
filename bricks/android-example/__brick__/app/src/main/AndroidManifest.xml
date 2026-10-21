@@ -25,9 +25,10 @@
         </activity>
         
         <activity
-            android:name="io.flutter.embedding.android.FlutterActivity"
+            android:name="be.krispypen.plugins.flutter_embedding.FlutterEmbeddingActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+            tools:replace="android:theme" />
     </application>
 
 </manifest>
