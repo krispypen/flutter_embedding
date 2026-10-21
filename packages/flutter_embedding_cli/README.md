@@ -159,7 +159,7 @@ dart run flutter_embedding_cli:generate [options] <command> [arguments]
 Generate iOS Flutter module and optionally create an example app:
 
 ```bash
-dart run flutter_embedding_cli:generate ios [--example] [--verbose] [--zip] [--zip-password <password>]
+dart run flutter_embedding_cli:generate ios [--example] [--verbose] [--zip] [--zip-password <password>] [--codesign-identity <identity>]
 ```
 
 **Options:**
@@ -167,14 +167,16 @@ dart run flutter_embedding_cli:generate ios [--example] [--verbose] [--zip] [--z
 - `--verbose`, `-v`: Show verbose output
 - `--zip`: Create a distributable `ios_sdk.zip` archive (see [SDK Zip Archives](#sdk-zip-archives))
 - `--zip-password`: Password-protect the zip archive (requires `--zip`)
+- `--codesign-identity`: Code signing identity (certificate name such as `"Apple Distribution: Company (TEAMID)"`, or its SHA-1) to sign the generated xcframeworks with. App Store Connect rejects apps that embed commonly used third-party SDKs (Flutter, `connectivity_plus`, `share_plus`, ...) from unsigned xcframeworks (ITMS-91065), so pass this for any SDK that ends up in an App Store or TestFlight build. The identity must be available in the keychain.
 
 **What it does:**
 1. Generates a Flutter module plugin with Swift handover services from proto files
 2. Builds the Flutter iOS frameworks (xcframeworks per build configuration)
-3. With `ios.package_manager: cocoapods` (the default): zips the frameworks per configuration and generates Podspec files and a Pod helper, so the host app links the Debug frameworks in Debug builds and the Release frameworks in Release builds
-4. With `ios.package_manager: swift_package_manager`: generates a local Swift package in `embedding/ios/sdk/FlutterEmbeddingModule/` containing hybrid xcframeworks (Release slice for physical devices, Debug slice for simulators, since SPM cannot switch frameworks per build configuration) and a `Package.swift` exposing them as a single `FlutterEmbeddingModule` library product
-5. If `--example` is specified, creates a complete example iOS app matching the configured package manager: a Podfile-based app (run `pod install` and open the `.xcworkspace`), or an app whose Xcode project references the local Swift package directly (just open the `.xcodeproj`)
-6. If `--zip` is specified, creates `embedding/ios/ios_sdk.zip`
+3. If `--codesign-identity` is specified, signs the xcframeworks that are not signed yet (Flutter.xcframework keeps Google's signature, except for the hybrid one in the Swift package, which is recombined and therefore re-signed)
+4. With `ios.package_manager: cocoapods` (the default): zips the frameworks per configuration and generates Podspec files and a Pod helper, so the host app links the Debug frameworks in Debug builds and the Release frameworks in Release builds
+5. With `ios.package_manager: swift_package_manager`: generates a local Swift package in `embedding/ios/sdk/FlutterEmbeddingModule/` containing hybrid xcframeworks (Release slice for physical devices, Debug slice for simulators, since SPM cannot switch frameworks per build configuration) and a `Package.swift` exposing them as a single `FlutterEmbeddingModule` library product
+6. If `--example` is specified, creates a complete example iOS app matching the configured package manager: a Podfile-based app (run `pod install` and open the `.xcworkspace`), or an app whose Xcode project references the local Swift package directly (just open the `.xcodeproj`)
+7. If `--zip` is specified, creates `embedding/ios/ios_sdk.zip`
 
 #### Android Module Generation
 
