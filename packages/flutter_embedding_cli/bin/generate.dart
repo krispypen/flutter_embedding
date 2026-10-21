@@ -4,6 +4,7 @@ import 'package:args/args.dart';
 import 'package:mason/mason.dart';
 import 'package:yaml/yaml.dart';
 
+import 'src/codesign_xcframeworks.dart';
 import 'src/generate_hybrid_xcframeworks.dart';
 import 'src/generate_pod_spec.dart';
 import 'src/generate_pod_structure.dart';
@@ -40,7 +41,10 @@ void main(List<String> arguments) async {
           ..addFlag('example', abbr: 'e', help: 'Generate example app')
           ..addFlag('verbose', abbr: 'v', help: 'Verbose output')
           ..addFlag('zip', help: 'Create a zip archive of the generated sdk and example app')
-          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip'))
+          ..addOption('zip-password', help: 'Password to protect the zip archive created with --zip')
+          ..addOption('codesign-identity',
+              help: 'Code signing identity (certificate name or SHA-1) to sign the generated xcframeworks with, '
+                  'required by App Store Connect for commonly used third-party SDKs such as Flutter'))
     ..addCommand(
         'android',
         ArgParser()
@@ -153,6 +157,11 @@ void main(List<String> arguments) async {
         await updateSwiftHandoverServices(verbose, 'embedding/$moduleName/ios/Classes/');
         // using --no-cocoapods here makes the Flutter.framework part of the FlutterEmbeddingModule.xcframework, so the podhelper should also not contain a direct pod declaration for Flutter, since it will be included in the FlutterEmbeddingModule.xcframework
         await runFlutterCommand(['build', 'ios-framework', '--no-cocoapods', '--output=embedding/ios/sdk'], verbose);
+        final codesignIdentity = results.command?['codesign-identity'] as String?;
+        if (codesignIdentity == null) {
+          print('Warning: no --codesign-identity given, the xcframeworks stay unsigned and App Store Connect '
+              'will reject apps embedding them (ITMS-91065)');
+        }
 
         // flutter build ios-framework only recreates the Debug/Profile/Release
         // directories, so remove sdk-root output of the other package manager
@@ -167,10 +176,18 @@ void main(List<String> arguments) async {
             }
             await generateHybridXcframeworks(
                 Directory('embedding/ios/sdk'), Directory('${spmPackageDirectory.path}/Frameworks'), verbose);
+            if (codesignIdentity != null) {
+              await codesignXcframeworks(Directory('${spmPackageDirectory.path}/Frameworks'), codesignIdentity, verbose);
+            }
             await generateSpmPackage(spmPackageDirectory);
           case iosPackageManagerCocoapods:
             if (spmPackageDirectory.existsSync()) {
               spmPackageDirectory.deleteSync(recursive: true);
+            }
+            if (codesignIdentity != null) {
+              for (final configuration in ['Release', 'Debug']) {
+                await codesignXcframeworks(Directory('embedding/ios/sdk/$configuration'), codesignIdentity, verbose);
+              }
             }
             await generateZip(Directory('embedding/ios/sdk'), verbose);
             await generatePodSpecs(Directory('embedding/ios/sdk'));
