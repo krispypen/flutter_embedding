@@ -204,6 +204,10 @@ class {{flutterEmbeddingName}} {
         FlutterEmbedding.instance().startScreen(context)
     }
 
+    fun stopScreen() {
+        FlutterEmbedding.instance().stopScreen()
+    }
+
     fun stopEngine() {
         FlutterEmbedding.instance().stopEngine()
     }

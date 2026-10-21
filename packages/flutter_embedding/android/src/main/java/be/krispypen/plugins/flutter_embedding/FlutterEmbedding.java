@@ -136,9 +136,27 @@ public class FlutterEmbedding implements MethodChannel.MethodCallHandler {
     }
 
     public void startScreen(Context context){
-        context.startActivity(FlutterActivity
-                .withCachedEngine(FlutterEmbedding.ENGINE_ID)
+        context.startActivity(new FlutterActivity.CachedEngineIntentBuilder(FlutterEmbeddingActivity.class, FlutterEmbedding.ENGINE_ID)
                 .build(context));
+    }
+
+    /**
+     * Finishes the activity opened by {@link #startScreen(Context)}, if it is still showing.
+     * The cached engine keeps running; call {@link #stopEngine()} to destroy it (which also closes the screen).
+     */
+    public void stopScreen() {
+        Runner stopScreen = () -> {
+            FlutterEmbeddingActivity activity = FlutterEmbeddingActivity.current();
+            if (activity != null && !activity.isFinishing()) {
+                activity.finish();
+            }
+        };
+
+        if (UiThreadUtil.isOnUiThread()) {
+            stopScreen.run();
+        } else {
+            UiThreadUtil.runOnUiThread(stopScreen::run);
+        }
     }
 
     public void stopEngine() {
@@ -155,10 +173,21 @@ public class FlutterEmbedding implements MethodChannel.MethodCallHandler {
                 this.channel = null;
             };
 
+            // A FlutterView that detaches after engine.destroy() crashes, so close the startScreen
+            // activity first and only destroy the engine once that activity is destroyed.
+            Runner stopScreenAndEngine = () -> {
+                FlutterEmbeddingActivity activity = FlutterEmbeddingActivity.current();
+                if (activity != null) {
+                    activity.finish(destroyEngine);
+                } else {
+                    destroyEngine.run();
+                }
+            };
+
             if (UiThreadUtil.isOnUiThread()) {
-                destroyEngine.run();
+                stopScreenAndEngine.run();
             } else {
-                UiThreadUtil.runOnUiThread(destroyEngine::run);
+                UiThreadUtil.runOnUiThread(stopScreenAndEngine::run);
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to stop engine", e);

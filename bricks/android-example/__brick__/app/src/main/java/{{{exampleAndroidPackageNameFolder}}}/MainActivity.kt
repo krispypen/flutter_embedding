@@ -294,6 +294,9 @@ class MainActivity : AppCompatActivity() {
         if (removeViewButton.isVisible) {
             // Flutter is embedded, remove it from the container
             removeFlutterView(removeViewButton)
+        } else {
+            // Flutter was opened with startScreen, close that activity
+            {{flutterEmbeddingName}}.instance().stopScreen()
         }
     }
 }
