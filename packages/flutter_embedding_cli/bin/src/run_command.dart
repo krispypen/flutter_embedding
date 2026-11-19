@@ -35,6 +35,20 @@ Future<void> runFlutterCommand(
   );
 }
 
+/// Whether `flutter build ios-framework` knows the `--[no-]codesign` flag.
+///
+/// From Flutter 3.47 on, `flutter build ios-framework` code-signs the
+/// xcframeworks by default and fails on a machine without a signing
+/// certificate (e.g. a CI step that runs before the keychain is set up).
+/// Older Flutter versions reject the flag.
+Future<bool> flutterIosFrameworkHasCodesignFlag() async {
+  final result = await Process.run(
+    useFVM ? 'fvm' : 'flutter',
+    [if (useFVM) 'flutter', 'build', 'ios-framework', '--help'],
+  );
+  return result.stdout.toString().contains('--[no-]codesign');
+}
+
 /// Runs a `dart` command, optionally prefixed with `fvm` when [useFVM] is true.
 Future<void> runDartCommand(
   List<String> arguments,

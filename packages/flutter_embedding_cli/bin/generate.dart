@@ -156,7 +156,12 @@ void main(List<String> arguments) async {
         print('Generating iOS module for bundle identifier: ${brickVars['iosBundleIdentifier']}');
         await updateSwiftHandoverServices(verbose, 'embedding/$moduleName/ios/Classes/');
         // using --no-cocoapods here makes the Flutter.framework part of the FlutterEmbeddingModule.xcframework, so the podhelper should also not contain a direct pod declaration for Flutter, since it will be included in the FlutterEmbeddingModule.xcframework
-        await runFlutterCommand(['build', 'ios-framework', '--no-cocoapods', '--output=embedding/ios/sdk'], verbose);
+        // Flutter's own signature is not needed: the xcframeworks are signed
+        // after packaging (--codesign-identity), and recombining the slices
+        // into hybrid xcframeworks drops it anyway.
+        final noCodesign = [if (await flutterIosFrameworkHasCodesignFlag()) '--no-codesign'];
+        await runFlutterCommand(
+            ['build', 'ios-framework', '--no-cocoapods', ...noCodesign, '--output=embedding/ios/sdk'], verbose);
         final codesignIdentity = results.command?['codesign-identity'] as String?;
         if (codesignIdentity == null) {
           print('Warning: no --codesign-identity given, the xcframeworks stay unsigned and App Store Connect '
@@ -362,6 +367,7 @@ void main(List<String> arguments) async {
           'ios-framework',
           '--cocoapods',
           '--no-profile',
+          if (await flutterIosFrameworkHasCodesignFlag()) '--no-codesign',
           '--output=$flutterRnEmbeddingPath/ios-rn/Flutter'
         ], verbose);
 
